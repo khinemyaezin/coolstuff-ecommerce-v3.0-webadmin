@@ -1,0 +1,363 @@
+<div class="p-3">
+    <div class="alert alert-primary alert-dismissible fade show justify-content-between d-flex align-items-center"
+        role="alert" *ngIf="saveBtnOn">
+        <strong>You have unsaved {{ chnagedVariNumber }} changes.</strong>
+        <button type="button" class="btn btn-outline-primary" aria-label="Save" (click)="submit()">Save</button>
+    </div>
+
+    <div class="card" style="height: 100%;">
+        <div class="card-header">
+            <div class="card-title">Manage Inventory</div>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap mb-3 gap-2">
+
+                <div [formGroup]="productCriFormGroup">
+                    <div class="input-group border rounded">
+                        <input class="form-control border-0 rounded-end" type="text" placeholder="Search SKU, Name"
+                            formControlName="name">
+                        <i
+                            class="bi bi-search position-absolute top-50 end-0 translate-middle-y text-muted fs-base me-3"></i>
+                    </div>
+                </div>
+                <!-- <button class="btn btn-secondary" (click)="selectControls(true)">Select all</button>
+                <button class="btn btn-secondary" (click)="selectControls(false)">Deselect all</button> -->
+                <div>
+                    <button class="btn btn-secondary dropdown-toggle w-100 h-100" data-bs-toggle="dropdown"
+                        id="productgroup-btn">Product group</button>
+                    <ul class="dropdown-menu shadow-sm" aria-labelledby="productgroup-btn">
+                        <!-- <li role="button"><a class="dropdown-item" (click)="createProductGroup()">Create or replace</a>
+                        </li>
+                        <li role="button"><a class="dropdown-item" (click)="removeProductsFromProductGroup()">Remove
+                                from product
+                                group</a></li> -->
+                        <li role="button"><a class="dropdown-item">Product group list</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <button class="btn btn-secondary dropdown-toggle w-100 h-100" data-bs-toggle="dropdown"
+                        data-bs-auto-close="outside" aria-expanded="false" id="col">Columns</button>
+                    <div class="dropdown-menu shadow-sm p-2" aria-labelledby="col">
+                        <ul>
+                            <li>
+                                <h6 class="dropdown-header">Header titles</h6>
+                            </li>
+                            <li *ngFor="let col of tableHeader; let i = index;">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" [id]="'colsInputId_' + i"
+                                        [(ngModel)]="col.show">
+                                    <label class="form-check-label" [for]="'colsInputId_' + i">
+                                        {{col.title}}
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="table-responsive" [formGroup]="productFormGroup" id="productForm">
+
+                <table>
+                    <thead class="table-header-container">
+                        <tr class="rps-table-row rps-table-row--head">
+                            <th scope="col">No</th>
+                            <th scope="col">Status</th>
+                            <ng-container *ngFor="let col of tableHeader">
+                                <th scope="col" *ngIf="col.show"> {{col.title}}</th>
+                            </ng-container>
+                            <th scope="col" class="operation">Operation</th>
+                        </tr>
+                    </thead>
+                    <ng-container formArrayName="products">
+                        <ng-template ngFor let-prod let-i="index" [ngForOf]="productVariationControls">
+                            <tbody [formGroupName]="i">
+                                <ng-container
+                                    *ngTemplateOutlet="variantTemplate; context:{ vari: prod, index: i , isStandAlone: prod.get('product')?.value?.variant_option1_hdr == null ,isParent: true, trigger: variantCollapse}">
+                                </ng-container>
+                            </tbody>
+                            <ng-container [formGroupName]="i">
+                                <ng-container formArrayName="variants">
+                                    <tbody #variantCollapse="ngbCollapse" [(ngbCollapse)]="$any(prod.get('collapse')).value">
+                                        <ng-template ngFor let-vari let-varIndex="index"
+                                            [ngForOf]="$any(prod).get('variants').controls">
+                                            <ng-container
+                                                *ngTemplateOutlet="variantTemplate; context:{ vari: vari, index: i , childIndex: varIndex, isStandAlone: false ,isParent: false}">
+                                            </ng-container>
+                                        </ng-template>
+                                    </tbody>
+                                </ng-container>
+                            </ng-container>
+                        </ng-template>
+
+                    </ng-container>
+
+                </table>
+            </div>
+            <div class="d-flex justify-content-between py-3">
+                <div>
+
+                </div>
+                <app-pagination [links]="paginationLinks" [urlFetch]="URL"></app-pagination>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Modal group -->
+<!-- <div class="modal fade" id="productGroupModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+        <div class="modal-content product-group" id="productGroupModalContent">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Product Group</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="productGroupFormGroup">
+                    <div class="px-2">
+                        <label class="form-label">Group title</label>
+                        <div class="input-group border rounded">
+                            <input type="text" class="form-control border-0" formControlName="name">
+                            <button type="button"
+                                *ngIf="!pgStatus && productGroupFormGroup.get('pgList')?.value.length>0"
+                                class="btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li *ngFor="let pg of productGroupFormGroup.get('pgList')?.value"
+                                    (click)="selectProdGroup(pg)">
+                                    <a class="dropdown-item">
+                                        {{pg.name}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-3"></div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switch-new"
+                                formControlName='isNew'>
+                            <label class="form-check-label" for="switch-new">create as new product group</label>
+                        </div>
+                    </div>
+
+                    <ul formArrayName="products" class="list-group list-group-flush">
+                        <li class="list-group-item pg-item gap-2" *ngFor="let prod of pgItems; let i = index">
+                            <div class="pg-image-box">
+                                <div class="mx-auto pg-image-container">
+                                    <img class="pg-image rounded"
+                                        [src]="prod.get('image')?.value ? prod.get('image')?.value.link : 'assets/img/def-stock.jpg'">
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 pg-name-box text-break">
+                                <a>{{prod.get('name')?.value}}</a>
+                            </div>
+                            <div class="pg-close-box">
+                                <button type="button" class="btn-close" aria-label="Close"
+                                    (click)="removeItemFromProdGroup(i)"></button>
+
+                            </div>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" (click)="submitProdGroup()">Save</button>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<ng-template #variantTemplate let-vari="vari" let-index="index" let-childIndex="childIndex" let-trigger="trigger"
+    let-isStandAlone="isStandAlone" let-isParent="isParent">
+    <tr class="rps-table-row variant-item" [formGroup]="vari" [attr.data-id]="vari.get('id')?.value">
+        <th class="rps-table-cell count text-break order-count">
+            <span *ngIf="isParent">{{index+1}}</span>
+
+        </th>
+        <td class="rps-table-cell status order-status">
+            <div class="rps-table-cell--content text-break ">
+
+                <div class="rps-table-cell--heading">
+
+                </div>
+                <ng-container [ngSwitch]="vari.get('biz_status')?.value">
+                    <div *ngSwitchCase="1" class="badge rounded-pill d-block badge-soft-pending mb-1">
+                        <span class="badge-text-only"></span>
+                    </div>
+                    <div *ngSwitchCase="2" class="badge rounded-pill d-block badge-soft-active mb-1">
+                        <span class="badge-text-only"></span>
+                    </div>
+                    <div *ngSwitchCase="6" class="badge rounded-pill d-block badge-soft-hold mb-1">
+                        <span class="badge-text"></span>
+                    </div>
+
+                </ng-container>
+
+                <div *ngIf="vari.get('qty')?.value < 1" class="badge rounded-pill d-block badge-soft-outofstock mb-1">
+                    <span class="badge-text-only"></span>
+                </div>
+
+            </div>
+        </td>
+        <td class="rps-table-cell name text-break order-name">
+            <div class="rps-table-cell--heading">
+                Name
+            </div>
+            <div class="rps-table-cell--content text-break p-0">
+                <div *ngIf="!isStandAlone && isParent; then toggleArrow else plainText"></div>
+
+                <ng-template #toggleArrow>
+                    <button class="btn btn-toggle align-items-center rounded gap-2 p-0" [attr.aria-expanded]="!vari.get('collapse')?.value"
+                        (click)="trigger.toggle();getVariants(vari)">
+                        <a [routerLink]="['../add-a-product/'+vari.get('product')?.value?.id]"
+                            class="text-nowrap overflow-hidden">
+                            {{vari.get('product')?.value?.title}}</a>
+                        <span class="menu-arrow ms-auto"></span>
+
+                    </button>
+                    <a [routerLink]="['../add-a-product/' + vari.get('product')?.value?.id + '/' + vari.get('id')?.value]"
+                        class="d-block small" type="link">{{vari.get('title')?.value}}</a>
+                </ng-template>
+                <ng-template #plainText>
+                    <ul class="list-unstyled m-0 p-0">
+                        <li class="text-wrap" style="width: 200px;">
+                            <a [routerLink]="['../add-a-product/'+vari.get('product')?.value?.id]">
+                                {{vari.get('product')?.value?.title}}</a>
+                        </li>
+                        <li>
+                            <a [routerLink]="['../add-a-product/' + vari.get('product')?.value?.id + '/' + vari.get('id')?.value]"
+                                class="d-block small" type="link">{{vari.get('title')?.value}}</a>
+                        </li>
+                    </ul>
+                </ng-template>
+            </div>
+
+        </td>
+        <td class="rps-table-cell image-col text-break order-image">
+            <div class="rps-table-cell--heading">
+                Image
+            </div>
+            <div class="rps-table-cell--content ">
+                <div class="mx-auto product-image-container">
+                    <img class="product-image rounded" [src]="vari.get('media_1_image')?.value"
+                        (error)="pgService.setDefaultImageURL($event)">
+
+                </div>
+
+            </div>
+        </td>
+        <td class="rps-table-cell sku-col text-break order-sku">
+            <div class="rps-table-cell--heading">
+                SKU
+            </div>
+            <div class="rps-table-cell--content ">
+                {{vari.get('seller_sku')?.value}}
+            </div>
+        </td>
+
+        <td class="rps-table-cell price-col text-break order-price">
+            <div class="rps-table-cell--heading">
+                Price
+            </div>
+
+            <div class="rps-table-cell--content" *ngIf="vari.get('edit')?.value">
+                <div class="form-group position-relative">
+                    <input type="number" class="form-control text-end " min="0" pattern="\d*"
+                        formControlName="buy_price" style="min-width: 150px;"
+                        (change)="inputNumberChange(vari,'buy_price')">
+                    <span
+                        class="def-value def-buy_price-value position-absolute top-0 start-0 badge rounded-pill bg-light text-dark text-muted"></span>
+                </div>
+
+            </div>
+
+        </td>
+        <td class="rps-table-cell price-col text-break order-sprice">
+            <div class="rps-table-cell--heading">
+                Selling price
+            </div>
+
+            <div class="rps-table-cell--content text-end">
+                <div class="form-group position-relative">
+                    <input type="number" class="form-control text-end" pattern="\d*" formControlName="selling_price"
+                        style="min-width: 150px;" (change)="inputNumberChange(vari,'selling_price')">
+                    <span
+                        class="def-value def-selling_price-value position-absolute top-0 start-0 badge rounded-pill bg-light text-dark text-muted"></span>
+                </div>
+
+            </div>
+
+        </td>
+        <td class="rps-table-cell price-col text-break order-qty">
+            <div class="rps-table-cell--heading">
+                Qty
+            </div>
+
+            <div class="rps-table-cell--content text-end">
+                <div class="form-group position-relative">
+                    <input type="number" class="form-control text-end" min="0" pattern="\d*" formControlName="qty"
+                        style="min-width: 150px;" (change)="inputNumberChange(vari,'qty')">
+                    <span
+                        class="def-value def-qty-value position-absolute top-0 start-0 badge rounded-pill bg-light text-dark text-muted"></span>
+                </div>
+
+            </div>
+        </td>
+        <td class="rps-table-cell prodgroup-col text-break order-pg">
+            <div class="rps-table-cell--heading">
+                Prod Group
+            </div>
+            <div class="rps-table-cell--content">
+                -
+            </div>
+        </td>
+        <td class="rps-table-cell condition text-break order-condition">
+            <div class="rps-table-cell--heading">
+                Condition
+            </div>
+            <div class="rps-table-cell--content">
+                <div class="form-group position-relative">
+                    <select id="plain-select" class="form-select" formControlName="condition"
+                        [compareWith]="compareCondition">
+                        <option [ngValue]="con" *ngFor="let con of conditions">
+                            {{con.title}}</option>
+                    </select>
+
+                </div>
+
+            </div>
+        </td>
+        <td class="rps-table-cell date-range text-break order-daterange">
+            <div class="rps-table-cell--heading">
+                Date range
+            </div>
+            <div class="rps-table-cell--content text-end">
+                {{vari.get('start_at')?.value | date :
+                'mediumDate'}}<br>
+                {{vari.get('expired_at')?.value | date :
+                'mediumDate'}}
+            </div>
+        </td>
+
+        <td class="rps-table-cell operation text-break order-operation">
+            <div class="rps-table-cell--heading">
+
+            </div>
+            <div class="rps-table-cell--content">
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <button class="btn btn-sm btn-clean">
+                        <i class="bi bi-save"></i>
+                    </button>
+                    <button class="btn btn-sm btn-clean">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+
+            </div>
+        </td>
+    </tr>
+</ng-template>

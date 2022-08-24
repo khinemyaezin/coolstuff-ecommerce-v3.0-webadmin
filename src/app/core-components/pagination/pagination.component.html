@@ -1,0 +1,10 @@
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <ng-template ngFor let-page let-index="index" [ngForOf]="links">
+            <li [ngClass]="{ 'page-item': true, 'active': page.active, 'disabled': !page.url  }">
+                <a class="page-link" role="button" [innerHTML]="page?.label">
+                </a>
+            </li>
+        </ng-template>
+    </ul>
+</nav>

@@ -1,0 +1,15 @@
+<div class="modal fade rounded" id="confirm-modal" tabindex="-1" aria-labelledby="confirmIdentity-modal-label"
+  aria-hidden="true">
+  <div class="modal-dialog  modal-sm modal-dialog-centered rounded">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="confirmIdentity-modal-label">{{header}}</h5>
+        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+      </div>
+      <div class="modal-footer border-0 d-flex">
+        <button type="button" class="btn btn-clean ms-auto" (click)="cancel()"> No</button>
+        <button type="button" class="btn btn-clean" (click)="confirm()"> Yes</button>
+      </div>
+    </div>
+  </div>
+</div>

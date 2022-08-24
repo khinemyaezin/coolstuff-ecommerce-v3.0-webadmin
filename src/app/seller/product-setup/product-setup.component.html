@@ -1,0 +1,890 @@
+<div class="container">
+    <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs">
+        <li [ngbNavItem]="1">
+            <ng-template ngbNavContent>
+                <ng-container *ngTemplateOutlet="heading; context:{ submitBtn: false }">
+                </ng-container>
+                <div class="card">
+
+                    <div class="card-header">
+                        <div class="card-title">Select a product category</div>
+                        <small>Choosing the best category ensure that you see the most appropriate data field for
+                            your product.
+                        </small>
+                    </div>
+                    <div class="card-body">
+                        <form [formGroup]="categoryForm" id="browse-category">
+                            <label for="category-name" class="form-label">Browse </label>
+                            <div class="input-group border">
+                                <input type="text" class="form-control border-0 " list="datalistOptions"
+                                    id="category-name" placeholder="Search category" formControlName="categorySearch">
+                                <span class="p-1 spinner">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </span>
+
+                            </div>
+                            <div class="overflow-auto">
+
+                                <ul class="list-group list-group-flush py-3" id="category-query-data">
+                                    <li class="list-group-item list-group-item-action" role="button" type="button"
+                                        *ngFor="let c of categoryForm.get('categorySearchResult')?.value"
+                                        (click)="selectedCategory(c)">
+                                        <a class="">{{c.title}}</a><br>
+                                        <small class="text-muted">{{c.path}}</small>
+                                    </li>
+                                </ul>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </ng-template>
+        </li>
+        <li [ngbNavItem]="2">
+            <ng-template ngbNavContent>
+                <ng-container *ngTemplateOutlet="heading; context:{ submitBtn: true }">
+                </ng-container>
+                <p class="small">{{categoryBreadCrumb}}</p>
+
+                <div class="row g-2">
+                    <div class="col-lg-8">
+
+                        <div class="card mb-2" [formGroup]="vitalInfoForm">
+                            <div class="card-header">
+                                <div class="card-title">Vital Information</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-4">
+                                    <div class="col-sm-4">
+                                        <label for="product-name"
+                                            class="w-100 col-form-label  text-lg-end text-sm-start">Title</label>
+                                    </div>
+                                    <!-- [ngClass]="{'form-control is-invalid': !brandFormGroup.get('')?.valid && brandFormGroup.get('')?.touched,'form-control':true}" -->
+                                    <div class="col-sm-8">
+                                        <input type="text" aria-label="First name" id="product-name"
+                                            formControlName="title" placeholder="Product Title"
+                                            [ngClass]="{'form-control is-invalid': !vitalInfoForm.get('title')?.valid && vitalInfoForm.get('title')?.touched,'form-control':true}">
+                                    </div>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-sm-4">
+                                        <label for="brand-name"
+                                            class="w-100 col-form-label  text-lg-end text-sm-start">Brand</label>
+                                    </div>
+
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" aria-label="First name" id="brand-name"
+                                            formControlName="brand" placeholder="Brand Name"
+                                            [ngClass]="{'form-control is-invalid': !vitalInfoForm.get('brand')?.valid && vitalInfoForm.get('brand')?.touched,'form-control':true}">
+                                    </div>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-sm-4">
+                                        <label for="manufacturer"
+                                            class="w-100 col-form-label  text-lg-end text-sm-start">Manufacturer</label>
+                                    </div>
+
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" aria-label="First name"
+                                            id="manufacturer" formControlName="manufacturer"
+                                            placeholder="Manufactured from"
+                                            [ngClass]="{'form-control is-invalid': !vitalInfoForm.get('manufacturer')?.valid && vitalInfoForm.get('manufacturer')?.touched,'form-control':true}">
+                                    </div>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-sm-4">
+                                        <label for="material-type"
+                                            class="w-100 col-form-label  text-lg-end text-sm-start">Material
+                                            Type</label>
+                                    </div>
+
+                                    <div class="col-sm-8">
+                                        <select formControlName="packType"
+                                            [ngClass]="{'form-select is-invalid': !vitalInfoForm.get('packType')?.valid && vitalInfoForm.get('packType')?.touched,'form-select':true}"
+                                            [compareWith]="compare">
+                                            <option [value]='null' disabled>Select</option>
+                                            <option [ngValue]="matype" *ngFor=" let matype of packTypeList">
+                                                {{matype.title}}
+                                            </option>
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <ng-container *ngIf="!hasVariant">
+
+                            <div class="card mb-2" [formGroup]="offerForm">
+                                <div class="card-header">
+                                    <div class="card-title">Pricing</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-4">
+                                        <div class="col-sm-4">
+                                            <label for="offerSellingPrice"
+                                                class="w-100 col-form-label  text-lg-end text-sm-start">
+                                                Selling price</label>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <input type="number" class=" form-control text-start" id="offerSellingPrice"
+                                                (change)="calMarginAndProfit()" (blur)="convertDecimal($event)"
+                                                formControlName="sellingPrice" step="0.1">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-4">
+                                        <div class="col-sm-4">
+                                            <label for="offerCompareAtPrice"
+                                                class="w-100 col-form-label  text-lg-end text-sm-start">
+                                                Compare at price</label>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <input type="number" class="form-control text-start"
+                                                (blur)="convertDecimal($event)" id="offerCompareAtPrice" step="0.1"
+                                                value="0.0">
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-4">
+                                        <div class="col-sm-4">
+                                            <label for="offerCostPerItem"
+                                                class="w-100 col-form-label  text-lg-end text-sm-start">
+                                                Cost per item</label>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <input type="number" class="form-control text-start" id="offerCostPerItem"
+                                                (change)="calMarginAndProfit()" (blur)="convertDecimal($event)"
+                                                formControlName="price" step="0.1">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-4">
+                                        <div class="col-sm-4">
+                                            <label for="offerMargin"
+                                                class="w-100 col-form-label  text-lg-end text-sm-start">Margin</label>
+                                        </div>
+                                        <div class="col-sm-8 d-flex align-items-center">
+                                            <span>{{marginPercentage | percent:'1.2-2'}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-4">
+                                        <div class="col-sm-4">
+                                            <label for="offerProfit"
+                                                class="w-100 col-form-label  text-lg-end text-sm-start">Profit</label>
+                                        </div>
+                                        <div class="col-sm-8  d-flex align-items-center">
+                                            <span>
+                                                {{profit|currency:'Ks':'symbol':'1.2-2':'en-US'}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-2" [formGroup]="offerForm">
+                                <div class="card-header">
+                                    <div class="card-title">Inventory</div>
+                                </div>
+
+                                <div class="card-body">
+
+                                    <div class="row mb-4">
+                                        <div class="col-sm-4">
+                                            <label for="offerSku"
+                                                class="w-100 col-form-label  text-lg-end text-sm-start">SKU</label>
+                                        </div>
+
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="offerSku"
+                                                [ngClass]="{'form-control is-invalid': !offerForm.get('sellerSku')?.valid && offerForm.get('sellerSku')?.touched,'form-control':true}"
+                                                formControlName="sellerSku">
+                                            <small class="text-muted">Stock Keeping Unit</small>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-4">
+                                        <div class="col-sm-4">
+                                            <label for="offerBarcode"
+                                                class="w-100 col-form-label  text-lg-end text-sm-start">Barcode</label>
+                                        </div>
+
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="offerBarcode">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-4">
+                                        <div class="col-sm-4">
+                                            <label for="offerQty"
+                                                class="w-100 col-form-label  text-lg-end text-sm-start">Quantity</label>
+                                        </div>
+
+                                        <div class="col-sm-8">
+                                            <input type="number" class="form-control text-start" id="offerQty"
+                                                formControlName="quantity">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-4">
+                                        <div class="col-sm-4">
+                                            <label for="offerDateRange"
+                                                class="w-100 col-form-label  text-lg-end text-sm-start">Date
+                                                range</label>
+                                        </div>
+
+                                        <div class="col-sm-8">
+                                            <div class="input-group rounded border input-group-date-range">
+                                                <div class="p-2">
+                                                    <i class="bi bi-calendar"></i>
+                                                </div>
+                                                <input type="text" datePicker class="form-control border-0"
+                                                    [start]="offerForm.get('startDate')?.value"
+                                                    [end]="offerForm.get('endDate')?.value">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-4">
+                                        <div class="col-sm-4">
+                                            <label for="offerCondition"
+                                                class="w-100 col-form-label  text-lg-end text-sm-start">Condition</label>
+                                        </div>
+
+                                        <div class="col-sm-8">
+                                            <select class="form-select" formControlName="condition" id="offerCondition"
+                                                [compareWith]="compare">
+                                                <option [value]='null' disabled>Select</option>
+                                                <option *ngFor="let con of conditionOptions" [ngValue]="con">
+                                                    {{con.title}}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="card mb-2" [formGroup]="descriptionForm">
+                                <div class="card-header">
+                                    <div class="card-title">Description</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-4">
+                                        <div class="col-sm-4 ">
+                                            <label for="product-features"
+                                                class="w-100 col-form-label  text-lg-end text-sm-start">Features
+
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <ul class="list-unstyled">
+                                                <ng-container formArrayName="features">
+                                                    <li class="mb-2"
+                                                        *ngFor="let feature of featuresControls; let i = index">
+                                                        <input type="text" class="form-control key-features"
+                                                            (keyup)="addFeatures(i,$event)" [formControlName]="i">
+                                                    </li>
+                                                </ng-container>
+                                                <li>
+                                                    <button class="btn btn-link" (click)="removeLastFeatures()">Remove
+                                                        last</button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-4">
+                                        <div class="col-sm-4">
+                                            <label for="product-description" data-bs-toggle="tooltip"
+                                                data-bs-placement="top" title="Pending need to save"
+                                                class="w-100 col-form-label  text-lg-end text-sm-start">
+                                                Description
+
+                                            </label>
+                                        </div>
+
+                                        <div class="col-sm-8">
+                                            <div class="border rounded">
+                                                <div textEditor [data]="$any(this.descriptionForm.get('description'))">
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="card mb-2">
+                                <div class="card-header">
+                                    <div class="card-title">More details</div>
+                                    <small class="text-muted"> Invalid details will not be saved</small>
+
+                                </div>
+                                <div class="card-body">
+                                    <ng-container *ngFor="let data of moreDetails.attributes;let i = index">
+                                        <div class="row mb-4" [formGroup]="data.value">
+                                            <div class="col-sm-4">
+                                                <label [for]=" 'attributes-'+data.headerId "
+                                                    class="w-100 col-form-label  text-lg-end text-sm-start">{{data.name}}</label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control mb-2" formControlName="value"
+                                                    [id]=" 'attributes-'+data.headerId "
+                                                    *ngIf="data.allowDetailCustomName">
+                                                <div
+                                                    *ngIf="data.needDetailMapping || data.units.length !== 0; then optionDetailExist">
+                                                </div>
+                                                <ng-template #optionDetailExist>
+                                                    <div class="d-flex justify-content-start gap-2">
+                                                        <select class="form-select w-auto"
+                                                            formControlName="optionDetail" [compareWith]="compare"
+                                                            *ngIf="data.needDetailMapping">
+                                                            <option [value]="null" selected disabled>Choose...</option>
+                                                            <option [ngValue]="dtl" *ngFor="let dtl of data.details">
+                                                                {{dtl.title}}</option>
+
+                                                        </select>
+                                                        <select class="form-select w-auto"
+                                                            *ngIf="data.units.length !== 0" [compareWith]="compare"
+                                                            formControlName="optionUnit">
+                                                            <option [value]="null" selected disabled>Choose unit
+                                                            </option>
+                                                            <option [ngValue]="unit" *ngFor="let unit of data.units">
+                                                                {{unit.title}}
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                </ng-template>
+
+                                            </div>
+
+                                        </div>
+                                    </ng-container>
+                                </div>
+
+                            </div>
+                            <div class="card mb-2">
+                                <div class="card-header">
+                                    <div class="card-title">Medias</div>
+                                </div>
+                                <form [formGroup]="mediaForm">
+                                    <div class="card-body">
+                                        <div class="media-grid">
+                                            <media-chooser class="img__wrap" *ngFor="let media of mediaFormControlNames"
+                                                [src]="mediaForm.get(media.formControlName)?.value"
+                                                [title]="media.title"
+                                                (output)="loadImage($event,media.formControlName)"></media-chooser>
+                                        </div>
+                                    </div>
+
+                                </form>
+
+                            </div>
+                        </ng-container>
+                        <div class="card mb-2">
+                            <div class="card-header border-bottom p-4">
+                                <div class="card-title">
+                                    Variants
+                                </div>
+                                <div class="card-subtitle " [formGroup]="variationForm" *ngIf="!existOptionHeaders">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="has-variants"
+                                            (change)="change()" formControlName="hasVariant">
+                                        <label class="form-check-label small" for="has-variants">
+                                            This product has options, like size or color
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="variationForm.get('hasVariant')?.value">
+
+                                <div class="p-4" id="variationForm">
+
+                                    <div class="mb-3">
+                                        <label class="form-label text-uppercase">Options</label>
+                                        <ng-container *ngFor="let option of options; let i=index">
+                                            <ng-container
+                                                *ngTemplateOutlet="optionTemplate; context:{ formGroup: option, index: i }">
+                                            </ng-container>
+                                        </ng-container>
+
+
+                                        <ng-template #optionTemplate let-formGroup="formGroup" let-index="index">
+                                            <div class="row mb-3" [formGroup]="formGroup">
+                                                <div class="col-sm-4">
+                                                    <div class="d-flex mb-3">
+                                                        <button class="btn btn-clean"
+                                                            (click)="removeOptionHeader(index)">
+                                                            <i class="bi bi-trash-fill"></i>
+                                                        </button>
+                                                        <div class="auto-complete">
+                                                            <ng-template #rt let-r="result" let-t="term">
+                                                                <ngb-highlight [result]="r.title" [term]="t">
+                                                                </ngb-highlight>
+                                                            </ng-template>
+                                                            <input type="text" class="form-control"
+                                                                formControlName="headerSearchValue"
+                                                                [ngbTypeahead]="searchOptions"
+                                                                [inputFormatter]="formatter" [resultTemplate]="rt"
+                                                                [editable]='false'
+                                                                (selectItem)="selectedOption($event,formGroup)" />
+
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-sm-8">
+                                                    <ul class="list-unstyled vari-options-list">
+                                                        <div
+                                                            *ngIf="formGroup.get('header')?.value; then optionInputGroup else optionInputGroupNone">
+                                                        </div>
+                                                        <ng-template formArrayName="list" #optionInputGroup>
+                                                            <li class="mb-3"
+                                                                *ngFor="let feature of formGroup.get('list')?.controls; let i = index; let isLast=last; let isFirst = first">
+                                                                <div class="d-flex flex-nowrap gap-2"
+                                                                    [formGroupName]="i">
+                                                                    <input type="text" class="form-control"
+                                                                        formControlName="name"
+                                                                        (keyup)="addOption(index,i,feature,$event)">
+                                                                    <ng-container
+                                                                        *ngIf="!(isFirst && formGroup.get('list')?.controls.length==2) ">
+                                                                        <button class="btn btn-clean" tabindex="-1"
+                                                                            (click)="removeOption(index,i)"
+                                                                            *ngIf="feature.get('name')?.value !=='' && !isLast ">
+                                                                            &times;
+                                                                        </button>
+                                                                    </ng-container>
+
+                                                                </div>
+                                                            </li>
+                                                        </ng-template>
+                                                        <ng-template #optionInputGroupNone>
+                                                            Select option.
+                                                        </ng-template>
+                                                        <div [id]="'option'+(index+1)+'ErrorBox'">
+
+                                                        </div>
+
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </div>
+                                </div>
+
+                                <!-- put variant -->
+                                <div id="productVariantForm" [@enterAnimation]>
+                                    <div class="mb-1 filter-box">
+                                        <hr>
+                                        <div class="nav-scroller">
+                                            <nav class="nav nav-underline px-4 py-2  gap-2"
+                                                aria-label="Secondary navigation" [formGroup]="filterControlForm">
+                                                <button class="btn btn-clean" (click)="selectAllVariants(true)">Select
+                                                    All</button>
+                                                <button class="btn btn-clean"
+                                                    (click)="selectAllVariants(false)">Deselect
+                                                    All</button>
+                                                <button type="button" class="btn btn-clean">
+                                                    Remove</button>
+
+                                            </nav>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive m-4">
+                                        <table class="responsive-table mb-3">
+                                            <thead>
+                                                <tr class="table-row">
+                                                    <th class="table-cell column-heading">
+                                                        <span class="btn-toggle "><span
+                                                                class="menu-arrow"></span></span>
+                                                        <span *ngFor="let option of options">
+                                                            <ng-container *ngIf="option.get('header')?.value">
+                                                                {{option.get('header.title')?.value}}
+                                                            </ng-container>
+                                                        </span>
+                                                    </th>
+
+                                                    <ng-container *ngFor="let option of options">
+                                                        <ng-container *ngIf="option.get('header')?.value">
+                                                            <th class="table-cell column-heading">
+                                                                <span>
+                                                                    {{option.get('header')?.value.title}}
+                                                                </span>
+                                                                <span class="ms-1">Map</span>
+                                                            </th>
+                                                        </ng-container>
+                                                    </ng-container>
+
+                                                    <th class="table-cell column-heading">
+                                                        Seller SKU
+                                                    </th>
+                                                    <th class="table-cell column-heading">
+                                                        Your price
+                                                    </th>
+                                                    <th class="table-cell column-heading">
+                                                        Selling price
+                                                    </th>
+                                                    <th class="table-cell column-heading">
+                                                        Qty
+                                                    </th>
+                                                    <th class="table-cell column-heading">
+                                                        Condition
+                                                    </th>
+                                                    <th class="table-cell column-heading">
+                                                        Date range
+                                                    </th>
+                                                    <th class="table-cell column-heading"></th>
+                                                </tr>
+                                            </thead>
+                                            <thead [formGroup]="filterControlForm" id="defaultHeaderCollapse">
+                                                <tr class="table-row">
+                                                    <td class="table-cell column-heading">
+
+                                                    </td>
+                                                    <th class="table-cell column-heading ">
+
+                                                    </th>
+                                                    <ng-container *ngIf="options[1].get('header')?.value">
+                                                        <th class="table-cell column-heading ">
+
+                                                        </th>
+                                                    </ng-container>
+                                                    <ng-container *ngIf="options[2].get('header')?.value">
+                                                        <th class="table-cell column-heading">
+
+                                                        </th>
+                                                    </ng-container>
+
+                                                    <td class="table-cell column-heading">
+                                                        <select class="form-select form-select mb-1"
+                                                            [compareWith]="compareRandomSelect"
+                                                            aria-label="Default select example"
+                                                            formControlName="randomIdLength">
+                                                            <option selected [value]="len"
+                                                                *ngFor="let len of filterControlForm.get('randomIdOptions')?.value">
+                                                                {{len}}
+                                                            </option>
+
+                                                        </select>
+                                                        <div class="w-100 text-end">
+                                                            <i class="fa fa-exclamation-circle me-2 text-primary"
+                                                                aria-hidden="true"></i>
+                                                            <button class="btn btn-light btn-sm"
+                                                                (click)="generateRandomSKUS()">
+                                                                <i class="bi bi-check2"></i></button>
+                                                        </div>
+
+                                                    </td>
+                                                    <td class="table-cell column-heading">
+                                                        <input type="number" class="form-control mb-1"
+                                                            formControlName='price'>
+                                                        <div class="w-100 text-end">
+                                                            <i class="fa fa-exclamation-circle me-2 text-primary"
+                                                                aria-hidden="true"></i>
+                                                            <button class="btn btn-light btn-sm"
+                                                                (click)="replaceAllPrice('price')">
+                                                                <i class="bi bi-check2"></i></button>
+                                                        </div>
+
+                                                    </td>
+                                                    <td class="table-cell column-heading">
+                                                        <input type="number" class="form-control mb-1"
+                                                            formControlName='sellingPrice'>
+                                                        <div class="w-100 text-end">
+                                                            <i class="fa fa-exclamation-circle me-2 text-primary"
+                                                                aria-hidden="true"></i>
+
+                                                            <button class="btn btn-light btn-sm"
+                                                                (click)="replaceAllPrice('sellingPrice')">
+                                                                <i class="bi bi-check2"></i></button>
+                                                        </div>
+                                                    </td>
+                                                    <td class="table-cell column-heading">
+                                                        <input type="number" class="form-control mb-1"
+                                                            formControlName="quantity">
+                                                        <div class="w-100 text-end">
+                                                            <i class="fa fa-exclamation-circle me-2 text-primary"
+                                                                aria-hidden="true"></i>
+                                                            <button class="btn btn-light btn-sm"
+                                                                (click)="replaceAllPrice('quantity')"><i
+                                                                    class="fa fa-check"></i></button>
+                                                        </div>
+                                                    </td>
+                                                    <td class="table-cell column-heading ">
+                                                        <select class="form-select mb-1" formControlName="condition">
+                                                            <option value=''>-Select-</option>
+                                                            <option *ngFor="let con of conditionOptions"
+                                                                [ngValue]="con">
+                                                                {{con.title}}
+                                                            </option>
+                                                        </select>
+                                                        <div class="w-100 text-end">
+                                                            <i class="fa fa-exclamation-circle me-2 text-primary"
+                                                                aria-hidden="true"></i>
+
+                                                            <button class="btn btn-light btn-sm"
+                                                                [disabled]="filterControlForm.get('condition')?.value == ''"
+                                                                (click)="replaceAllCondition()">
+                                                                <i class="bi bi-check2"></i></button>
+                                                        </div>
+                                                    </td>
+                                                    <td class="table-cell column-heading">
+                                                        <div
+                                                            class="input-group rounded border input-group-date-range mb-1">
+                                                            <div class="p-2">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </div>
+                                                            <input type="text" class="form-control border-0" datePicker 
+                                                            [start]="filterControlForm.get('startDate')?.value" [end]="filterControlForm.get('endDate')?.value">
+
+                                                        </div>
+                                                        <div class="w-100 text-end">
+                                                            <i class="fa fa-exclamation-circle me-2 text-primary"
+                                                                aria-hidden="true"></i>
+
+                                                            <button class="btn btn-light btn-sm"
+                                                                (click)="replaceAllDateRange()">
+                                                                <i class="bi bi-check2"></i></button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </thead>
+                                            <ng-container [formGroup]="productVariationForm">
+                                                <ng-container formArrayName="products">
+                                                    <ng-container
+                                                        *ngFor="let prod of productVariationControls;let i = index">
+                                                        <!-- new variant -->
+                                                        <ng-container [formGroupName]="i">
+                                                            <tr class="table-row">
+                                                                <td class="table-cell">
+                                                                    <div class="table-cell-content d-flex"
+                                                                        *ngIf="!prod.get('edit')?.value">
+                                                                        <span class="p-2">{{i+1}}</span>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input"
+                                                                                type="checkbox"
+                                                                                formControlName="selected"
+                                                                                [id]="prod.get('formId')?.value">
+                                                                            <label
+                                                                                [ngClass]="{'form-check-label': prod.get('status')?.value === 2,
+                                                                                     'form-check-label text-decoration-line-through' : prod.get('status')?.value === 4 }"
+                                                                                [for]="prod.get('formId')?.value">
+
+                                                                                <span
+                                                                                    *ngFor="let option of options; let isFirst=first; let i=index">
+                                                                                    <ng-container
+                                                                                        *ngIf="option.get('header')?.value">
+                                                                                        {{ !isFirst ? '/' : ''}}
+                                                                                        {{prod.get('variantOptions.'+i+'.inputRef.name')?.value}}
+                                                                                    </ng-container>
+
+                                                                                </span>
+
+                                                                            </label>
+                                                                        </div>
+
+                                                                    </div>
+                                                                    <div class="table-cell-content"
+                                                                        *ngIf="prod.get('edit')?.value">
+
+                                                                    </div>
+                                                                </td>
+                                                                <ng-container formArrayName="variantOptions">
+                                                                    <ng-container
+                                                                        *ngFor="let varOpt of $any(prod).get('variantOptions').controls; let varOptIndex=index">
+                                                                        <td class="table-cell"
+                                                                            *ngIf="varOpt.get('header')?.value">
+                                                                            <div class="table-cell-heading">
+                                                                                <span>
+
+                                                                                </span>
+                                                                                <span class="ms-1">Map</span>
+                                                                            </div>
+                                                                            <div class="table-cell-content"
+                                                                                [formGroupName]="varOptIndex">
+                                                                                <select
+                                                                                    class="form-select prod-var-input"
+                                                                                    [compareWith]="compare"
+                                                                                    formControlName="detail">
+                                                                                    <option value=''>-Select-</option>
+                                                                                    <option
+                                                                                        *ngFor="let opt of options[varOptIndex].get('details')?.value"
+                                                                                        [ngValue]="opt">
+                                                                                        {{opt.title}}
+                                                                                    </option>
+                                                                                </select>
+                                                                            </div>
+                                                                        </td>
+                                                                    </ng-container>
+                                                                </ng-container>
+
+                                                                <td
+                                                                    [ngClass]="{'table-cell dos':true,'':prod.get('status')?.value == 4}">
+                                                                    <div class="table-cell-heading">
+                                                                        Seller SKU
+                                                                    </div>
+                                                                    <div class="table-cell-content">
+                                                                        <input class="form-control prod-var-input"
+                                                                            formControlName="sellerSku">
+                                                                    </div>
+                                                                </td>
+                                                                <td
+                                                                    [ngClass]="{'table-cell':true,'':prod.get('status')?.value == 4}">
+                                                                    <div class="table-cell-heading">
+                                                                        Your price
+                                                                    </div>
+                                                                    <div class="table-cell-content">
+                                                                        <div class="input-group prod-var-input">
+                                                                            <span
+                                                                                class="input-group-text currency-text text-muted">MMK</span>
+                                                                            <input type="number" class="form-control"
+                                                                                formControlName="price">
+                                                                        </div>
+
+                                                                    </div>
+                                                                </td>
+                                                                <td
+                                                                    [ngClass]="{'table-cell':true,'':prod.get('status')?.value == 4}">
+                                                                    <div class="table-cell-heading">
+                                                                        Selling price
+                                                                    </div>
+                                                                    <div class="table-cell-content">
+                                                                        <div class="input-group prod-var-input">
+                                                                            <span
+                                                                                class="input-group-text currency-text text-muted">MMK</span>
+                                                                            <input type="number" class="form-control"
+                                                                                formControlName="sellingPrice">
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td
+                                                                    [ngClass]="{'table-cell':true,'':prod.get('status')?.value == 4}">
+                                                                    <div class="table-cell-heading">
+                                                                        Qty
+                                                                    </div>
+                                                                    <div class="table-cell-content">
+                                                                        <input type="number"
+                                                                            class="form-control prod-var-input"
+                                                                            formControlName="quantity">
+                                                                    </div>
+                                                                </td>
+                                                                <td
+                                                                    [ngClass]="{'table-cell':true,'':prod.get('status')?.value == 4}">
+                                                                    <div class="table-cell-heading">
+                                                                        Condition
+                                                                    </div>
+                                                                    <div class="table-cell-content">
+                                                                        <select class="form-select prod-var-input"
+                                                                            [compareWith]="compare"
+                                                                            formControlName="condition">
+                                                                            <option value=''>Select-</option>
+                                                                            <option *ngFor="let con of conditionOptions"
+                                                                                [ngValue]="con">
+                                                                                {{con.title}}
+                                                                            </option>
+                                                                        </select>
+                                                                    </div>
+                                                                </td>
+                                                                <td
+                                                                    [ngClass]="{'table-cell':true,'':prod.get('status')?.value == 4}">
+                                                                    <div class="table-cell-heading">
+                                                                        Start date
+                                                                    </div>
+                                                                    <div class="table-cell-content">
+                                                                        <div
+                                                                            class="input-group rounded border">
+                                                                            <div class="p-2">
+                                                                                <i class="bi bi-calendar"></i>
+
+                                                                            </div>
+                                                                            <input type="text" class="form-control border-0" datePicker 
+                                                                            [start]="prod.get('startDate')?.value" [end]="prod.get('endDate')?.value">
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td [ngClass]="{'table-cell operation':true}">
+                                                                    <div class="table-cell-content gap-2">
+                                                                        <button class="btn btn-clean"
+                                                                            (click)="removeVariant(prod,i)"
+                                                                            *ngIf="prod.get('status')?.value!==4">
+                                                                            <i class="bi bi-trash-fill"></i>
+                                                                        </button>
+                                                                        <button class="btn btn-clean"
+                                                                            (click)="restore(prod)"
+                                                                            *ngIf="prod.get('status')?.value==4">
+                                                                            <i class="bi bi-arrow-clockwise"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </ng-container>
+                                                    </ng-container>
+                                                </ng-container>
+                                            </ng-container>
+
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <form [formGroup]="vitalInfoForm">
+                            <div class="">
+                                <div class="card mb-2 flex-fill">
+                                    <div class="card-header">
+                                        <div class="card-title">Product Status</div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-check" *ngFor="let bizStatus of businessStatus;let i=index">
+                                            <input class="form-check-input" type="radio" name="status"
+                                                [id]="'biz-status-'+i" formControlName="status"
+                                                [value]=" bizStatus.value ">
+                                            <label class="form-check-label" [for]="'biz-status-'+i">
+                                                {{ bizStatus.title }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="card-header">
+                                        <div class="card-title">Payment</div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="prodCurrency" class="form-label ">Product
+                                                currency</label>
+                                            <select class="form-select" id="prodCurrency" formControlName="currency"
+                                                [compareWith]="compare">
+                                                <option [value]="null" disabled selected>Select</option>
+                                                <option [ngValue]="currency"
+                                                    *ngFor="let currency of currencyByRegions;">
+                                                    {{ currency.currency_code }}<br>
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="card-header">
+                                        <div class="card-title">Organization</div>
+                                    </div>
+                                    <hr>
+                                    <div class="card-body">
+                                        <h6>Tag</h6>
+                                        <input type="text" class="form-control" placeholder="shirt, red">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </ng-template>
+        </li>
+    </ul>
+    <ng-template #heading let-submitBtn="submitBtn">
+        <div class="d-flex justify-content-between py-3 align-items-center">
+            <button backButton name="Products" icon="bi bi-chevron-left"
+                [routerLink]="'/seller-central/inventory'"></button>
+            <h5 class="m-0">Product Setup</h5>
+            <button *ngIf="submitBtn" class="btn text-primary" (click)="submit()">Submit</button>
+        </div>
+    </ng-template>
+
+    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+</div>

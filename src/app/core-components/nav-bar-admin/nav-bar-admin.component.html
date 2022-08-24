@@ -1,0 +1,21 @@
+<nav class="navbar navbar-expand-lg bg-light shadow-sm sticky-top">
+  <div class="container">
+    <a class="navbar-toggler" data-bs-toggle="offcanvas" href="#side-menu" role="button" type="button"
+      aria-controls="side-menu">
+      <i class="bi bi-list"></i>
+    </a>
+    <a class="navbar-brand" href="#">
+      <img [src]="brandProfileUrl" alt="" height="50">
+    </a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="'/dashboard'">admin</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="'/seller'">seller</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

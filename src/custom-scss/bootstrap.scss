@@ -1,0 +1,66 @@
+@import "bootstrap-variable.scss";
+@import "~bootstrap/scss/bootstrap";
+
+.card {
+  border: none;
+  border-radius: 8px;
+  box-shadow: $box-shadow;
+  box-sizing: border-box;
+  .card-footer,
+  .card-header {
+    background-color: transparent;
+    border: none;
+    .card-title {
+      text-transform: uppercase;
+    }
+  }
+
+  .card-footer {
+    text-transform: unset;
+  }
+  .card-header {
+    padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+  }
+  .card-body {
+    padding: 1.6rem;
+  }
+  .card-footer {
+    padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+  }
+}
+
+// Offcanvas
+
+.offcanvas-enabled {
+  flex: 1 1 auto;
+  min-width: 0;
+  will-change: transform, box-shadow;
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+    box-shadow 0.3s ease;
+  box-shadow: none;
+}
+
+.offcanvas-expand {
+  will-change: transform, box-shadow;
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+    box-shadow 0.3s ease;
+  box-shadow: none;
+  visibility: visible !important;
+  z-index: 0;
+  flex: 0 1 21.875rem;
+
+  .offcanvas-body {
+    @include media-breakpoint-up(md) {
+      background-color: transparent;
+      transform: none !important;
+      position: sticky;
+      top: 76px;
+    }
+  }
+
+  @include media-breakpoint-down(md) {
+    // z-index: $zindex-offcanvas;
+    display: none;
+    width: 0px;
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "login": {
+    "user_type": {
+      "client": {
+        "path_afterlogin":"market/p",
+        "login":""
+      },
+      "admin": {
+        "path_afterlogin":"dashboard",
+        "login":""
+      },
+      "seller": { 
+        "path_afterlogin":"seller/dashboard",
+        "login":"seller/login"
+      }
+    }
+  },
+  "dashboard": {
+    "menus": [
+      {
+        "id": "management",
+        "title": "Management",
+        "shown": true,
+        "icon": "fa fa-users",
+        "children": [
+          { "title": "Brand", "route": "/dashboard/brand", "shown": true }
+        ]
+      },
+      {
+        "id": "setup",
+        "title": "Setup",
+        "shown": true,
+        "icon": "fa fa-cogs",
+        "children": [
+          {
+            "title": "Departments Attributes",
+            "shown": true,
+            "children" : [
+              {
+                "title": "Matching",
+                "route": "/dashboard/product-attributes",
+                "shown": true
+              }
+            ]
+          },
+          {
+            "title": "Variant Theme",
+            "route": "/dashboard/variant-theme",
+            "shown": true
+          },
+          {
+            "title": "Variant Option",
+            "route": "/dashboard/variant-option",
+            "shown": true
+          },
+          {
+            "title": "Departments",
+            "route": "/dashboard/category",
+            "shown": true
+          },
+          {
+            "title": "Brand Register",
+            "route": "/brand-register",
+            "shown": true
+          }
+        ]
+      }
+    ],
+    "navbar":[
+      {
+        "id": "seller-central",
+        "title": "Seller Central",
+        "shown": true,
+        "icon": "fa fa-users",
+        "route": "/seller"
+      }
+    ]
+  },
+  "pg_config": {
+    "itemPerPage": 10
+  }
+}

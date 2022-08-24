@@ -1,0 +1,28 @@
+<ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: menus }"></ng-container>
+<ng-template #recursiveListTmpl let-list="list">
+    <ul>
+        <li *ngFor="let item of list" class="nav-item navbar-collapse ">
+            
+            <button *ngIf="item.children.length > 0; else noButtons"
+                class="btn btn-toggle btn-toggle-hover align-items-center rounded gap-2 " type="button"
+                (click)="collapse.toggle()" [attr.aria-expanded]="!item.collapse">
+
+                <i [class]="item.icon" *ngIf="item.icon && item.icon!==''"></i>
+                <span class="text-nowrap">{{item.title}}</span>
+                <span class="menu-arrow ms-auto"></span>
+            </button>
+            <ng-template #noButtons>
+                <div class="btn btn-toggle btn-toggle-hover align-items-center rounded gap-2"  aria-expanded="false">
+                    <i [class]="item.icon" *ngIf="item.icon && item.icon!==''"></i>
+                    <a [routerLink]="item.routerLink" class="text-nowrap" aria-label="Close" (click)="offControl?.close()">{{item.title}}</a>
+                </div>
+            </ng-template>
+
+            <div #collapse="ngbCollapse" [(ngbCollapse)]="item.collapse">
+                <div *ngIf="item.children.length > 0">
+                    <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: item.children }"></ng-container>
+                </div>
+            </div>
+        </li>
+    </ul>
+</ng-template>
