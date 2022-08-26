@@ -4,82 +4,113 @@ import {
   Component,
   Directive,
   ElementRef,
+  forwardRef,
+  HostBinding,
   HostListener,
   Input,
-  OnChanges,
   OnInit,
   Renderer2,
-  SimpleChanges,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {
-  easepick,
-} from '@easepick/bundle';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { easepick } from '@easepick/bundle';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 import { ControllerService } from '../services/controller.service';
 
 @Directive({
   selector: '[datePicker]',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => DatePickerDirective),
+      multi: true,
+    },
+  ],
 })
-export class DatePickerDirective implements OnInit, AfterViewInit, OnChanges {
+export class DatePickerDirective
+  implements OnInit, ControlValueAccessor, AfterViewInit
+{
+  @HostBinding('value') inputRef: string = '';
   public datepicker!: any;
-  @Input('start') public startDate: Date = new Date();
-  @Input('end') public endDate: Date = new Date();
 
-  constructor(private model: NgbModal,private elementRef:ElementRef,private render:Renderer2,private datepie:DatePipe) {}
-  
+  private output = new Subject<any>();
+  private modelRef: any;
+  private dateValue: any;
 
-  ngOnInit(): void {}
-  ngAfterViewInit(): void {
+  constructor(
+    private model: NgbModal,
+    private elementRef: ElementRef,
+    private render: Renderer2,
+    private datepie: DatePipe
+  ) {}
 
-    if(this.elementRef.nativeElement instanceof HTMLInputElement) {
-      this.render.setAttribute( this.elementRef.nativeElement,'readonly', 'true');
-      
-      this.render.setAttribute( this.elementRef.nativeElement,'value', this.format(this.startDate, this.endDate))
+  public _onChange = (_: any) => {};
+
+  writeValue(e: any): void {
+    if (e) {
+      this.inputRef = this.format(e.start, e.end);
+      this.dateValue = e;
     }
   }
-  ngOnChanges(changes: SimpleChanges): void {
-    this.render.setAttribute( this.elementRef.nativeElement,'value', this.format(this.startDate, this.endDate))
-    
+  registerOnChange(fn: any): void {
+    this._onChange = fn;
   }
+  registerOnTouched(fn: any): void {}
 
-  @HostListener('click', ['$event.target'])
-  onClick(click: Event) {
-    let output = new Subject<any>();
-    let modelRef = this.model.open(NgbdModalContent, {
-      backdrop: 'static',
-      centered: true,
-      modalDialogClass: 'transparent-modal',
-    });
-    modelRef.componentInstance.subject = output;
-    modelRef.componentInstance.startDate = this.startDate;
-    modelRef.componentInstance.endDate = this.endDate;
+  ngOnInit(): void {
+    
+    // Fire after datepicker model dismiss
+    this.output.subscribe({
+      next: (e: { value: any; type: string }) => {
+        this.modelRef.dismiss();
+        if (e.type == 'apply') {
+          this.dateValue = e.value.detail;
+          // Render set value to input
+          this.inputRef = this.format(e.value.detail.start, e.value.detail.end);
 
-    output.subscribe({
-      next: (e:{value:any,type:string}) => {
-        modelRef.dismiss();
-        if(e.type == 'apply') {          
-          this.startDate = e.value.detail.start;
-          this.endDate = e.value.detail.end;
-          this.render.setAttribute( this.elementRef.nativeElement,'value', this.format(this.startDate, this.endDate))
+          this._onChange(this.dateValue);
         }
       },
     });
   }
 
-  format(start:Date,end:Date) {
-    const startDateString = this.datepie.transform(
-      start,
-      'dd-MM-YYYY'
-    );
-    const endDateString = this.datepie.transform(
-      end,
-      'dd-MM-YYYY'
-    );
+  ngAfterViewInit(): void {
+    if (this.elementRef.nativeElement instanceof HTMLInputElement) {
+      this.render.setAttribute(
+        this.elementRef.nativeElement,
+        'readonly',
+        'true'
+      );
+    }
+  }
+
+  @HostListener('click', ['$event.target'])
+  onClick(click: Event) {
+    this.showDatepickerModel();
+  }
+
+  @HostListener('ngModelChange', ['$event'])
+  public onModelChange(e: any): void {}
+
+  format(start: Date, end: Date) {
+    const startDateString = this.datepie.transform(start, 'dd-MM-YYYY');
+    const endDateString = this.datepie.transform(end, 'dd-MM-YYYY');
     const value = startDateString + ' -> ' + endDateString;
     return value;
+  }
+
+  showDatepickerModel() {
+    this.modelRef = this.model.open(NgbdModalContent, {
+      backdrop: 'static',
+      centered: true,
+      modalDialogClass: 'transparent-modal',
+    });
+
+    this.modelRef.componentInstance.subject = this.output;
+    this.modelRef.componentInstance.startDate = this.dateValue.start;
+    this.modelRef.componentInstance.endDate = this.dateValue.end;
   }
 }
 
@@ -96,7 +127,6 @@ export class DatePickerDirective implements OnInit, AfterViewInit, OnChanges {
       .transparent-modal .modal-content {
         background-color: transparent;
         border: none;
-        
       }
     `,
   ],
@@ -105,11 +135,15 @@ export class NgbdModalContent implements AfterViewInit {
   @ViewChild('datepicker') public datePickerRef!: ElementRef;
 
   @Input() public subject: any;
-  @Input() public startDate:Date = new Date();
-  @Input() public endDate:Date = new Date();
+  @Input() public startDate: Date = new Date();
+  @Input() public endDate: Date = new Date();
   private easepick!: easepick.Core;
 
-  constructor(public activeModal: NgbActiveModal,private service:ControllerService) {}
+  constructor(
+    public activeModal: NgbActiveModal,
+    private service: ControllerService
+  ) {}
+
   ngAfterViewInit(): void {
     this.easepick = this.service.easePick(this.datePickerRef);
 
@@ -117,14 +151,15 @@ export class NgbdModalContent implements AfterViewInit {
       this.subject.next({ value: event, type: 'apply' });
     });
     this.easepick.on('click', (event) => {
-    	const target = event.target;
-      if (target instanceof HTMLElement &&  this.easepick.isCancelButton(target)) {
-      	this.subject.next({ value: event, type: 'dismiss' });
+      const target = event.target;
+      if (
+        target instanceof HTMLElement &&
+        this.easepick.isCancelButton(target)
+      ) {
+        this.subject.next({ value: event, type: 'dismiss' });
       }
     });
-    this.easepick.setStartDate( this.startDate );
-    this.easepick.setEndDate( this.endDate );
-
+    if( this.startDate ) this.easepick.setStartDate(this.startDate);
+    if( this.endDate ) this.easepick.setEndDate(this.endDate);
   }
 }
-

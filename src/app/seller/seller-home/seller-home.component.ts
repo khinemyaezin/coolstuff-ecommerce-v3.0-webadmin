@@ -144,14 +144,14 @@ export class SellerHomeComponent implements OnInit {
         },
       ],
     },
-    // {
-    //   id: "logout",
-    //   title: "Logout",
-    //   icon: "",
-    //   routerLink: '../logout',
-
-    //   children: [],
-    // },
+    {
+      id: "logout",
+      title: "Logout",
+      icon: "",
+      routerLink: '../logout',
+      collapse: true,
+      children: [],
+    },
   ];
 
   constructor(

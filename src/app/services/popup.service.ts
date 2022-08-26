@@ -3,13 +3,12 @@ import {
   ComponentFactoryResolver,
   Injectable,
   Injector,
+  TemplateRef,
 } from '@angular/core';
-import { BootstrapModelComponent } from '../core-components/bootstrap-model/bootstrap-model.component';
 import { DialogConfirmComponent } from '../core-components/dialog-confirm/dialog-confirm.component';
 import { ImageCropperModelComponent } from '../core-components/image-cropper-model/image-cropper-model.component';
 import { LoadingComponent } from '../core-components/loading/loading.component';
-import { PopupComponent } from '../core-components/popup/popup.component';
-import { Auth } from './core';
+
 declare var $: any;
 
 @Injectable({
@@ -17,6 +16,8 @@ declare var $: any;
 })
 export class PopupService {
   loadingEl: any;
+  toasts: any[] = [];
+
 
   constructor(
     private componentFactoryResolver: ComponentFactoryResolver,
@@ -24,67 +25,6 @@ export class PopupService {
     private injector: Injector
   ) {}
 
-  // showConfirmIdenModal() {
-  //   return new Promise<Auth>((rs, rj) => {
-  //     const popup = document.createElement('modal-component');
-  //     const factory = this.componentFactoryResolver.resolveComponentFactory(
-  //       BootstrapModelComponent
-  //     );
-  //     const popupComponentRef = factory.create(this.injector, [], popup);
-  //     this.appRef.attachView(popupComponentRef.hostView);
-  //     popupComponentRef.instance.closed.subscribe((e) => {
-  //       $(popup).remove();
-  //       this.appRef.detachView(popupComponentRef.hostView);
-  //       if (e.confirm) {
-  //         const auth: Auth = {
-  //           id: '',
-  //           currentPassword: e.password,
-  //           newPassword: '',
-  //         };
-  //         rs(auth);
-  //       } else {
-  //         rj();
-  //       }
-  //     });
-  //     popupComponentRef.instance.ready.subscribe(() => {});
-  //     const notifierContainerRef = document.body.getElementsByClassName(
-  //       'confirm-identity-modal'
-  //     );
-  //     $(notifierContainerRef).append(popup);
-  //   });
-  // }
-  alert(message: string) {
-    return new Promise<void>((rs, rj) => {
-      // Create element
-      const popup = document.createElement('popup-component');
-      // Create the component and wire it up with the element
-      const factory =
-        this.componentFactoryResolver.resolveComponentFactory(PopupComponent);
-      const popupComponentRef = factory.create(this.injector, [], popup);
-      // Attach to the view so that the change detector knows to run
-      this.appRef.attachView(popupComponentRef.hostView);
-      // Listen to the close event
-      popupComponentRef.instance.closed.subscribe(() => {
-        $(popup).remove();
-        this.appRef.detachView(popupComponentRef.hostView);
-      });
-
-      // Set the message
-      popupComponentRef.instance.message = message;
-      // Add to the DOM
-      const notifierContainerRef =
-        document.body.getElementsByClassName('notifier');
-      $(notifierContainerRef).append(popup);
-      const myApp = document.body.getElementsByClassName('my-app');
-      $(myApp).addClass('disabled');
-      setTimeout(() => {
-        $(popup).remove();
-        this.appRef.detachView(popupComponentRef.hostView);
-        $(myApp).removeClass('disabled');
-        rs();
-      }, 1000);
-    });
-  }
   showLoading(message: string) {
     return new Promise<{ present: any; dismiss: any }>((resolve, reject) => {
       const popup = document.createElement('loading-component');
@@ -161,5 +101,17 @@ export class PopupService {
       );
       $(notifierContainerRef).append(popup);
     });
+  }
+
+  showTost(textOrTpl: string | TemplateRef<any>, options: any = {}) {
+    this.toasts.push({ textOrTpl, ...options });
+  }
+
+  removeTost(toast:any) {
+    this.toasts = this.toasts.filter(t => t !== toast);
+  }
+
+  clearTost() {
+    this.toasts.splice(0, this.toasts.length);
   }
 }

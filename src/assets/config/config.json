@@ -1,19 +1,6 @@
 {
   "url": "http://127.0.0.1:8000/api/",
-  "payment_type": {
-    "default_code": "CASH"
-  },
-  "delivery_time": {
-    "default_code": "ANYTIME"
-  },
-  "client_token_name": "cs-token",
-  "auth_method_type": {
-    "phone": "p",
-    "email": "e"
-  },
-  "user_type": {
-    "client": "client",
-    "admin": "admin",
-    "seller": "seller"
+  "mask" : {
+    "maxnumber_count":"00000000000000000000"
   }
 }

@@ -1,20 +1,36 @@
-import { AfterViewInit, Directive, ElementRef, EventEmitter, Input, OnInit, Output, Renderer2 } from '@angular/core';
-import { AbstractControl, FormControl } from '@angular/forms';
+import {
+  AfterViewInit,
+  Directive,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  Renderer2,
+  SimpleChanges,
+} from '@angular/core';
 import Quill from 'quill';
+import { debounceTime, distinctUntilChanged, map, Observable } from 'rxjs';
 
 @Directive({
-  selector: '[textEditor]'
+  selector: '[textEditor]',
 })
-export class TextEditorDirective implements OnInit,AfterViewInit{
-  private quillEditor!:Quill;
+export class TextEditorDirective implements OnInit, AfterViewInit,OnChanges {
+  private quillEditor!: Quill;
 
-  @Input('data') public initData!:string|FormControl|AbstractControl<FormControl>;
+  @Input('data') public initData!: string;
   @Output('changes') public dataChanges = new EventEmitter();
 
-  constructor(private elementRef:ElementRef, private render:Renderer2) { }
+  constructor(private elementRef: ElementRef, private render: Renderer2) {}
 
-  ngAfterViewInit(): void {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.quillEditor?.root.innerHTML !== this.initData) {
+      this.quillEditor?.setContents(this.quillEditor?.clipboard.convert(this.initData), 'silent');
+    }
   }
+
+  ngAfterViewInit(): void {}
 
   ngOnInit(): void {
     this.quillLoad();
@@ -34,30 +50,33 @@ export class TextEditorDirective implements OnInit,AfterViewInit{
       placeholder: 'Description |',
     });
 
+    this.quillEditor?.setContents(
+      this.quillEditor?.clipboard.convert(this.initData),
+      'silent'
+    );
+
     //* text change event to import data
-    this.quillEditor.on('text-change', (delta: any, oldDelta: any, source: any) => {
-      if (source == 'user') {
-        if(this.initData instanceof FormControl) {
-          this.initData.setValue(this.quillEditor?.root.innerHTML);
-        }
-        this.dataChanges.emit(this.quillEditor?.root.innerHTML);
-
-      }
+    const obs$ = new Observable( subscriber=> {
+      this.quillEditor.on('text-change',
+      (delta: any, oldDelta: any, source: any) => 
+        subscriber.next({delta, oldDelta, source})
+      )
     });
-
-    if (this.quillEditor?.root.innerHTML !== this.initData) {
-      let data;
-      if(this.initData instanceof FormControl) {
-        data = this.initData.value;
-      }else if( typeof this.initData == 'string') {
-        data = this.initData;
-      }else {
-        data = "";
+    // this.quillEditor.on(
+    //   'text-change',
+    //   (delta: any, oldDelta: any, source: any) => {
+    //     if (source == 'user') {
+    //       this.dataChanges.emit(this.quillEditor?.root.innerHTML);
+    //     }
+    //   }
+    // );
+    obs$.pipe(debounceTime(500),distinctUntilChanged(),map( (v:any)=> v )).subscribe(
+      (value)=> {
+        if (value.source == 'user') {
+          this.dataChanges.emit(this.quillEditor?.root.innerHTML);
+        }
+        
       }
-      this.quillEditor?.setContents(this.quillEditor?.clipboard.convert(data), 'silent');
-    }
-
-    
+    )
   }
-
 }

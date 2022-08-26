@@ -14,7 +14,6 @@ export class MenusPannelComponent implements OnInit,AfterViewInit {
 
   constructor() { }
   ngAfterViewInit(): void {
-    console.log(this.offControl);
     
   }
 

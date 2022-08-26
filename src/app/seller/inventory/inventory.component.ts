@@ -6,8 +6,10 @@ import {
   FormControl,
   FormBuilder,
   AbstractControl,
+  Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { IConfig } from 'ngx-mask';
 import {
   Subject,
   takeUntil,
@@ -79,7 +81,9 @@ export class InventoryComponent implements OnInit {
     profit: 0.0,
     totalProduct: 0,
   };
-  private defaultVariants = new Map();
+  defaultVariants = new Map();
+
+  public maskConfig = this.http.config.mask;
 
   constructor(
     public pgService: ControllerService,
@@ -90,16 +94,6 @@ export class InventoryComponent implements OnInit {
     private auth: AuthService,
     private router: Router
   ) {}
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.unsubscribe();
-  }
-
-  ngAfterViewInit(): void {}
-
-  ngOnInit(): void {
-    this.init();
-  }
 
   get productVariationControls(): AbstractControl[] {
     return (<FormArray>this.productFormGroup.get('products')).controls;
@@ -118,36 +112,47 @@ export class InventoryComponent implements OnInit {
     return this.variantsChanges.size;
   }
 
-  getColumn(index: number) {
-    return this.tableHeader[index];
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
-  getVariantControls(form: any): AbstractControl[] {
-    return (<FormArray>form.get('variant')).controls;
+
+  ngAfterViewInit(): void {}
+
+  ngOnInit(): void {
+    this.init();
   }
-  async getVariants(product: any) {
-    let variants = <FormArray>product.get('variants');
-    if (variants.controls.length !== 0) return;
-    let params = new HttpParams();
-    params = params.set('product_id', product.get('product')?.value?.id);
-    params = params.set('filter_variants', product.get('id')?.value);
-    const products = await lastValueFrom(this.getProducts(params))
-      .then((result: any) => {
-        return result.status == 200 ? result.details : null;
-      })
-      .catch(() => {
-        return null;
-      });
-    if (!products) {
-      return;
-    }
-    products.forEach((e: any) => {
-      variants.push(this.prepare(e));
-    });
+
+  async init() {
+    const getProducts = this.getProducts();
+    const getConditions = this.sellerService.getConditionList();
+
+    lastValueFrom(forkJoin([getProducts, getConditions])).then(
+      (values: any[]) => {
+        if (values[0] && values[0].status == 200) {
+          (<FormArray>this.productFormGroup.get('products')).clear();
+          values[0].details.data.forEach((variants: any) => {
+            (<FormArray>this.productFormGroup.get('products')).push(
+              this.prepare(variants)
+            );
+          });
+          this.paginationLinks = values[0].details.links;
+        }
+        if (values[1] && values[1].status == 200) {
+          this.conditions = values[1].details.data;
+        }
+      }
+    );
+    console.log(this.productFormGroup);
+    
   }
 
   prepare(variants: any) {
     const vari = this.fb.group(variants) as FormGroup;
-
+    vari.get('buy_price')?.addValidators([Validators.required,Validators.min(0)]);
+    vari.get('selling_price')?.addValidators([Validators.required,Validators.min(0)]);
+    vari.get('qty')?.addValidators([Validators.required,Validators.min(0)]);
     vari.addControl(
       'title',
       this.fb.control(
@@ -188,30 +193,67 @@ export class InventoryComponent implements OnInit {
       condition: variants['condition'].id,
     });
     return vari;
+  }  
+  
+  traceChanges(variant: AbstractControl, control: string) {
+    const id = variant.get('id')?.value;
+
+    variant
+      .get(control)
+      ?.valueChanges.pipe(takeUntil(this.destroy$), debounceTime(500))
+      .subscribe((changes) => {
+        // Attribute lvl changes detection
+        const jsonChanges = JSON.stringify({
+          buy_price: variant.get('buy_price')?.value,
+          selling_price: variant.get('selling_price')?.value,
+          qty: variant.get('qty')?.value,
+          condition: variant.get('condition')?.value.id,
+        });
+        console.log(jsonChanges);
+        
+
+        const jsonDefault = this.defaultVariants.get(id);
+
+        if (jsonChanges != JSON.stringify(jsonDefault)) {
+          variant.markAsDirty();
+          this.variantsChanges.set(id, variant);
+        } else {
+          variant.markAsPristine();
+          this.variantsChanges.delete(id);
+        }
+
+        // Attribute lvl changes detection
+        if (
+          (typeof changes == 'object' ? changes['id'] : changes) !=
+          jsonDefault[control]
+        ) {
+          variant.get(control)?.markAsDirty();
+        } else {
+          variant.get(control)?.markAsPristine();
+        }
+      });
   }
 
-  convertChanges() {}
-
-  async init() {
-    const getProducts = this.getProducts();
-    const getConditions = this.sellerService.getConditionList();
-
-    lastValueFrom(forkJoin([getProducts, getConditions])).then(
-      (values: any[]) => {
-        if (values[0] && values[0].status == 200) {
-          (<FormArray>this.productFormGroup.get('products')).clear();
-          values[0].details.data.map((variants: any) => {
-            (<FormArray>this.productFormGroup.get('products')).push(
-              this.prepare(variants)
-            );
-          });
-          this.paginationLinks = values[0].details.links;
-        }
-        if (values[1] && values[1].status == 200) {
-          this.conditions = values[1].details.data;
-        }
-      }
-    );
+  /** Http */
+  async getVariants(product: any) {
+    let variants = <FormArray>product.get('variants');
+    if (variants.controls.length !== 0) return;
+    let params = new HttpParams();
+    params = params.set('product_id', product.get('product')?.value?.id);
+    params = params.set('filter_variants', product.get('id')?.value);
+    const products = await lastValueFrom(this.getProducts(params))
+      .then((result: any) => {
+        return result.status == 200 ? result.details : null;
+      })
+      .catch(() => {
+        return null;
+      });
+    if (!products) {
+      return;
+    }
+    products.forEach((e: any) => {
+      variants.push(this.prepare(e));
+    });
   }
 
   getProducts(filter?: HttpParams) {
@@ -247,76 +289,22 @@ export class InventoryComponent implements OnInit {
     }
   }
 
+  /** Utility */
   compareCondition(a: any, b: any) {
     if (a && b) return a.id.toString() === b.id.toString();
     else return false;
   }
 
-  inputNumberChange(vari: AbstractControl, formControlName: string) {
-    let num = vari.get(formControlName)?.value;
-    if (num < 0) {
-      vari.get(formControlName)?.setValue(0, { emitEvent: false });
-      num = 0;
-    }
-  }
-
-  traceChanges(variant: AbstractControl, control: string) {
-    const id = variant.get('id')?.value;
-
-    variant
-      .get(control)
-      ?.valueChanges.pipe(takeUntil(this.destroy$), debounceTime(500))
-      .subscribe((changes) => {
-        // Attribute lvl changes detection
-        const jsonChanges = JSON.stringify({
-          buy_price: variant.get('buy_price')?.value,
-          selling_price: variant.get('selling_price')?.value,
-          qty: variant.get('qty')?.value,
-          condition: variant.get('condition')?.value.id,
-        });
-
-        const jsonDefault = this.defaultVariants.get(id);
-
-        console.log(jsonChanges);
-        console.log(JSON.stringify(jsonDefault));
-
-        if (jsonChanges != JSON.stringify(jsonDefault)) {
-          variant.markAsDirty();
-          this.variantsChanges.set(id, variant);
-        } else {
-          variant.markAsPristine();
-          this.variantsChanges.delete(id);
-        }
-
-        // Attribute lvl changes detection
-        if (
-          (typeof changes == 'object' ? changes['id'] : changes) !=
-          jsonDefault[control]
-        ) {
-          variant.get(control)?.markAsDirty();
-
-          try {
-            // const cell = $(`[data-id="${id}"] .def-${control}-value`);
-            // cell[0].innerText = jsonDefault[control];
-           // $(cell).css('display', 'block');
-          } catch {}
-        } else {
-          variant.get(control)?.markAsPristine();
-
-          //$(`[data-id="${id}"] .def-${control}-value`).css('display', 'none');
-        }
-      });
-  }
-
+  /** Submit */
   submit() {
     const values = {
       variants: Array.from(this.variantsChanges.values()).map(
         (variant: AbstractControl) => {
           return {
             id: variant.get('id')?.value,
-            buy_price: variant.get('buy_price')?.value,
-            selling_price: variant.get('selling_price')?.value,
-            qty: variant.get('qty')?.value,
+            buy_price: variant.get('buy_price')?.value ?? 0.0,
+            selling_price: variant.get('selling_price')?.value ?? 0.0,
+            qty: variant.get('qty')?.value ?? 0,
             condition: variant.get('condition')?.value?.id,
           };
         }
@@ -325,9 +313,11 @@ export class InventoryComponent implements OnInit {
     this.http.PUT('prod-variants', values).subscribe({
       next: (result: any) => {
         if (result.status == 200) {
-          this.popup.alert('Success!').then(() => {
-            // Reset states
-            this.productFormGroup.markAsPristine();
+          // this.popup.alert('Success!').then(() => {
+          //   // Reset states
+            
+          // });
+          this.productFormGroup.markAsPristine();
             //$(`.def-value`).css('display', 'none');
 
             values.variants.forEach((v) => {
@@ -340,11 +330,11 @@ export class InventoryComponent implements OnInit {
             });
 
             this.variantsChanges.clear();
-          });
         } else {
         }
       },
-      error: (err) => {},
+      error: (err) => { console.log(err);
+      },
     });
     console.log(values);
   }

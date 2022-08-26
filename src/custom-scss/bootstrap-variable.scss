@@ -1,7 +1,14 @@
 $enable-rounded: true;
+$primary: #227dab;
+$secondary: #d63384;
+$success: #20c997;
+$warning: #fd7e14;
 $body-bg: #edf2f9;
 $body-color: #5e6e82;
 $box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-
+$spacer:1.6rem;
+$alert-padding-y: 1rem;
+$alert-padding-x:  $spacer;
+$alert-margin-bottom:  $spacer * .5;
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";

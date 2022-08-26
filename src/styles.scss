@@ -1,6 +1,5 @@
 @import "custom-scss/bootstrap.scss";
-$primary: blue;
-$white: white;
+
 
 html,
 body {
@@ -430,6 +429,24 @@ body {
 
 /* Importing Bootstrap SCSS file. */
 
-.container.inline {
-  width: 100% !important;
+.line-through {
+  position: relative;
+  //pointer-events: none;
+  &::after {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      height: 1px;
+      background: rgb(53, 53, 53);
+      content: "";
+      width: 100%;
+      display: block;
+  }
+  &::before {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    background-color: #6b8398;
+    z-index: 3000;
+  }
 }

@@ -9,15 +9,20 @@ import { Router } from '@angular/router';
 import { map, forkJoin, lastValueFrom, catchError, throwError } from 'rxjs';
 import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
+import { CONFIG } from './core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ServerService {
-  private CONFIG: any;
-  private SYSTEM: any;
+  private _CONFIG!: CONFIG;
+  private _SYSTEM: any;
 
   constructor(private http: HttpClient, private auth: AuthService,private router:Router) {}
+
+  get config () {
+    return this._CONFIG;
+  }
 
   init() {
     return new Promise<void>((res, rej) => {
@@ -30,8 +35,8 @@ export class ServerService {
           
         })
         .then((next: any) => {
-          this.CONFIG = next[0];
-          this.SYSTEM = next[1];
+          this._CONFIG = next[0] as CONFIG;
+          this._SYSTEM = next[1];
 
           this.GET('sessions/user').subscribe({
             next: (body: any) => {
@@ -51,7 +56,7 @@ export class ServerService {
   }
 
   GET(url: string, callback?: Function, reqParam?: HttpParams) {
-    const myurl = this.CONFIG?.url + url;
+    const myurl = this._CONFIG?.url + url;
     const options: {
       headers?: HttpHeaders;
       params?: HttpParams;
@@ -73,19 +78,19 @@ export class ServerService {
           return resp.body;
         }),
         catchError((err) => {
-          throw 'error in source. Details: ' + err;
+          throw 'error in source. Details: ' + JSON.stringify(err);
         })
       );
   }
 
   POST(url: string, body: any, callback?: Function, reqParam?: HttpParams) {
-    const myurl = this.CONFIG?.url + url;
+    const myurl = this._CONFIG?.url + url;
     const options: {
       headers?: HttpHeaders;
       params?: HttpParams;
     } = {
       headers: new HttpHeaders({
-        Accept: 'application/json',
+        'Accept': 'application/json',
         'Content-Type': 'application/json',
       }),
       params: reqParam,
@@ -101,19 +106,19 @@ export class ServerService {
           return resp.body;
         }),
         catchError((err) => {
-          throw 'error in source. Details: ' + err;
+          throw 'error in source. Details: ' + JSON.stringify(err);
         })
       );
   }
 
   PUT(url: string, body: any, callback?: Function, reqParam?: HttpParams) {
-    const myurl = this.CONFIG?.url + url;
+    const myurl = this._CONFIG?.url + url;
     const options: {
       headers?: HttpHeaders;
       params?: HttpParams;
     } = {
       headers: new HttpHeaders({
-        Accept: 'application/json',
+        'Accept': 'application/json',
         'Content-Type': 'application/json',
       }),
       params: reqParam,
@@ -129,7 +134,7 @@ export class ServerService {
           return resp.body;
         }),
         catchError((err) => {
-          throw 'error in source. Details: ' + err;
+          throw 'error in source. Details: ' + JSON.stringify(err);
         })
       );
   }
@@ -141,7 +146,7 @@ export class ServerService {
       params?: HttpParams;
     } = {
       headers: new HttpHeaders({
-        Accept: 'application/json',
+        'Accept': 'application/json',
         'Content-Type': 'application/json',
       }),
     };

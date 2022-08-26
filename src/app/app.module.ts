@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { QuillModule } from 'ngx-quill';
 import { environment } from 'src/environments/environment';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -19,12 +19,11 @@ import { TextEditorComponent } from './core-components/text-editor/text-editor.c
 import { ProductSetupComponent } from './seller/product-setup/product-setup.component';
 import { ProductAdditionalSetupComponent } from './seller/product-additional-setup/product-additional-setup.component';
 import { BootstrapModelComponent } from './core-components/bootstrap-model/bootstrap-model.component';
-import { PopupComponent } from './core-components/popup/popup.component';
 import { ImageCropperModelComponent } from './core-components/image-cropper-model/image-cropper-model.component';
 import { InventoryComponent } from './seller/inventory/inventory.component';
 import { LoadingComponent } from './core-components/loading/loading.component';
 import { PaginationComponent } from './core-components/pagination/pagination.component';
-import { GlobalErrorHandlerService } from './services/global-error-handler.service';
+import { AuthRouteHandlerService } from './services/auth-route-handler.service';
 import { DatePipe } from '@angular/common';
 import { MediaChooserComponent } from './core-components/media-chooser/media-chooser.component';
 import { BackButtonDirective } from './core-components/back-button.directive';
@@ -33,6 +32,11 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ProfileComponent } from './seller/profile/profile.component';
 import { TextEditorDirective } from './core-components/text-editor.directive';
 import { DatePickerDirective } from './core-components/date-picker.directive';
+import { ToastComponent } from './core-components/toast/toast.component';
+import { NgxMaskModule } from 'ngx-mask';
+import { LineThroughDirective } from './core-components/line-through.directive';
+import { FileInputDirective } from './core-components/file-input.directive';
+import { Router } from '@angular/router';
 // const config: SocketIoConfig = {
 //   url: 'http://localhost:8084',
 //   options: { autoConnect: false },
@@ -50,7 +54,6 @@ import { DatePickerDirective } from './core-components/date-picker.directive';
     ProductAdditionalSetupComponent,
     InventoryComponent,
     BootstrapModelComponent,
-    PopupComponent,
     ImageCropperModelComponent,
     LoadingComponent,
     PaginationComponent,
@@ -60,6 +63,9 @@ import { DatePickerDirective } from './core-components/date-picker.directive';
     ProfileComponent,
     TextEditorDirective,
     DatePickerDirective,
+    ToastComponent,
+    LineThroughDirective,
+    FileInputDirective,
   ],
   imports: [
     BrowserModule,
@@ -72,17 +78,22 @@ import { DatePickerDirective } from './core-components/date-picker.directive';
     ReactiveFormsModule,
     ImageCropperModule,
     QuillModule.forRoot(),
+    NgxMaskModule.forRoot(),
     NgbModule,
     //SocketIoModule.forRoot(config),
   ],
   providers: [
     DatePipe,
     ServerService,
-    {
-      // processes all errors
-      provide: ErrorHandler,
-      useClass: GlobalErrorHandlerService,
-    },
+    // {
+    //   // processes all errors
+    //   provide: HTTP_INTERCEPTORS,
+    //   useFactory: function(router: Router) {
+    //     return new AuthRouteHandlerService(router);
+    //   },
+    //   multi: true,
+    //   deps: [Router]
+    // },
     {
       provide: APP_INITIALIZER,
       useFactory: (config: ServerService) => () => config.init(),

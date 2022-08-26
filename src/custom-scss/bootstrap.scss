@@ -12,6 +12,7 @@
     border: none;
     .card-title {
       text-transform: uppercase;
+      margin-bottom: 0px;
     }
   }
 
@@ -21,9 +22,9 @@
   .card-header {
     padding: 1.5rem 1.5rem 0.5rem 1.5rem;
   }
-  .card-body {
-    padding: 1.6rem;
-  }
+  // .card-body {
+  //   padding-top: 1.5rem;
+  // }
   .card-footer {
     padding: 0.5rem 1.5rem 1.5rem 1.5rem;
   }
@@ -63,4 +64,8 @@
     display: none;
     width: 0px;
   }
+}
+
+nbg-alert {
+  
 }
