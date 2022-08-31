@@ -1,44 +1,42 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { User, UserTypes } from 'src/app/model/user.model';
+import { User, UserTypes } from '../services/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private curUser!: User;
-  constructor(private router:Router) {}
+  constructor(private router: Router) {}
 
   get user() {
     return this.curUser;
   }
 
   public signin(request: any) {
-    this.curUser = new User(
-      request.user.first_name,
-      request.user.last_name,
-      request.user.nrc_value,
-      request.user.image_url,
-      request.user.email,
-      request.user.phone,
-      request.user.address,
-      request.user.brand,
-      request.user.user_type,
-      request.roles
-    );
+    this.curUser = {
+      first_name: request.user.first_name,
+      last_name: request.user.last_name,
+      nrc_value: request.user.nrc_value,
+      image_url: request.user.image_url,
+      email: request.user.email,
+      phone: request.user.phone,
+      address: request.user.address,
+      brand: request.user.brand,
+      user_type: request.user.user_type,
+      user_roles: request.roles,
+    };
+
     return this.curUser;
-    
   }
 
-  public isLogin():boolean {
-    return (this.curUser ? true : false);
+  public isLogin(): boolean {
+    return this.curUser ? true : false;
   }
 
   public identifyUser() {
-    if( this.curUser.user_type.title == UserTypes.SELLER) {
+    if (this.curUser.user_type.title == UserTypes.SELLER) {
       this.router.navigateByUrl('/seller-central');
-
     }
   }
-
 }

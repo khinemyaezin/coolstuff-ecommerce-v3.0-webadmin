@@ -2,11 +2,11 @@ import { HttpParams } from '@angular/common/http';
 import {
   AfterViewInit,
   Component,
+  ElementRef,
   OnChanges,
   OnDestroy,
   OnInit,
   QueryList,
-  SimpleChanges,
   ViewChild,
   ViewChildren,
 } from '@angular/core';
@@ -32,8 +32,10 @@ import {
   takeUntil,
 } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
+import { Media } from 'src/app/core-components/media-chooser-model/media-chooser-model.component';
+import { MediaChooserConfig } from 'src/app/core-components/media-chooser/media-chooser.component';
 import { ControllerService } from 'src/app/services/controller.service';
-import { BizStatus } from 'src/app/services/core';
+import { BizStatus, MaskConfig } from 'src/app/services/core';
 import { PopupService } from 'src/app/services/popup.service';
 import { ServerService } from 'src/app/services/server.service';
 import { SellerService } from '../seller.service';
@@ -71,9 +73,7 @@ export enum ALERTS_TYPES {
   templateUrl: './product-setup.component.html',
   styleUrls: ['./product-setup.component.scss'],
 })
-export class ProductSetupComponent
-  implements OnInit, AfterViewInit, OnDestroy, OnChanges
-{
+export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('nav') public tabs!: any;
   @ViewChildren(NgbAlert) productAlertsComponents!: QueryList<NgbAlert>;
   public activeTab = 1;
@@ -93,7 +93,7 @@ export class ProductSetupComponent
     startDate: new FormControl(new Date()),
     endDate: new FormControl(new Date()),
     price: new FormControl(0),
-    sellingPrice: new FormControl(0),
+    sellingPrice: new FormControl(0, [Validators.required]),
     quantity: new FormControl(0),
     condition: new FormControl(''),
   });
@@ -103,15 +103,17 @@ export class ProductSetupComponent
     categorySelected: new FormControl({ path: '' }),
     lvlCategory: new FormControl(null),
   });
+
   vitalInfoForm: FormGroup = new FormGroup({
-    id: new FormControl(null),
+    id: new FormControl(),
     status: new FormControl(2),
-    title: new FormControl(null, [Validators.required]),
-    brand: new FormControl(null, [Validators.required]),
-    manufacturer: new FormControl(null, [Validators.required]),
-    packType: new FormControl(null, [Validators.required]),
-    currency: new FormControl(null),
+    title: new FormControl('',{validators:Validators.required}),
+    brand: new FormControl('',{validators:Validators.required}),
+    manufacturer: new FormControl('',{validators:Validators.required}),
+    packType: new FormControl(null,{validators:Validators.required}),
+    currency: new FormControl(null,{validators:Validators.required}),
   });
+
   variationForm: FormGroup = new FormGroup({
     hasVariant: new FormControl(false),
   });
@@ -119,22 +121,19 @@ export class ProductSetupComponent
     products: new FormArray([]),
   });
   descriptionForm: FormGroup = new FormGroup({
-    selectedProduct: new FormControl(-1),
     description: new FormControl(''),
     features: new FormArray([new FormControl('')]),
   });
+
   offerForm: FormGroup = new FormGroup({
     id: new FormControl('-1'),
     status: new FormControl(2),
-    sellerSku: new FormControl(null, [Validators.required]),
-    price: new FormControl(0.0, [
-      Validators.required,
-      Validators.pattern('[0-9]+'),
-    ]),
-    sellingPrice: new FormControl(0.0, [Validators.pattern('[0-9]+')]),
-    quantity: new FormControl(0, [Validators.pattern('[0-9]+')]),
-    dateRange: new FormControl(),
-    condition: new FormControl(),
+    sellerSku: new FormControl('',{validators: Validators.required}),
+    price: new FormControl(0,{validators: Validators.required}),
+    sellingPrice: new FormControl(0,{validators: Validators.required}),
+    quantity: new FormControl(0,{validators: Validators.required}),
+    dateRange: new FormControl({ start: new Date(), end: new Date() },{validators: Validators.required}),
+    condition: new FormControl(null,{validators: Validators.required}),
   });
 
   mediaFormControlNames = [
@@ -177,6 +176,11 @@ export class ProductSetupComponent
 
   private _productAlerts: Map<string, Alert> = new Map();
   private productAlertsController: Subject<Map<string, Alert>> = new Subject();
+  public maskConfig: MaskConfig = this.http.config.mask;
+  productImageConfig: MediaChooserConfig = {
+    pagination: 12,
+    ratio: '1/1',
+  };
 
   // destroy all subscription onNgDestroy();
   destroy$: Subject<boolean> = new Subject<boolean>();
@@ -191,9 +195,6 @@ export class ProductSetupComponent
     public activatedRoute: ActivatedRoute,
     public router: Router
   ) {}
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
-  }
 
   get isNew() {
     return this.vitalInfoForm.value.id;
@@ -250,6 +251,7 @@ export class ProductSetupComponent
     const routeParams = this.activatedRoute.snapshot.paramMap;
     const id = routeParams.get('id');
     if (id) {
+      // this.tabs.select(2);
       this.importProduct(id, null);
     }
   }
@@ -276,6 +278,13 @@ export class ProductSetupComponent
         }
         if (values[2] && values[2].status == 200) {
           this.currencyByRegions = values[2].details.data;
+
+          // Set default currency value by brand;
+          this.vitalInfoForm.controls['currency'].setValue(
+            this.currencyByRegions.find(
+              (r) => r.id == this.authService.user.brand.fk_region_id
+            )
+          );
         }
       }
     );
@@ -414,10 +423,6 @@ export class ProductSetupComponent
 
   /** Description */
 
-  textEditorChanged(value: string, fname: AbstractControl) {
-    fname.setValue(value);
-  }
-
   addFeatures(i: number, e: any) {
     if (e.key === 'Enter' || e.keyCode === 13) {
       return;
@@ -526,9 +531,8 @@ export class ProductSetupComponent
 
   /** Media */
 
-  async loadImage(e: any, formControlName: string) {
+  loadImage(e: Media, formControlName: string) {
     this.mediaForm.controls[formControlName].setValue(e);
-    
   }
 
   /** Variants */
@@ -576,7 +580,7 @@ export class ProductSetupComponent
       edit: new FormControl(false),
       id: new FormControl('-1'),
       status: new FormControl(2),
-      sellerSku: new FormControl('', [Validators.required]),
+      sellerSku: new FormControl(''),
       variantOptions: new FormArray([
         this.fb.group({
           header: new FormControl(hdr1),
@@ -594,10 +598,10 @@ export class ProductSetupComponent
           inputRef: title3,
         }),
       ]),
-      price: new FormControl(0.0),
-      sellingPrice: new FormControl(0.0),
+      price: new FormControl(0),
+      sellingPrice: new FormControl(0),
       quantity: new FormControl(0),
-      dateRange: new FormControl(),
+      dateRange: new FormControl({ start: new Date(), end: new Date() }),
       condition: new FormControl(),
       images: new FormArray([]),
       description: new FormControl(''),
@@ -1103,7 +1107,6 @@ export class ProductSetupComponent
           let duplicate = 0;
           let optionCount = 0;
           for (let prod of this.productVariationControls) {
-            const status = prod.get('status')?.value;
             const title = prod.get(
               'variantOptions.' + optionIndex + '.inputRef.name'
             )?.value;
@@ -1331,8 +1334,6 @@ export class ProductSetupComponent
         data.variants[0].media_9_video
       );
     }
-    console.log(this.mediaForm);
-    
 
     //fockjoin
     return lastValueFrom(forkJoin(optionSubscriptions))
@@ -1349,7 +1350,7 @@ export class ProductSetupComponent
   getCategory(searchNames: string) {
     let param = new HttpParams();
     param = param.set('title', searchNames);
-    return this.http.GET('category-leaves', undefined, param);
+    return this.http.GET('category-leaves', param);
   }
 
   getVariantOptionItems(headerId: string) {
@@ -1364,11 +1365,7 @@ export class ProductSetupComponent
     let httparam = new HttpParams();
     httparam = httparam.append('title', optionName);
     httparam = httparam.append('relationships', relationships);
-    return this.http.GET(
-      `categories/${categoryId}/attributes`,
-      undefined,
-      httparam
-    );
+    return this.http.GET(`categories/${categoryId}/attributes`, httparam);
   }
 
   getProductById(id: string, variantId: string | null) {
@@ -1377,7 +1374,11 @@ export class ProductSetupComponent
       'relationships',
       'variants,myBrand,category,packType,currency,variantOption1Hdr,variantOption2Hdr,variantOption3Hdr'
     );
-    return this.http.GET(`products/${id}`, undefined, httpParam);
+    httpParam = httpParam.set(
+      'variants',
+      'media_1_image,media_2_image,media_3_image,media_4_image,media_5_image,media_6_image,media_7_image,media_8_video,media_9_video'
+    );
+    return this.http.GET(`products/${id}`, httpParam);
   }
 
   /** Submit ==================================================================================*/
@@ -1398,10 +1399,16 @@ export class ProductSetupComponent
       variants: [],
     };
 
+    // Product doesn't have variations 
     if (!param.hasVariant) {
+
+      //check validation
+      if(!this.vitalInfoForm.valid ) {
+        this.popup.showTost('Invalid request!');
+        return;
+      }
       let vari = this.exportVariations(this.offerForm, param.hasVariant);
-      console.log(vari);
-      
+
       try {
         vari.features = this.descriptionForm.value.features.filter((e: any) => {
           return !this.pgService.isEmptyOrSpaces(e);
@@ -1414,6 +1421,13 @@ export class ProductSetupComponent
       vari.attributes = this.exportAttributes();
       param.variants = [vari];
     } else {
+
+      // Check variations validation
+      if( !this.vitalInfoForm.valid || !this.productVariationForm.valid) {
+        this.popup.showTost('Invalid request!');
+        return;
+      }
+
       param.fk_varopt_1_hdr_id = this.options[0].value.header?.id;
       param.fk_varopt_2_hdr_id = this.options[1].value.header?.id;
       param.fk_varopt_3_hdr_id = this.options[2].value.header?.id;
@@ -1434,8 +1448,6 @@ export class ProductSetupComponent
     }
 
     const result = (e: any) => {
-      console.log('product save result', e);
-
       if (e.status == 200) {
         this.popup.showTost('Success');
       } else {
@@ -1459,7 +1471,6 @@ export class ProductSetupComponent
         //this.popup.alert('Cant connect to server!');
       });
     }
-    console.log(param);
   }
 
   exportVariations(variationFg: any, hasVariant: boolean) {
@@ -1493,9 +1504,11 @@ export class ProductSetupComponent
       var_3_title: hasVariant
         ? variationFg.get('variantOptions.2.inputRef.name')?.value
         : null,
-      buy_price: parseFloat(variationFg.get('price')?.value),
-      selling_price: parseFloat(variationFg.get('sellingPrice')?.value),
-      qty: parseInt(variationFg.get('quantity')?.value),
+      buy_price: this.pgService.safeNum(variationFg.controls['price'].value),
+      selling_price: this.pgService.safeNum(
+        variationFg.controls['sellingPrice'].value
+      ),
+      qty: this.pgService.safeNum(variationFg.controls['quantity'].value),
       condition_desc: '',
       start_at: this.pgService.dateTransform(
         variationFg.get('dateRange')?.value?.start
@@ -1509,40 +1522,40 @@ export class ProductSetupComponent
       id: variationFg.value.id,
       media_1_image:
         this.offerForm.value.id === variationFg.value.id
-          ? this.mediaForm.value.media_1
-          : variationFg.value.media_1_image,
+          ? this.mediaForm.value.media_1?.id ?? null
+          : variationFg.value.media_1_image?.id ?? null,
       media_2_image:
         this.offerForm.value.id === variationFg.value.id
-          ? this.mediaForm.value.media_2
-          : variationFg.value.media_2_image,
+          ? this.mediaForm.value.media_2?.id ?? null
+          : variationFg.value.media_2_image?.id ?? null,
       media_3_image:
         this.offerForm.value.id === variationFg.value.id
-          ? this.mediaForm.value.media_3
-          : variationFg.value.media_3_image,
+          ? this.mediaForm.value.media_3?.id ?? null
+          : variationFg.value.media_3_image?.id ?? null,
       media_4_image:
         this.offerForm.value.id === variationFg.value.id
-          ? this.mediaForm.value.media_4
-          : variationFg.value.media_4_image,
+          ? this.mediaForm.value.media_4?.id ?? null
+          : variationFg.value.media_4_image?.id ?? null,
       media_5_image:
         this.offerForm.value.id === variationFg.value.id
-          ? this.mediaForm.value.media_5
-          : variationFg.value.media_5_image,
+          ? this.mediaForm.value.media_5?.id ?? null
+          : variationFg.value.media_5_image?.id ?? null,
       media_6_image:
         this.offerForm.value.id === variationFg.value.id
-          ? this.mediaForm.value.media_6
-          : variationFg.value.media_6_image,
+          ? this.mediaForm.value.media_6?.id ?? null
+          : variationFg.value.media_6_image?.id ?? null,
       media_7_image:
         this.offerForm.value.id === variationFg.value.id
-          ? this.mediaForm.value.media_7
-          : variationFg.value.media_7_image,
+          ? this.mediaForm.value.media_7?.id ?? null
+          : variationFg.value.media_7_image?.id ?? null,
       media_8_video:
         this.offerForm.value.id === variationFg.value.id
-          ? this.mediaForm.value.media_8
-          : variationFg.value.media_8_video,
+          ? this.mediaForm.value.media_8?.id ?? null
+          : variationFg.value.media_8_video?.id ?? null,
       media_9_video:
         this.offerForm.value.id === variationFg.value.id
-          ? this.mediaForm.value.media_9
-          : variationFg.value.media_9_video,
+          ? this.mediaForm.value.media_9?.id ?? null
+          : variationFg.value.media_9_video?.id ?? null,
     } as any;
   }
 

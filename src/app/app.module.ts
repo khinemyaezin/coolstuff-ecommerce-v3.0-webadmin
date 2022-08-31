@@ -1,10 +1,10 @@
-import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { QuillModule } from 'ngx-quill';
+import { QuillConfigModule, QuillModule } from 'ngx-quill';
 import { environment } from 'src/environments/environment';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule, NgControl, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -23,20 +23,24 @@ import { ImageCropperModelComponent } from './core-components/image-cropper-mode
 import { InventoryComponent } from './seller/inventory/inventory.component';
 import { LoadingComponent } from './core-components/loading/loading.component';
 import { PaginationComponent } from './core-components/pagination/pagination.component';
-import { AuthRouteHandlerService } from './services/auth-route-handler.service';
 import { DatePipe } from '@angular/common';
 import { MediaChooserComponent } from './core-components/media-chooser/media-chooser.component';
 import { BackButtonDirective } from './core-components/back-button.directive';
 import { DialogConfirmComponent } from './core-components/dialog-confirm/dialog-confirm.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ProfileComponent } from './seller/profile/profile.component';
-import { TextEditorDirective } from './core-components/text-editor.directive';
 import { DatePickerDirective } from './core-components/date-picker.directive';
 import { ToastComponent } from './core-components/toast/toast.component';
 import { NgxMaskModule } from 'ngx-mask';
 import { LineThroughDirective } from './core-components/line-through.directive';
 import { FileInputDirective } from './core-components/file-input.directive';
-import { Router } from '@angular/router';
+import { RegisterComponent } from './seller/register/register.component';
+import { AttributesComponent } from './admin/attributes/attributes.component';
+import { MediaChooserModelComponent } from './core-components/media-chooser-model/media-chooser-model.component';
+import { RadioInputDirective } from './core-components/radio-input.directive';
+import { ValidationDirective } from './core-components/validation.directive';
+import { ImageDirective } from './core-components/image.directive';
+import { OptionGroupFilterPipe } from './seller/product-additional-setup/option-group-filter.pipe';
 // const config: SocketIoConfig = {
 //   url: 'http://localhost:8084',
 //   options: { autoConnect: false },
@@ -61,11 +65,17 @@ import { Router } from '@angular/router';
     BackButtonDirective,
     DialogConfirmComponent,
     ProfileComponent,
-    TextEditorDirective,
     DatePickerDirective,
     ToastComponent,
     LineThroughDirective,
     FileInputDirective,
+    RegisterComponent,
+    AttributesComponent,
+    MediaChooserModelComponent,
+    RadioInputDirective,
+    ValidationDirective,
+    ImageDirective,
+    OptionGroupFilterPipe,
   ],
   imports: [
     BrowserModule,
@@ -76,8 +86,21 @@ import { Router } from '@angular/router';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    ImageCropperModule,
+    ImageCropperModule, 
+    QuillConfigModule.forRoot({
+      modules: {
+        syntax: true,
+        toolbar: [
+          ['bold', 'italic', 'underline'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+        ],
+        theme: 'snow',
+        placeholder: 'Description |',
+        themes:'snow'
+      },
+    }),
     QuillModule.forRoot(),
+   
     NgxMaskModule.forRoot(),
     NgbModule,
     //SocketIoModule.forRoot(config),

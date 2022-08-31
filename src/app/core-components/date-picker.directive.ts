@@ -18,7 +18,10 @@ import { easepick } from '@easepick/bundle';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 import { ControllerService } from '../services/controller.service';
-
+export interface DatePickerValue {
+  start: Date,
+  end:Date
+}
 @Directive({
   selector: '[datePicker]',
   providers: [
@@ -37,7 +40,7 @@ export class DatePickerDirective
 
   private output = new Subject<any>();
   private modelRef: any;
-  private dateValue: any;
+  private dateValue:DatePickerValue = { start: new Date(), end:new Date()};
 
   constructor(
     private model: NgbModal,
@@ -52,6 +55,8 @@ export class DatePickerDirective
     if (e) {
       this.inputRef = this.format(e.start, e.end);
       this.dateValue = e;
+    } else {
+      this._onChange(this.dateValue)
     }
   }
   registerOnChange(fn: any): void {
@@ -74,6 +79,9 @@ export class DatePickerDirective
         }
       },
     });
+
+    this.inputRef = this.format( this.dateValue.start, this.dateValue.end);
+    this._onChange(this.dateValue);
   }
 
   ngAfterViewInit(): void {
@@ -88,6 +96,11 @@ export class DatePickerDirective
 
   @HostListener('click', ['$event.target'])
   onClick(click: Event) {
+    this.showDatepickerModel();
+  }
+
+  @HostListener('keydown', ['$event.target'])
+  onFocus(click: Event) {
     this.showDatepickerModel();
   }
 

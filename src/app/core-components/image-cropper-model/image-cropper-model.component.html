@@ -1,20 +1,13 @@
-<div class="modal fade rounded" id="image-cropper-modal" tabindex="-1" aria-labelledby="confirmIdentity-modal-label"
-  aria-hidden="true">
-  <div class="modal-dialog  modal-dialog-centered rounded">
-    <div class="modal-content">
-      <div class="modal-header border-0">
-        <h5 class="modal-title" id="confirmIdentity-modal-label"></h5>
-      </div>
-      <div class="modal-body">
-        <image-cropper #imgcrop  [imageBase64]="imageBase64" [maintainAspectRatio]="true"
-        [aspectRatio]="cropRatio" format="png" [autoCrop]="false" (imageCropped)="imageCropped($event)"
-        (imageLoaded)="imageLoaded()" (cropperReady)="cropperReady()" (loadImageFailed)="loadImageFailed()">
-    </image-cropper>
-      </div>
-      <div class="modal-footer border-0 d-flex">
-        <button class="btn btn-link " (click)="cancel()">Cancel</button>
-        <button class="btn btn-link ms-auto" (click)="finishedCropImage()">Crop Image</button>
-      </div>
-    </div>
-  </div>
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-basic-title">Media</h4>
+</div>
+<div class="modal-body">
+  <image-cropper #imgcrop [imageBase64]="config.base64" [maintainAspectRatio]="true" [aspectRatio]="config.ratio"
+    format="png" [autoCrop]="false" (imageCropped)="imageCropped($event)" (imageLoaded)="imageLoaded()"
+    (cropperReady)="cropperReady()" (loadImageFailed)="loadImageFailed()">
+  </image-cropper>
+</div>
+<div class="modal-footer d-flex justify-content-end gap-2">
+  <button type="button" class="btn btn-outline-dark" (click)="modelRef.close(null)">Close</button>
+  <button type="button" class="btn btn-primary" (click)="finishedCropImage()">Save</button>
 </div>

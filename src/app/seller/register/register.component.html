@@ -1,0 +1,72 @@
+<div class="container">
+    <form [formGroup]="brandFormGroup">
+        <div class="card ">
+            <div class="card-body">
+                <div class="card-body-title">Brand Information</div>
+                <div class="mb-4">
+                    <label for="brand-name" class="form-label">What is your brand name?</label>
+                    <input type="text" id="brand-name" formControlName="brand-name"
+                        [ngClass]="{'form-control is-invalid': !brandFormGroup.get('brand-name')?.valid && brandFormGroup.get('brand-name')?.touched,'form-control':true}">
+                </div>
+    
+            </div>
+    
+        </div>
+    </form>
+    <form [formGroup]="accountFormGroup">
+        <div class="card">
+            <div class="card-body">
+                <div id="account-info" class="mb-4">
+                    <div class="card-body-title">Account Information</div>
+                    <div class="mb-3">
+                        <label for="user-name" class="form-label">What is your name?</label>
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="First name" aria-label="First name"
+                                    formControlName="user-firstname"
+                                    [ngClass]="{'form-control is-invalid': !accountFormGroup.get('user-firstname')?.valid && accountFormGroup.get('user-firstname')?.touched,'form-control':true}">
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="Last name" aria-label="Last name"
+                                    formControlName="user-lastname"
+                                    [ngClass]="{'form-control is-invalid': !accountFormGroup.get('user-lastname')?.valid && accountFormGroup.get('user-lastname')?.touched,'form-control':true}">
+                            </div>
+                        </div>
+        
+                    </div>
+                    <div class="mb-3">
+                        <label for="user-email" class="form-label">What is your email?</label>
+                        <input type="email" class="form-control" id="user-email" formControlName="user-email"
+                            placeholder="name@example.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="user-phone" class="form-label">What is your phone number?</label>
+                        <input type="tel" id="user-phone" placeholder="09 xxxxxxxxx" formControlName="user-phno"
+                            [ngClass]="{'form-control is-invalid': !accountFormGroup.get('user-phno')?.valid && accountFormGroup.get('user-phno')?.touched,'form-control':true}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" id="user-phone" formControlName="password"
+                            [ngClass]="{'form-control is-invalid': !accountFormGroup.get('password')?.valid && accountFormGroup.get('password')?.touched,'form-control':true}">
+                    </div>
+                </div>
+                <div class="mb-2" id="address-info">
+                    <div class="card-body-title">Address Information</div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">What is your store located?</label>
+                        <textarea id="address" formControlName="user-address"
+                            [ngClass]="{'form-control is-invalid': !accountFormGroup.get('user-address')?.valid && accountFormGroup.get('user-address')?.touched,'form-control':true}"></textarea>
+                    </div>
+                </div>
+        
+        
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-main" id="btn-submit-stepper" (click)="submit()">Submit</button>
+
+            </div>
+        </div>
+    
+    
+    </form>
+</div>

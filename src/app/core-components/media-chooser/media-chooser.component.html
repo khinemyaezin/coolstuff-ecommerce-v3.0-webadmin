@@ -1,17 +1,24 @@
-<img class="rounded" [src]="media" (error)="pgService.setDefaultImageURL($event)" />
-<div class="backdrop"></div>
-<span class="img__description">
-    <div class="w-100 p-2">{{title}}</div>
-    <ul>
-        <li>
-            <input type="file" hidden #imageChooser (change)="loadImage($event)">
-            <button class="btn btn-primary mx-auto" (click)="imageChooser.click()">
-                <i class="bi bi-upload"></i>
-            </button>
-        </li>
-        <li>
-            <button class="btn btn-primary"><i class="bi bi-x-lg"></i>
-            </button>
-        </li>
-    </ul>
-</span>
+<div class="img__wrap" #wrapper>
+    <img class="rounded" [src]="media?.path" (error)="onError()" />
+    <span class="no-image-content">
+        <span><i class="bi bi-image"></i>
+        </span>
+    </span>
+    <div class="backdrop"></div>
+
+    <span class="img__description">
+        <div class="w-100 p-2">{{title}}</div>
+        <ul>
+            <li>
+                <button class="btn btn-primary mx-auto" (click)="showImageChooserModel()">
+                    <i class="bi bi-upload"></i>
+                </button>
+            </li>
+            <li>
+                <button class="btn btn-primary"><i class="bi bi-x-lg"></i>
+                </button>
+            </li>
+        </ul>
+    </span>
+
+</div>

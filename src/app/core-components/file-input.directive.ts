@@ -8,7 +8,7 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Directive({
-  selector: 'rr',
+  selector: '[input[type=file]]',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -22,25 +22,20 @@ export class FileInputDirective implements ControlValueAccessor {
 
   constructor(private element: ElementRef, private render: Renderer2) {}
 
-  @HostListener('change', ['$event.target.value']) _handleInput(event: any) {
-    console.log(event);
-    
-    if (event.target.files.length > 0) {
-      const file = event.target.files[0];
-      this._onChange(file);
-    }
+  @HostListener('change', ['$event.target.files']) emitFiles(event: FileList) {
+    this._onChange(
+      Object.keys(event).map(function (key: any, index) {
+        return event[key];
+      })
+    );
   }
 
   writeValue(value: any): void {
-    const normalizedValue = value == null ? '' : value;
-    this.render.setProperty(this.element.nativeElement, 'value', normalizedValue);
-    console.log(value);
-    
+    if(!value)
+    this.render.setProperty(this.element.nativeElement, 'value', '');
   }
   registerOnChange(fn: any): void {
     this._onChange = fn;
   }
-  registerOnTouched(fn: any): void {
-    throw new Error('Method not implemented.');
-  }
+  registerOnTouched(fn: any): void {}
 }

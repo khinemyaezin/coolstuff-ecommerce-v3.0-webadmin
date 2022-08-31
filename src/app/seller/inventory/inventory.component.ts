@@ -83,7 +83,7 @@ export class InventoryComponent implements OnInit {
   };
   defaultVariants = new Map();
 
-  public maskConfig = this.http.config.mask;
+  protected maskConfig = this.http.config.mask;
 
   constructor(
     public pgService: ControllerService,
@@ -128,7 +128,7 @@ export class InventoryComponent implements OnInit {
     const getProducts = this.getProducts();
     const getConditions = this.sellerService.getConditionList();
 
-    lastValueFrom(forkJoin([getProducts, getConditions])).then(
+    await lastValueFrom(forkJoin([getProducts, getConditions])).then(
       (values: any[]) => {
         if (values[0] && values[0].status == 200) {
           (<FormArray>this.productFormGroup.get('products')).clear();
@@ -144,7 +144,7 @@ export class InventoryComponent implements OnInit {
         }
       }
     );
-    console.log(this.productFormGroup);
+    console.log(this.productFormGroup.value);
     
   }
 
@@ -208,10 +208,7 @@ export class InventoryComponent implements OnInit {
           selling_price: variant.get('selling_price')?.value,
           qty: variant.get('qty')?.value,
           condition: variant.get('condition')?.value.id,
-        });
-        console.log(jsonChanges);
-        
-
+        });        
         const jsonDefault = this.defaultVariants.get(id);
 
         if (jsonChanges != JSON.stringify(jsonDefault)) {
@@ -259,7 +256,6 @@ export class InventoryComponent implements OnInit {
   getProducts(filter?: HttpParams) {
     return this.http.GET(
       `brands/${this.auth.user.brand.id}/inventory/products`,
-      undefined,
       filter ?? new HttpParams()
     );
   }

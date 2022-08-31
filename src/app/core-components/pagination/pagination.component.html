@@ -2,7 +2,7 @@
     <ul class="pagination">
         <ng-template ngFor let-page let-index="index" [ngForOf]="links">
             <li [ngClass]="{ 'page-item': true, 'active': page.active, 'disabled': !page.url  }">
-                <a class="page-link" role="button" [innerHTML]="page?.label">
+                <a class="page-link" role="button" [innerHTML]="page?.label" (click)="fetch(page.url)">
                 </a>
             </li>
         </ng-template>

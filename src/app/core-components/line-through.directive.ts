@@ -26,7 +26,6 @@ export class LineThroughDirective implements OnInit, AfterViewInit, OnChanges {
   }
 
   ngOnInit(): void {
-    throw new Error('Method not implemented.');
   }
 
   ngAfterViewInit(): void {

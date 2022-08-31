@@ -1,3 +1,4 @@
+import { HttpParams } from '@angular/common/http';
 import {
   ApplicationRef,
   ComponentFactoryResolver,
@@ -5,9 +6,15 @@ import {
   Injector,
   TemplateRef,
 } from '@angular/core';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { lastValueFrom } from 'rxjs';
 import { DialogConfirmComponent } from '../core-components/dialog-confirm/dialog-confirm.component';
 import { ImageCropperModelComponent } from '../core-components/image-cropper-model/image-cropper-model.component';
 import { LoadingComponent } from '../core-components/loading/loading.component';
+import { Media, MediaChooserModelComponent } from '../core-components/media-chooser-model/media-chooser-model.component';
+import { ImageCropperConfig, MediaChooserConfig } from '../core-components/media-chooser/media-chooser.component';
+import { ViewResult } from './core';
+import { ServerService } from './server.service';
 
 declare var $: any;
 
@@ -18,11 +25,12 @@ export class PopupService {
   loadingEl: any;
   toasts: any[] = [];
 
-
   constructor(
     private componentFactoryResolver: ComponentFactoryResolver,
     private appRef: ApplicationRef,
-    private injector: Injector
+    private injector: Injector,
+    private ngModel: NgbModal,
+    private http: ServerService
   ) {}
 
   showLoading(message: string) {
@@ -72,46 +80,64 @@ export class PopupService {
       $(notifierContainerRef).append(popup);
     });
   }
-  showImageCropperModal(
-    base64: string,
-    ratio: number,
-    m?: { header: string; btns?: { cancel: string; confirm: string } }
-  ) {
-    return new Promise<string>((rs, rj) => {
-      const popup = document.createElement('modal-component');
-      const factory = this.componentFactoryResolver.resolveComponentFactory(
-        ImageCropperModelComponent
-      );
-      const popupComponentRef = factory.create(this.injector, [], popup);
-      this.appRef.attachView(popupComponentRef.hostView);
-      popupComponentRef.instance.base64 = base64;
-      popupComponentRef.instance.ratio = ratio;
-      // if(m.btns){
-      //   popupComponentRef.instance.cancelBtn = m.btns.cancel;
-      //   popupComponentRef.instance.confirmBtn = m.btns.confirm;
-      // }
-      popupComponentRef.instance.closed.subscribe((e: string) => {
-        $(popup).remove();
-        this.appRef.detachView(popupComponentRef.hostView);
-        e == null ? rj() : rs(e);
-      });
-      popupComponentRef.instance.ready.subscribe(() => {});
-      const notifierContainerRef = document.body.getElementsByClassName(
-        'confirm-identity-modal'
-      );
-      $(notifierContainerRef).append(popup);
+  showImageCropperModal(config:ImageCropperConfig) {
+    const model:NgbModalRef = this.ngModel.open(ImageCropperModelComponent, {
+      backdrop: 'static',
+      centered: true,
+      scrollable: true,
+      size: 'lg',
     });
+    model.componentInstance.config = config;
+    model.componentInstance.modelRef = model;
+    return model.result;
   }
 
   showTost(textOrTpl: string | TemplateRef<any>, options: any = {}) {
     this.toasts.push({ textOrTpl, ...options });
   }
 
-  removeTost(toast:any) {
-    this.toasts = this.toasts.filter(t => t !== toast);
+  removeTost(toast: any) {
+    this.toasts = this.toasts.filter((t) => t !== toast);
   }
 
   clearTost() {
     this.toasts.splice(0, this.toasts.length);
+  }
+
+  async showMediaChooser(config:MediaChooserConfig):Promise<Media|null> {
+    let param = new HttpParams();
+    for (const [key, value] of Object.entries(config)) {
+      param = param.append(key, value);
+    }
+    const files = await this.getMedias(param);
+    const model = this.ngModel.open(MediaChooserModelComponent, {
+      backdrop: 'static',
+      centered: true,
+      scrollable: true,
+      size: 'lg',
+    });
+    model.componentInstance.files = files;
+    model.componentInstance.modelRef = model;
+    model.componentInstance.httpParam = param;
+    model.componentInstance.config = config;
+    return model.result;
+    
+  }
+
+  getMedias(param:HttpParams) {
+ 
+    return lastValueFrom(this.http.GET('files', param)).then(
+      (value: ViewResult<any> | any) => {
+        if (value.status == 200) {
+          return value.details;
+        } else {
+          return null;
+        }
+      },
+      (error) => {
+        console.log(error);
+        return null;
+      }
+    );
   }
 }

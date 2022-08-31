@@ -50,8 +50,8 @@
         .input-group > input.date-picker {
           width: 15rem;
         }
-        input[type=number] {
-          text-align: end;
+        .input-number {
+          min-width: 15rem;
         }
       }
 

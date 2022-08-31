@@ -1,1 +1,784 @@
-<p>product-additional-setup works!</p>
+<div class="container">
+    <ul ngbNav #nav="ngbNav" class="nav-tabs">
+
+        <li [ngbNavItem]="1">
+            <ng-template ngbNavContent>
+                <ng-container *ngTemplateOutlet="heading; context:{ submitBtn: false }">
+                </ng-container>
+                <div class="card">
+
+                    <div class="card-header">
+                        <div class="card-title">Select a product category</div>
+                        <small>Choosing the best category ensure that you see the most appropriate data field for
+                            your product.
+                        </small>
+                    </div>
+                    <div class="card-body">
+                        <form [formGroup]="categoryForm" id="browse-category">
+                            <label for="category-name" class="form-label">Browse </label>
+                            <div class="input-group border">
+                                <input type="text" class="form-control border-0 " list="datalistOptions"
+                                    id="category-name" placeholder="Search category" formControlName="categorySearch">
+                                <span class="p-1 spinner">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </span>
+
+                            </div>
+                            <div class="overflow-auto">
+
+                                <ul class="list-group list-group-flush py-3" id="category-query-data">
+                                    <li class="list-group-item list-group-item-action" role="button" type="button"
+                                        *ngFor="let c of categoryForm.get('categorySearchResult')?.value"
+                                        (click)="selectCategory(c)">
+                                        <a class="">{{c.title}}</a><br>
+                                        <small class="text-muted">{{c.path}}</small>
+                                    </li>
+                                </ul>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </ng-template>
+        </li>
+        <li [ngbNavItem]="2">
+            <ng-template ngbNavContent>
+                <form [formGroup]="productForm" (ngSubmit)="submit()">
+                    <div class="row g-2">
+                        <div class="col-lg-8 order-sm-2 order-md-1">
+                            <!-- Product Information -->
+                            <div class="card mb-2">
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <span class="position-relative">
+                                            Vital Information
+                                        </span>
+
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-2">
+                                        <div class="col-sm-4">
+                                            <label for="product-name"
+                                                class="w-100 col-form-label  text-lg-end text-sm-start">Title</label>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <input type="text" aria-label="First name" id="product-name"
+                                                formControlName="title" placeholder="Product Title"
+                                                class="form-control form-validation">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-sm-4">
+                                            <label for="brand-name"
+                                                class="w-100 col-form-label  text-lg-end text-sm-start">Brand</label>
+                                        </div>
+
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control form-validation"
+                                                aria-label="First name" id="brand-name" formControlName="brand"
+                                                placeholder="Brand Name">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-sm-4">
+                                            <label for="manufacturer"
+                                                class="w-100 col-form-label  text-lg-end text-sm-start">Manufacturer</label>
+                                        </div>
+
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control form-validation"
+                                                aria-label="First name" id="manufacturer" formControlName="manufacturer"
+                                                placeholder="Manufactured from">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-sm-4">
+                                            <label for="material-type"
+                                                class="w-100 col-form-label  text-lg-end text-sm-start">Material
+                                                Type</label>
+                                        </div>
+
+                                        <div class="col-sm-8">
+                                            <select formControlName="packType" class="form-select form-validation"
+                                                [compareWith]="compare">
+                                                <option [value]='null' disabled>Select</option>
+                                                <option [ngValue]="matype" *ngFor=" let matype of packTypeList">
+                                                    {{matype.title}}
+                                                </option>
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div *ngIf="!productForm.controls['hasVariant'].value" formArrayName="variants">
+                                <div *ngFor="let variant of getVariants.controls; let i = index">
+                                    <!-- Pricing -->
+                                    <ng-container *ngTemplateOutlet="pricing; context:{ formGroup: variant, index : i}">
+                                    </ng-container>
+                                    <!-- Inventory  -->
+                                    <ng-container
+                                        *ngTemplateOutlet="inventory; context:{ formGroup: variant, index : i}">
+                                    </ng-container>
+                                    <!-- Attributes  -->
+                                    <!-- Media  -->
+                                </div>
+                            </div>
+                            <div class="variations-group">
+                                <ng-container *ngTemplateOutlet="variants; context:{ formGroup: productForm }">
+                                </ng-container>
+                            </div>
+
+                        </div>
+                        <div class="col-lg-4 order-sm-1 order-md-2">
+                            <!-- <div id="messageBox">
+                                <p class="mb-2" *ngFor="let alert of productAlerts | async | keyvalue">
+                                    <ngb-alert [dismissible]="false" class="mb-0" [type]="alert.value.type">{{
+                                        alert.value.message }}</ngb-alert>
+                                </p>
+                            </div> -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-title">Product Status</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-check" *ngFor="let bizStatus of businessStatus;let i=index">
+                                        <input class="form-check-input" type="radio" name="status"
+                                            [id]="'biz-status-'+i" formControlName="status" [value]=" bizStatus.value ">
+                                        <label class="form-check-label" [for]="'biz-status-'+i">
+                                            {{ bizStatus.title }}
+                                        </label>
+                                    </div>
+                                </div>
+                                <hr class="m-0">
+                                <div class="card-header">
+                                    <div class="card-title">Payment</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-2">
+                                        <label for="prodCurrency" class="form-label ">Purchased with</label>
+                                        <select class="form-select" id="prodCurrency" formControlName="currency"
+                                            [compareWith]="compare">
+                                            <option [value]="null" disabled selected>Select</option>
+                                            <option [ngValue]="currency" *ngFor="let currency of currencyByRegions;">
+                                                {{ currency.currency_code }}<br>
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="prodCurrency" class="form-label ">Sell with</label>
+                                        <select class="form-select" id="prodCurrency">
+                                            <option [value]="null" disabled selected>Select</option>
+                                            <option [ngValue]="currency" *ngFor="let currency of currencyByRegions;">
+                                                {{ currency.currency_code }}<br>
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <hr class="m-0">
+                                <div class="card-header">
+                                    <div class="card-title">Organization</div>
+                                </div>
+                                <hr class="m-0">
+                                <div class="card-body">
+                                    <h6>Tag</h6>
+                                    <input type="text" class="form-control" placeholder="shirt, red">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </ng-template>
+        </li>
+    </ul>
+    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+
+</div>
+
+<ng-template #heading let-submitBtn="submitBtn">
+    <div class="d-flex justify-content-between py-3 align-items-center">
+        <button type="button" backButton name="Products" icon="bi bi-chevron-left"
+            [routerLink]="'/seller-central/inventory'"></button>
+        <h5 class="m-0">Product Setup</h5>
+        <button type="button" *ngIf="submitBtn" class="btn text-primary">Submit</button>
+    </div>
+</ng-template>
+
+<ng-template #pricing let-formGroup="formGroup" let-index="index">
+    <div class="card mb-2" [formGroup]="formGroup">
+        <div class="card-header">
+            <div class="card-title">Pricing</div>
+        </div>
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-sm-4">
+                    <label for="offerSellingPrice" class="w-100 col-form-label  text-lg-end text-sm-start">
+                        Selling price</label>
+                </div>
+                <div class="col-sm-8">
+
+                    <input type="text" class="form-control text-end" id="offerSellingPrice"
+                        formControlName="sellingPrice" [suffix]=" ' ' + buyCurrency?.currency_code"
+                        [mask]="maskConfig.maxnumber_count">
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-4">
+                    <label for="offerCompareAtPrice" class="w-100 col-form-label  text-lg-end text-sm-start">
+                        Compare at price</label>
+                </div>
+                <div class="col-sm-8">
+
+                    <input type="text" class="form-control text-end" id="offerCompareAtPrice"
+                        [suffix]=" ' ' + buyCurrency?.currency_code" [mask]="maskConfig.maxnumber_count">
+
+                </div>
+            </div>
+
+            <div class="row mb-2">
+                <div class="col-sm-4">
+                    <label for="offerCostPerItem" class="w-100 col-form-label  text-lg-end text-sm-start">
+                        Cost per item</label>
+                </div>
+                <div class="col-sm-8">
+
+                    <input type="text" class="form-control text-end" id="offerCostPerItem" formControlName="price"
+                        [suffix]=" ' ' + buyCurrency?.currency_code" [mask]="maskConfig.maxnumber_count">
+
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-4">
+                    <label for="offerMargin" class="w-100 col-form-label  text-lg-end text-sm-start">Margin</label>
+                </div>
+                <div class="col-sm-8 d-flex align-items-center">
+                    <!-- <span>{{marginPercentage | percent:'1.2-2'}}</span> -->
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-4">
+                    <label for="offerProfit" class="w-100 col-form-label  text-lg-end text-sm-start">Profit</label>
+                </div>
+                <div class="col-sm-8  d-flex align-items-center">
+                    <span>
+                        <!-- {{profit|currency:'Ks':'symbol':'1.2-2':'en-US'}} -->
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<ng-template #inventory let-formGroup="formGroup" let-index="index">
+    <div class="card mb-2" [formGroup]="formGroup">
+        <div class="card-header">
+            <div class="card-title">Inventory
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-sm-4">
+                    <label for="offerSku" class="w-100 col-form-label  text-lg-end text-sm-start">SKU</label>
+                </div>
+
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="offerSku" [mask]="maskConfig.brand_sku_count"
+                        formControlName="sellerSku">
+                    <small class="text-muted">Stock Keeping Unit</small>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-4">
+                    <label for="offerBarcode" class="w-100 col-form-label  text-lg-end text-sm-start">Barcode</label>
+                </div>
+
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="offerBarcode">
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-4">
+                    <label for="offerQty" class="w-100 col-form-label  text-lg-end text-sm-start">Quantity</label>
+                </div>
+
+                <div class="col-sm-8">
+                    <input type="number" class="form-control text-start" id="offerQty" formControlName="quantity">
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-4">
+                    <label for="offerDateRange" class="w-100 col-form-label  text-lg-end text-sm-start">Date
+                        range</label>
+                </div>
+
+                <div class="col-sm-8">
+                    <div class="input-group rounded border input-group-date-range">
+                        <div class="px-2 align-self-center">
+                            <i class="bi bi-calendar"></i>
+                        </div>
+                        <input type="text" datePicker class="form-control border-0" formControlName="dateRange">
+
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-4">
+                    <label for="offerCondition"
+                        class="w-100 col-form-label  text-lg-end text-sm-start">Condition</label>
+                </div>
+
+                <div class="col-sm-8">
+                    <select class="form-select" formControlName="condition" id="offerCondition" [compareWith]="compare">
+                        <option [value]='null' disabled>Select</option>
+                        <option *ngFor="let con of conditionOptions" [ngValue]="con">
+                            {{con.title}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</ng-template>
+<ng-template #attributes let-formGroup="formGroup" let-index="index">
+    <div class="card mb-2">
+        <div class="card-header">
+            <div class="card-title"></div>
+        </div>
+    </div>
+</ng-template>
+<ng-template #medias let-formGroup="formGroup" let-index="index">
+    <div class="card mb-2">
+        <div class="card-header">
+            <div class="card-title"></div>
+        </div>
+    </div>
+</ng-template>
+<ng-template #description let-formGroup="formGroup" let-index="index">
+    <div class="card mb-2">
+        <div class="card-header">
+            <div class="card-title"></div>
+        </div>
+    </div>
+</ng-template>
+<ng-template #variants let-formGroup="formGroup" let-index="index">
+    <div class="card" [formGroup]="formGroup">
+        <div class="card-header">
+            <div class="card-title">
+                Variants
+            </div>
+            <div class="py-2" *ngIf="checkedVariantCard">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="has-variants" formControlName="hasVariant">
+                    <label class="form-check-label small" for="has-variants">
+                        This product has options, like size or color
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="card-body" *ngIf="productForm.controls['hasVariant'].value">
+            <div class="variant-options">
+                <ng-container *ngFor="let option of options; let optionIndex=index">
+                    <div class="row mb-2" [formGroup]="option">
+                        <div class="col-sm-4">
+                            <div class="d-flex mb-2" >
+                                <button type="button" class="btn" [disabled]="!option.get('header')?.value"
+                                (click)="removeVariantOptionHeader(optionIndex)">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                                <div class="auto-complete">
+                                    <ng-template #rt let-r="result" let-t="term">
+                                        <ngb-highlight [result]="r.title" [term]="t">
+                                        </ngb-highlight>
+                                    </ng-template>
+                                    <input type="text" class="form-control" formControlName="headerSearchValue"
+                                    
+                                        [ngbTypeahead]="searchOptions" [inputFormatter]="formatter"
+                                        [resultTemplate]="rt" [editable]='false'
+                                        (selectItem)="onSelectVariantOption($event,option,optionIndex)" />
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-sm-8">
+                            <ul class="list-unstyled vari-options-list">
+
+                                <ng-container *ngIf="option.get('header')?.value; else optionInputGroupNone"
+                                    formArrayName="list">
+                                    <li class="mb-2"
+                                        *ngFor="let feature of option.get('list')?.controls; let i = index; let isLast=last; let isFirst = first">
+                                        <div class="d-flex flex-nowrap gap-2 align-items-center" [formGroupName]="i">
+                                            <input type="text" class="form-control" formControlName="name"
+                                                (keyup)="onChangeOptionItem(optionIndex,i,feature,$event)"/>
+                                            <ng-container *ngIf="!(isFirst && option.get('list')?.controls.length==2) ">
+                                                <button type="button" class="btn btn-close" tabindex="-1"
+                                                    (click)="removeVariantOption(optionIndex,i)"
+                                                    *ngIf="feature.get('name')?.value !=='' && !isLast ">
+                                                </button>
+                                            </ng-container>
+
+                                        </div>
+                                        <ngb-alert type="success" *ngIf="feature.get('error')?.value.isError">
+                                            {{ feature.get('error')?.value.message }}
+                                        </ngb-alert>
+                                        <small class="p-2 small">
+                                            index[{{feature.get('optionOrder')?.value}}] id[{{feature.get('id')?.value}}]
+                                        </small>
+                                    </li>
+                                </ng-container>
+                                <ng-template #optionInputGroupNone>
+                                    Select option.
+                                </ng-template>
+
+                            </ul>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+            <div class="table-variants">
+
+                <div class="mb-2">
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <button type="button"  class="btn" (click)="selectVariants(true)"
+                            ngbTooltip="select all variants">
+                            Select all
+                        </button>
+
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="responsive-table mb-2">
+                        <!-- Header -->
+                        <thead>
+                            <tr class="table-row">
+                                <th class="table-cell column-heading sticky-cell-start">
+                                    <span class="btn-toggle " (click)="filterFormCollapsed.toggle()"
+                                        [attr.aria-expanded]="!isFilterFormCollapsed">
+                                        <span class="menu-arrow"></span>
+                                    </span>
+                                    <span *ngFor="let option of options">
+                                        <ng-container *ngIf="option.get('header')?.value">
+                                            {{option.get('header.title')?.value}}
+                                        </ng-container>
+                                    </span>
+                                </th>
+
+                                <ng-container *ngFor="let option of options">
+                                    <ng-container *ngIf="option.get('header')?.value">
+                                        <th class="table-cell column-heading">
+                                            <span>
+                                                {{option.get('header')?.value.title}}
+                                            </span>
+                                            <span class="ms-1">Map</span>
+                                        </th>
+                                    </ng-container>
+                                </ng-container>
+
+                                <th class="table-cell column-heading">
+                                    Seller SKU
+                                </th>
+                                <th class="table-cell column-heading">
+                                    Your price
+                                </th>
+                                <th class="table-cell column-heading">
+                                    Selling price
+                                </th>
+                                <th class="table-cell column-heading">
+                                    Qty
+                                </th>
+                                <th class="table-cell column-heading">
+                                    Condition
+                                </th>
+                                <th class="table-cell column-heading">
+                                    Date range
+                                </th>
+                                <th class="table-cell column-heading"></th>
+                            </tr>
+                        </thead>
+                        <!-- Filter -->
+                        <thead [formGroup]="filterControlForm" id="defaultHeaderCollapse"
+                            #filterFormCollapsed="ngbCollapse"
+                            [(ngbCollapse)]="isFilterFormCollapsed">
+                            <tr class="table-row">
+                                <td class="table-cell column-heading sticky-cell-start">
+
+                                </td>
+                                <th class="table-cell column-heading ">
+
+                                </th>
+                                <ng-container *ngIf="options[1].get('header')?.value">
+                                    <th class="table-cell column-heading ">
+
+                                    </th>
+                                </ng-container>
+                                <ng-container *ngIf="options[2].get('header')?.value">
+                                    <th class="table-cell column-heading">
+
+                                    </th>
+                                </ng-container>
+
+                                <td class="table-cell column-heading">
+                                    <select class="form-select form-select mb-1"
+                                        [compareWith]="compareRandomSelect"
+                                        aria-label="Default select example"
+                                        formControlName="randomIdLength">
+                                        <option selected [value]="len"
+                                            *ngFor="let len of filterControlForm.get('randomIdOptions')?.value">
+                                            {{len}}
+                                        </option>
+
+                                    </select>
+                                    <div class="w-100 text-end">
+                                        <i class="fa fa-exclamation-circle me-2 text-primary"
+                                            aria-hidden="true"></i>
+                                        <button type="button" class="btn btn-light btn-sm"
+                                            (click)="generateRandomSKUS()">
+                                            <i class="bi bi-check2"></i></button>
+                                    </div>
+
+                                </td>
+                                <td class="table-cell column-heading">
+                                    <input type="number" class="form-control mb-1"
+                                        formControlName='price'>
+                                    <div class="w-100 text-end">
+                                        <i class="fa fa-exclamation-circle me-2 text-primary"
+                                            aria-hidden="true"></i>
+                                        <button type="button" class="btn btn-light btn-sm"
+                                            (click)="replaceAllPrice('price')">
+                                            <i class="bi bi-check2"></i></button>
+                                    </div>
+
+                                </td>
+                                <td class="table-cell column-heading">
+                                    <input type="number" class="form-control mb-1"
+                                        formControlName='sellingPrice'>
+                                    <div class="w-100 text-end">
+                                        <i class="fa fa-exclamation-circle me-2 text-primary"
+                                            aria-hidden="true"></i>
+
+                                        <button type="button" class="btn btn-light btn-sm"
+                                            (click)="replaceAllPrice('sellingPrice')">
+                                            <i class="bi bi-check2"></i></button>
+                                    </div>
+                                </td>
+                                <td class="table-cell column-heading">
+                                    <input type="number" class="form-control mb-1"
+                                        formControlName="quantity">
+                                    <div class="w-100 text-end">
+                                        <i class="fa fa-exclamation-circle me-2 text-primary"
+                                            aria-hidden="true"></i>
+                                        <button type="button" class="btn btn-light btn-sm"
+                                            (click)="replaceAllPrice('quantity')"><i
+                                                class="fa fa-check"></i></button>
+                                    </div>
+                                </td>
+                                <td class="table-cell column-heading ">
+                                    <select class="form-select mb-1" formControlName="condition">
+                                        <option value=''>-Select-</option>
+                                        <option *ngFor="let con of conditionOptions"
+                                            [ngValue]="con">
+                                            {{con.title}}
+                                        </option>
+                                    </select>
+                                    <div class="w-100 text-end">
+                                        <i class="fa fa-exclamation-circle me-2 text-primary"
+                                            aria-hidden="true"></i>
+
+                                        <button type="button" class="btn btn-light btn-sm"
+                                            [disabled]="filterControlForm.get('condition')?.value == ''"
+                                            (click)="replaceAllCondition()">
+                                            <i class="bi bi-check2"></i></button>
+                                    </div>
+                                </td>
+                                <td class="table-cell column-heading">
+                                    <div
+                                        class="input-group rounded border input-group-date-range mb-1">
+                                        <div class="p-2">
+                                            <i class="bi bi-calendar"></i>
+
+                                        </div>
+                                        <input type="text" class="form-control border-0">
+
+                                    </div>
+                                    <div class="w-100 text-end">
+                                        <i class="fa fa-exclamation-circle me-2 text-primary"
+                                            aria-hidden="true"></i>
+
+                                        <button type="button" class="btn btn-light btn-sm"
+                                            (click)="replaceAllDateRange()">
+                                            <i class="bi bi-check2"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </thead>
+                        <!-- Variants  -->
+                            <ng-container formArrayName="variants">
+                                <ng-container
+                                    *ngFor="let prod of getVariants.controls;let i = index">
+                                    <!-- new variant -->
+                                    <ng-container [formGroupName]="i">
+                                        <tr class="table-row" lineThrough
+                                            [status]="prod.get('status')?.value">
+                                            <td class="table-cell sticky-cell-start">
+                                                <div class="table-cell-content d-flex align-items-center"
+                                                    *ngIf="!prod.get('edit')?.value">
+                                                    <span class="p-2">{{i+1}}</span>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input"
+                                                            type="checkbox"
+                                                            formControlName="selected"
+                                                            [id]="prod.get('formId')?.value">
+                                                        <label class="form-check-label"
+                                                            [for]="prod.get('formId')?.value">
+
+                                                            <span
+                                                                *ngFor="let option of options; let isFirst=first; let i=index">
+                                                                <ng-container
+                                                                    *ngIf="option.get('header')?.value">
+                                                                    {{ !isFirst ? '/' : ''}}
+                                                                    {{prod.get('variantOptions')?.value[i].get('inputRef.name')?.value}} {{prod.get('variantOptions')?.value[i].get('inputRef.id')?.value}}
+                                                                </ng-container>
+
+                                                            </span>
+                                                            <br>
+                                                           
+
+                                                        </label>
+                                                    </div>
+
+                                                </div>
+                                               
+                                            </td>
+                                                <ng-container
+                                                    *ngFor="let varOpt of $any(prod).get('variantOptions').value; let varOptIndex=index">
+                                                    <td class="table-cell"
+                                                        *ngIf="varOpt.get('header')?.value">
+                                                        <div class="table-cell-heading">
+                                                            <span class="ms-1">Map</span>
+                                                        </div>
+                                                        <div class="table-cell-content"
+                                                            [formGroup]="varOpt">
+                                                            <select
+                                                                class="form-select prod-var-input"
+                                                                [compareWith]="compare"
+                                                                formControlName="detail">
+                                                                <option value=''>-Select-</option>
+                                                                <option
+                                                                    *ngFor="let opt of options[varOptIndex].get('details')?.value"
+                                                                    [ngValue]="opt">
+                                                                    {{opt.title}}
+                                                                </option>
+                                                            </select>
+                                                        </div>
+                                                    </td>
+                                                </ng-container>
+
+                                            <td class="table-cell">
+                                                <div class="table-cell-heading">
+                                                    Seller SKU
+                                                </div>
+                                                <div class="table-cell-content">
+                                                    <input class="form-control prod-var-input"
+                                                        formControlName="sellerSku">
+                                                </div>
+                                            </td>
+                                            <td class="table-cell">
+                                                <div class="table-cell-heading">
+                                                    Your price
+                                                </div>
+                                                <div class="table-cell-content">
+                                                    <input type="text"
+                                                        class="form-control input-number text-end"
+                                                        formControlName="price"
+                                                        [suffix]=" ' ' + buyCurrency?.currency_code"
+                                                        [mask]="maskConfig.maxnumber_count">
+                                                </div>
+                                            </td>
+                                            <td class="table-cell">
+                                                <div class="table-cell-heading">
+                                                    Selling price
+                                                </div>
+                                                <div class="table-cell-content">
+
+                                                    <input type="text"
+                                                        class="form-control input-number text-end"
+                                                        formControlName="sellingPrice"
+                                                        [suffix]=" ' ' + buyCurrency?.currency_code"
+                                                        [mask]="maskConfig.maxnumber_count">
+                                                </div>
+                                            </td>
+                                            <td
+                                                [ngClass]="{'table-cell':true,'':prod.get('status')?.value == 4}">
+                                                <div class="table-cell-heading">
+                                                    Qty
+                                                </div>
+                                                <div class="table-cell-content">
+                                                    <input type="text"
+                                                        class="form-control input-number  text-end"
+                                                        formControlName="quantity"
+                                                        [mask]="maskConfig.maxnumber_count">
+                                                </div>
+                                            </td>
+                                            <td class="table-cell">
+                                                <div class="table-cell-heading">
+                                                    Condition
+                                                </div>
+                                                <div class="table-cell-content">
+                                                    <select class="form-select prod-var-input"
+                                                        [compareWith]="compare"
+                                                        formControlName="condition">
+                                                        <option value=''>Select-</option>
+                                                        <option *ngFor="let con of conditionOptions"
+                                                            [ngValue]="con">
+                                                            {{con.title}}
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td class="table-cell">
+                                                <div class="table-cell-heading">
+                                                    Date range
+                                                </div>
+                                                <div class="table-cell-content">
+                                                    <div class="input-group rounded border ">
+                                                        <div class="p-2">
+                                                            <i class="bi bi-calendar"></i>
+
+                                                        </div>
+                                                        <input type="text" datePicker
+                                                            formControlName="dateRange"
+                                                            class="form-control border-0 date-picker">
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td [ngClass]="{'table-cell sticky-cell-end':true}">
+                                                <div class="table-cell-content gap-2">
+                                                    <button type="button" class="btn "
+                                                        (click)="removeVariant(prod,i)"
+                                                        *ngIf="prod.get('status')?.value!==4">
+                                                        <i class="bi bi-trash-fill"></i>
+                                                    </button>
+                                                    <button type="button" class="btn "
+                                                        (click)="restoreVariant(prod)"
+                                                        *ngIf="prod.get('status')?.value==4">
+                                                        <i class="bi bi-arrow-clockwise"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                </ng-container>
+                            </ng-container>
+
+                    </table>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+
+</ng-template>

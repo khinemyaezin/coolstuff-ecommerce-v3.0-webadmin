@@ -10,9 +10,9 @@ import { PopupService } from 'src/app/services/popup.service';
   styleUrls: ['./seller-home.component.scss'],
 })
 export class SellerHomeComponent implements OnInit {
-  accountName: any = '';
-  accountImagePath: any = '';
-  navBrand: string = ";"
+  accountName: string = '';
+  accountImagePath: string = "";
+  navBrand: string = ''
   menus: Menus[] = [
     // {
     //   id: "dashboard",
@@ -58,6 +58,14 @@ export class SellerHomeComponent implements OnInit {
           title: 'Add a product',
           icon: '',
           routerLink: '/seller-central/add-a-product',
+          collapse: true,
+          children: [],
+        },
+        {
+          id: 'inventory-product2',
+          title: 'Add a product',
+          icon: '',
+          routerLink: '/seller-central/add-a-product2',
           collapse: true,
           children: [],
         },

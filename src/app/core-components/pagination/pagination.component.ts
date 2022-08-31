@@ -1,4 +1,5 @@
-import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Subject } from 'rxjs';
 export interface PaginationLink {
   url: null|string,
   label: string,
@@ -11,7 +12,7 @@ export interface PaginationLink {
 })
 export class PaginationComponent implements OnInit {
   @Input('links') links: PaginationLink[] = [];
-  @Input('urlFetch') urlFetch: any;
+  @Output('pageChange') change = new Subject<any>();
 
   constructor() {}
 
@@ -19,7 +20,7 @@ export class PaginationComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  fetch(url: string) {
-    this.urlFetch(url);
+  fetch(url: any) {
+    this.change.next(url);
   }
 }

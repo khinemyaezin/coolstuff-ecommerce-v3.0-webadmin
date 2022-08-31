@@ -1,0 +1,52 @@
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">
+            Product Attributes setup
+        </div>
+    </div>
+    <div class="card-body">
+        Departments
+        <ul class="list-group list-group-flush py-3">
+            <li *ngFor="let value of categoryList?.data; let i = index"
+                class="list-group-item list-group-item-action" role="button" (click)="showDetailTab(value)">
+
+                <ul class="list-unstyled">
+                    <li>{{value?.title}}</li>
+                    <li><small class="text-muted">{{value.path}}</small></li>
+                </ul>
+                <i class="bi bi-chevron-right ms-auto"></i>
+
+            </li>
+        </ul>
+        <app-pagination [links]="paginationLinks" (pageChange)="pageChange($event)"></app-pagination>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">
+            {{category?.title}}
+        </div>
+        <small>{{category?.path}}</small>
+    </div>
+    <div class="card-body">
+        <div class="container">
+            <div class="row row-cols-1 row-cols-sm-1 row-cols-md-6">
+                <div class="col py-2 py-sm-1" *ngFor="let value of variantOptionHeaders">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="value.checked"
+                            [id]="value.id">
+                        <label class="form-check-label" [for]="value.id">
+                            {{value.title}}
+                        </label>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+    <div class="card-footer d-flex justify-content-end">
+        <button class="btn btn-primary" (click)="save()">Save</button>
+    </div>
+</div>

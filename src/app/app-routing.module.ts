@@ -1,10 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AdminHomeComponent } from './admin/admin-home/admin-home.component';
+import { AttributesComponent } from './admin/attributes/attributes.component';
 import { SignInComponent } from './auth/sign-in/sign-in.component';
 import { InventoryComponent } from './seller/inventory/inventory.component';
+import { ProductAdditionalSetupComponent } from './seller/product-additional-setup/product-additional-setup.component';
 import { ProductSetupComponent } from './seller/product-setup/product-setup.component';
 import { ProfileComponent } from './seller/profile/profile.component';
+import { RegisterComponent } from './seller/register/register.component';
 import { SellerHomeComponent } from './seller/seller-home/seller-home.component';
 import { SellerGuard } from './seller/seller.guard';
 
@@ -21,11 +24,21 @@ const routes: Routes = [
   {
     path: 'admin',
     component: AdminHomeComponent,
+    children: [
+      {
+        path: 'product-attributes',
+        component: AttributesComponent,
+      }
+    ]
+  },
+  {
+    path: 'brand-register',
+    component: RegisterComponent,
   },
   {
     path: 'seller-central',
     component: SellerHomeComponent,
-    canActivate: [SellerGuard],
+    //canActivate: [SellerGuard],
     children: [
       {
         path:'profile',
@@ -42,6 +55,10 @@ const routes: Routes = [
       {
         path: 'add-a-product/:id',
         component: ProductSetupComponent,
+      },
+      {
+        path: 'add-a-product2',
+        component: ProductAdditionalSetupComponent,
       },
     ],
   },

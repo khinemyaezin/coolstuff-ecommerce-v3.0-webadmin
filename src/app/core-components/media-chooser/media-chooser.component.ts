@@ -1,46 +1,66 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  Renderer2,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { ControllerService } from 'src/app/services/controller.service';
 import { PopupService } from 'src/app/services/popup.service';
+import { Media } from '../media-chooser-model/media-chooser-model.component';
 
+export interface ImageCropperConfig {
+  base64: string,
+  ratio: number,
+}
+export interface MediaChooserConfig {
+  ratio?: string;
+  pagination: number
+}
 @Component({
   selector: 'media-chooser',
   templateUrl: './media-chooser.component.html',
-  styleUrls: ['./media-chooser.component.scss']
+  styleUrls: ['./media-chooser.component.scss'],
 })
-export class MediaChooserComponent implements OnInit {
-
-  @Input('src') media:string = "";
-  @Input('title') title = "";
-  @Output('output') output = new EventEmitter();
+export class MediaChooserComponent implements OnInit,OnChanges {
+  @ViewChild('wrapper') imageWrapper!:ElementRef;
+  @Input('src') media: any = {};
+  @Input('title') title = '';
+  @Input('config') config: MediaChooserConfig = {
+    pagination : 12
+  };
+  @Output('output') output = new EventEmitter<Media>();
 
   constructor(
     public pgService: ControllerService,
-    private popup : PopupService
-  ) { }
+    private popup: PopupService,
+    private render:Renderer2
+  ) {}
 
-  ngOnInit(): void {
+  ngOnChanges(changes: SimpleChanges): void {
+   if(this.imageWrapper)
+    this.render.removeClass(this.imageWrapper.nativeElement,'no-image');
+    
   }
-  async loadImage(e: any) {
-    const input = e.srcElement;
-    for (let f of input.files) {
-      let base64 = await this.pgService.readFile(f);
-      if (base64) {
-        let image = (await this.pgService.readImage(base64)) as any;
-        // if (image.height !== image.width) {
-        //   this.popup
-        //     .showImageCropperModal(image.src, 1 / 1)
-        //     .then((e) => {
-        //       this.media = e;
-        //       this.output.emit(e)
-        //     })
-        //     .catch(() => {
-        //       console.log("cancel");
-        //     });
-        // } else {
-          this.media = image.src;
-          this.output.emit(image.src);
-        //}
+
+  ngOnInit(): void {}
+
+  showImageChooserModel() {
+    this.popup.showMediaChooser(this.config).then((value: Media | null) => {
+      if (value) {
+        this.output.emit(value);
       }
-    }
+    });
   }
+  onError() {
+    console.log('error');
+    this.render.addClass(this.imageWrapper.nativeElement,'no-image');
+  }
+
 }

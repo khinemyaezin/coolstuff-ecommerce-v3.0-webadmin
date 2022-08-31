@@ -1,0 +1,36 @@
+@import '../../../custom-scss/bootstrap-variable.scss';
+
+.image-select {
+  .overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: $modal-backdrop-bg;
+    opacity: $modal-backdrop-opacity;
+  }
+  input[type="radio"] {
+    display: none;
+  }
+  input[type="radio"] + .wrapper {
+    cursor: pointer;
+  }
+  .wrapper > .badge {
+    border-color: #0275d8;
+    display: none;
+  }
+  input[type="radio"]:checked + .wrapper > .badge {
+    border-color: #0275d8;
+    display: block;
+  }
+  input[type="radio"]:checked + .wrapper > .overlay {
+    background-color: transparent;
+    opacity: 1;
+    border: solid $primary;
+  }
+  input[type="radio"]:checked + .wrapper:before {
+    color: inherit;
+  }
+  input[type="radio"]:checked + .option-name {
+    display: block;
+  }
+}

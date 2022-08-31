@@ -1,8 +1,310 @@
 <div class="container">
-    <div class="card">
-        <div class="card-body">
-            <input type="file" [formControl]="formControl">
-            <button (click)="submit()">Submit</button>
+    <div class="row">
+        <div class="col">
+            <div class="d-flex justify-content-center py-3">
+                <h5 class="m-0">Seller Profile</h5>
+            </div>
         </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-3 card-left-label">
+            <div class="px-3">
+                <h5>Brand details</h5>
+
+            </div>
+
+
+        </div>
+        <div class="col-lg-9 col-sm-12">
+            <div class="card mb-2" id="brand-info-card">
+
+                <div class="card-body ">
+                    <div class="brand-profile">
+                        <div class="brand-cover">
+                            <media-chooser class="wrapper" [src]="brandForm.get('image_cover_url')?.value" [config]="mediaChooserConfigBrandCover"
+                                (output)="brandLogoChange($event,'image_cover_url')"></media-chooser>
+                        </div>
+                        <div class="brand-info">
+                            <div class="brand-logo">
+                                <media-chooser id="brand-logo-wrapper" [src]="brandForm.get('image_profile_url')?.value"
+                                [config]="mediaChooserConfigBrandLogo"
+                                    (output)="brandLogoChange($event,'image_profile_url')"></media-chooser>
+                            </div>
+                            <div class="brand-logo-spacer">
+                                <p></p>
+                            </div>
+                            <div class="brand-details-info">
+                                <div class="">
+                                    <div class="position-relative">
+                                        <div class="d-flex">
+                                            <div class="position-relative">
+                                                <h5>{{ brandForm.get('title')?.value}}</h5>
+                                                <span class="position-absolute badge rounded-pill">
+                                                    <i class="bi bi-check2"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p>{{brandForm.get('created_at')?.value | date :'d/M/yy, h:mm a'}}</p>
+                                    <p class="text-muted">{{brandForm.get('public_id')?.value}}</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Logo</div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <label for="profile-image" class="col-sm-4 col-form-label ">
+                            Default logo
+                            <br><small class="text-muted">Used for most common logo applications</small>
+                        </label>
+                        <div class="col">
+                            <div class="border p-2">
+                                <media-chooser ></media-chooser>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="cover-image" class="col-sm-4 col-form-label ">
+                            Cover Image
+                            <br><small class="text-muted"> A key image that shows off your brand in profile pages
+                                and apps</small>
+                        </label>
+                        <div class="col">
+                            <div class="border p-2">
+                                <media-chooser ></media-chooser>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-lg-3 card-left-label">
+            <div class="px-3">
+                <h5>Account details</h5>
+                <a class="d-flex" data-bs-toggle="collapse" href="#account-detail-collapse" role="button"
+                    id="account-detail-collapse-toggle" aria-expanded="false" aria-controls="account-detail-collapse">
+                    <i class="bi bi-pencil-square"></i>
+                    <small class="ms-2">Edit your account informations</small>
+                </a>
+            </div>
+
+        </div>
+        <div class="col-lg-9 col-sm-12">
+            <form [formGroup]="accountForm" id="account-info-form" (ngSubmit)="saveAccount()">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Account Detail</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4 px-2">
+                            <div class="row mb-3">
+                                <label for="user-name" class="col-sm-4 col-form-label ">Avatar</label>
+                                <div class="col-sm-8 d-flex">
+                                    <div id="user-profile" class="img__wrap">
+                                        <img [src]="accountForm.get('profileImage')?.value" class=" rounded-circle"
+                                            id="avata">
+                                        <span class="img__description rounded-circle">
+                                            <ul style="list-style: none; list-style-type: none;" class="px-2 py-2">
+                                                <li class="list-hover-imgtag text-center">
+                                                    <span>Change</span>
+                                                </li>
+
+                                                <li class="list-hover-imgtag text-center"><span>View</span></li>
+                                            </ul>
+                                        </span>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="user-name" class="col-sm-4 col-form-label ">What is your
+                                    name?</label>
+                                <div class="col-sm-8">
+                                    <div class="row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" placeholder="First name"
+                                                aria-label="First name" formControlName="firstName"
+                                                [ngClass]="{'form-control is-invalid': !accountForm.get('firstName')?.valid && accountForm.get('firstName')?.touched,'form-control':true}">
+                                        </div>
+                                        <div class="col">
+                                            <input type="text" class="form-control" placeholder="Last name"
+                                                aria-label="Last name" formControlName="lastName"
+                                                [ngClass]="{'form-control is-invalid': !accountForm.get('lastName')?.valid && accountForm.get('lastName')?.touched,'form-control':true}">
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="row mb-3">
+                                <label for="user-email" class="col-sm-4 col-form-label ">What is your
+                                    email?</label>
+                                <div class="col-sm-8">
+                                    <input type="email" class="form-control" id="user-email" formControlName="email"
+                                        placeholder="name@example.com">
+                                </div>
+
+                            </div>
+                            <div class="row mb-3">
+                                <label for="user-phone" class="col-sm-4 col-form-label ">What is your phone
+                                    number?</label>
+                                <div class="col-sm-8">
+                                    <input type="tel" id="user-phone" placeholder="09 xxxxxxxxx"
+                                        formControlName="phoneNo"
+                                        [ngClass]="{'form-control is-invalid': !accountForm.get('user-phno')?.valid && accountForm.get('user-phno')?.touched,'form-control':true}">
+                                </div>
+
+                            </div>
+                            <!-- <div class="row mb-3">
+                                <label class="col-sm-4 col-form-label ">Sign in method</label>
+                                <div class="col-sm-8">
+
+                                    <select class="form-select rounded" formControlName="signinMethod">
+                                        <option [value]="method.code" *ngFor="let method of signin_method_list">
+                                            {{method.desc}}
+                                        </option>
+
+                                    </select>
+                                </div>
+
+                            </div> 
+                            <div class="row mb-3">
+                                <label for="account-type" class="col-sm-4 col-form-label ">Account
+                                    Type</label>
+                                <div class="col-sm-8">
+                                    <select id="account-type" class="form-select" formControlName="userType"
+                                        [compareWith]="compareAccountType">
+                                        <option *ngFor="let acctype of page_fg.get('account_type')?.value"
+                                            [ngValue]="acctype">
+                                            {{acctype.name}}</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="row mb-3 nrc-container" id="nrc-container">
+                                <label for="nrc" class="col-sm-4 col-form-label  ">NRC</label>
+                                <div class="col-sm-8">
+                                    <p class="form-control form-control-disabled nrc-display" id="nrc-display"></p>
+                                    <div class="input-group mb-3 nrc-edit">
+                                        <select class="form-select" id="nrc-state" (change)="nrcStateChange()"
+                                            formControlName="nrc_state_selected" [compareWith]="compareNrcState">
+                                            <option value=''>
+                                                -
+                                            </option>
+                                            <option [ngValue]="nrcState"
+                                                *ngFor="let nrcState of page_fg.get('nrc_state')?.value">
+                                                {{nrcState.code}}
+                                            </option>
+                                        </select>
+                                        <select class="form-select" id="nrc-district"
+                                            formControlName="nrc_district_selected" [compareWith]="compareNrcDistrict">
+                                            <option value=''>
+                                                -
+                                            </option>
+                                            <option [ngValue]="nrcDistrict"
+                                                *ngFor="let nrcDistrict of page_fg.get('nrc_district')?.value">
+                                                {{nrcDistrict.code}}
+                                            </option>
+
+                                        </select>
+                                        <select class="form-select" id="nrc-type" formControlName="nrc_type">
+                                            <option [value]="nrc_type" *ngFor="let nrc_type of nrc_type">
+                                                {{nrc_type}}
+                                            </option>
+                                        </select>
+                                        <input type="text" class="form-control" formControlName="nrc_number"
+                                            id="nrc-number">
+                                    </div>
+                                </div>
+
+
+                            </div>-->
+
+
+                        </div>
+                        <div class="mb-4 px-2">
+                            <div class="row mb-3">
+                                <label for="address" class="col-sm-4 col-form-label ">What is your store
+                                    located?</label>
+                                <div class="col-sm-8">
+                                    <textarea id="address" formControlName="address"
+                                        [ngClass]="{'form-control is-invalid': !accountForm.get('address')?.valid && accountForm.get('address')?.touched,'form-control':true}"></textarea>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-lg-3 card-left-label">
+            <div class="px-3">
+                <h5>Authencation</h5>
+                <a class="d-flex" data-bs-toggle="collapse" href="#change-password-collapse" role="button"
+                    id="change-password-collapse-toggle" aria-expanded="false" aria-controls="account-detail-collapse">
+                    <i class="bi bi-pencil-square"></i>
+                    <small class="ms-2">Change your password</small>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-9 col-sm-12">
+            <form [formGroup]="authenForm" id="signin-method-form">
+                <div class="card">
+                    <div class="card-header d-flex">
+                        <div class="card-title">Change Password</div>
+
+                    </div>
+                    <div class="card-body ">
+                        <div class="row mb-3">
+                            <label class="col-sm-4 col-form-label ">Current Password</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" placeholder="Current Password"
+                                    formControlName="current_password">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-4 col-form-label ">New Password</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" placeholder="New Password"
+                                    formControlName="new_password">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-4 col-form-label ">Confirm Password</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" placeholder="Confirm Password"
+                                    formControlName="confirm_password">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+        </div>
+
     </div>
 </div>

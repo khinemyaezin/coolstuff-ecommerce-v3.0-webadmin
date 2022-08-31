@@ -103,6 +103,10 @@ export class ControllerService {
   isEmptyOrSpaces(str: any) {
     return str === null || str.match(/^ *$/) !== null;
   }
+  safeNum( value: any):number {
+    const num: number = Number(value);
+    return Number.isNaN( num ) ? 0 : num  ;
+  }
   isEmptyID(str: any) {
     return str == null || str.match(/^$|^-1$/) !== null;
   }
@@ -129,13 +133,8 @@ export class ControllerService {
     });
   }
 
-  /** Images */
-  setDefaultImageURL(event: any) {
-    event.target.src = 'assets/img/def-stock.jpg';
-  }
-
   /** IO */
-  readImage(src: any) {
+  readImage(src: any):Promise<any> {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => resolve(img);
@@ -151,4 +150,6 @@ export class ControllerService {
       reader.readAsDataURL(f);
     });
   }
+
+ 
 }

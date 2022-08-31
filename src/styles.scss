@@ -1,5 +1,5 @@
+@import "custom-scss/flexbin.scss";
 @import "custom-scss/bootstrap.scss";
-
 
 html,
 body {
@@ -251,12 +251,15 @@ body {
   grid-template-rows: repeat(2, 1fr);
   grid-gap: 5px;
   //--aspect-ratio: 5/4;
-  .img__wrap {
+  .media {
     height: 100%;
-    aspect-ratio: 1/1;
-    img {
-      width: 100%;
+    overflow: hidden;
+      aspect-ratio: 1/1;
+    .img__wrap {
+      height: 100%;
+      aspect-ratio: 1/1;
     }
+
     &:nth-child(1) {
       grid-column-start: 1;
       grid-column-end: 3;
@@ -318,43 +321,43 @@ body {
   @include media-breakpoint-down(md) {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(5, 1fr);
-    .img__wrap:nth-child(1) {
+    .media:nth-child(1) {
       grid-column-start: 1;
       grid-column-end: 4;
       grid-row-start: 1;
       grid-row-end: 4;
     }
-    .img__wrap:nth-child(2) {
+    .media:nth-child(2) {
       grid-column-start: 1;
       grid-column-end: 2;
       grid-row-start: 4;
       grid-row-end: 5;
     }
-    .img__wrap:nth-child(3) {
+    .media:nth-child(3) {
       grid-column-start: 1;
       grid-column-end: 2;
       grid-row-start: 5;
       grid-row-end: 6;
     }
-    .img__wrap:nth-child(4) {
+    .media:nth-child(4) {
       grid-column-start: 2;
       grid-column-end: 3;
       grid-row-start: 4;
       grid-row-end: 5;
     }
-    .img__wrap:nth-child(5) {
+    .media:nth-child(5) {
       grid-column-start: 2;
       grid-column-end: 3;
       grid-row-start: 5;
       grid-row-end: 6;
     }
-    .img__wrap:nth-child(6) {
+    .media:nth-child(6) {
       grid-column-start: 3;
       grid-column-end: 4;
       grid-row-start: 4;
       grid-row-end: 5;
     }
-    .img__wrap:nth-child(7) {
+    .media:nth-child(7) {
       grid-column-start: 3;
       grid-column-end: 4;
       grid-row-start: 5;
@@ -368,6 +371,9 @@ body {
   display: flex;
   justify-content: center;
   height: 9.375rem;
+  .no-image-content {
+    display: none;
+  }
   img {
     max-height: 100%;
     max-width: 100%;
@@ -422,6 +428,36 @@ body {
     visibility: visible;
     opacity: 1;
   }
+  &.no-image::before {
+    
+    position: absolute;
+    content:'';
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #6b8398;
+  }
+  &.no-image .no-image-content {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    span {
+      width: 100%;
+      text-align: center;
+      font-size: xx-large;
+    }
+  }
 }
 
 /* Importing Bootstrap SCSS file. */
@@ -433,14 +469,14 @@ body {
   position: relative;
   //pointer-events: none;
   &::after {
-      position: absolute;
-      left: 0;
-      top: 50%;
-      height: 1px;
-      background: rgb(53, 53, 53);
-      content: "";
-      width: 100%;
-      display: block;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 1px;
+    background: rgb(53, 53, 53);
+    content: "";
+    width: 100%;
+    display: block;
   }
   &::before {
     position: absolute;

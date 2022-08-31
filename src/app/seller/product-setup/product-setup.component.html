@@ -1,5 +1,5 @@
 <div class="container">
-    <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs">
+    <ul ngbNav #nav="ngbNav" class="nav-tabs">
         <li [ngbNavItem]="1">
             <ng-template ngbNavContent>
                 <ng-container *ngTemplateOutlet="heading; context:{ submitBtn: false }">
@@ -52,7 +52,12 @@
 
                         <div class="card mb-2" [formGroup]="vitalInfoForm">
                             <div class="card-header">
-                                <div class="card-title">Vital Information</div>
+                                <div class="card-title">
+                                    <span class="position-relative">
+                                        Vital Information
+                                    </span>
+
+                                </div>
                             </div>
                             <div class="card-body">
                                 <div class="row mb-2">
@@ -60,11 +65,10 @@
                                         <label for="product-name"
                                             class="w-100 col-form-label  text-lg-end text-sm-start">Title</label>
                                     </div>
-                                    <!-- [ngClass]="{'form-control is-invalid': !brandFormGroup.get('')?.valid && brandFormGroup.get('')?.touched,'form-control':true}" -->
                                     <div class="col-sm-8">
                                         <input type="text" aria-label="First name" id="product-name"
                                             formControlName="title" placeholder="Product Title"
-                                            [ngClass]="{'form-control is-invalid': !vitalInfoForm.get('title')?.valid && vitalInfoForm.get('title')?.touched,'form-control':true}">
+                                            class="form-control form-validation">
                                     </div>
                                 </div>
                                 <div class="row mb-2">
@@ -74,9 +78,8 @@
                                     </div>
 
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" aria-label="First name" id="brand-name"
-                                            formControlName="brand" placeholder="Brand Name"
-                                            [ngClass]="{'form-control is-invalid': !vitalInfoForm.get('brand')?.valid && vitalInfoForm.get('brand')?.touched,'form-control':true}">
+                                        <input type="text" class="form-control form-validation" aria-label="First name"
+                                            id="brand-name" formControlName="brand" placeholder="Brand Name">
                                     </div>
                                 </div>
                                 <div class="row mb-2">
@@ -86,10 +89,9 @@
                                     </div>
 
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" aria-label="First name"
+                                        <input type="text" class="form-control form-validation" aria-label="First name"
                                             id="manufacturer" formControlName="manufacturer"
-                                            placeholder="Manufactured from"
-                                            [ngClass]="{'form-control is-invalid': !vitalInfoForm.get('manufacturer')?.valid && vitalInfoForm.get('manufacturer')?.touched,'form-control':true}">
+                                            placeholder="Manufactured from">
                                     </div>
                                 </div>
                                 <div class="row mb-2">
@@ -100,8 +102,7 @@
                                     </div>
 
                                     <div class="col-sm-8">
-                                        <select formControlName="packType"
-                                            [ngClass]="{'form-select is-invalid': !vitalInfoForm.get('packType')?.valid && vitalInfoForm.get('packType')?.touched,'form-select':true}"
+                                        <select formControlName="packType" class="form-select form-validation"
                                             [compareWith]="compare">
                                             <option [value]='null' disabled>Select</option>
                                             <option [ngValue]="matype" *ngFor=" let matype of packTypeList">
@@ -119,8 +120,8 @@
                         <ng-container *ngIf="!hasVariant">
                             <!-- Pricing -->
                             <div class="card mb-2" [formGroup]="offerForm">
-                                <div class="card-header">
-                                    <div class="card-title">Pricing</div>
+                                <div class="card-header ">
+                                    <div class="card-title">Pricing </div>
                                 </div>
                                 <div class="card-body">
                                     <div class="row mb-2">
@@ -130,15 +131,11 @@
                                                 Selling price</label>
                                         </div>
                                         <div class="col-sm-8">
-                                            <div class="input-group prod-var-input">
-                                                <span class="input-group-text text-muted">
-                                                    {{ buyCurrency?.currency_code }}
-                                                </span>
-                                                <input type="number" class=" form-control" id="offerSellingPrice" number
-                                                    [value]="offerForm.get('sellingPrice')?.value"
-                                                    formControlName="sellingPrice" step="0.1">
-                                            </div>
 
+                                            <input type="text" class="form-control text-end" id="offerSellingPrice"
+                                                formControlName="sellingPrice"
+                                                [suffix]=" ' ' + buyCurrency?.currency_code"
+                                                [mask]="maskConfig.maxnumber_count">
                                         </div>
                                     </div>
                                     <div class="row mb-2">
@@ -148,13 +145,11 @@
                                                 Compare at price</label>
                                         </div>
                                         <div class="col-sm-8">
-                                            <div class="input-group prod-var-input">
-                                                <span class="input-group-text text-muted">
-                                                    {{ buyCurrency?.currency_code }}
-                                                </span>
-                                                <input type="number" class="form-control" id="offerCompareAtPrice"
-                                                    number step="0.1">
-                                            </div>
+
+                                            <input type="text" class="form-control text-end" id="offerCompareAtPrice"
+                                                [suffix]=" ' ' + buyCurrency?.currency_code"
+                                                [mask]="maskConfig.maxnumber_count">
+
                                         </div>
                                     </div>
 
@@ -165,16 +160,14 @@
                                                 Cost per item</label>
                                         </div>
                                         <div class="col-sm-8">
-                                            <div class="input-group prod-var-input">
-                                                <span class="input-group-text text-muted">
-                                                    {{ buyCurrency?.currency_code }}
-                                                </span>
-                                                <input type="number" class="form-control" id="offerCostPerItem" number
-                                                    [value]="offerForm.get('price')?.value" formControlName="price" step="0.1">
-                                            </div>
+
+                                            <input type="text" class="form-control text-end" id="offerCostPerItem"
+                                                formControlName="price" [suffix]=" ' ' + buyCurrency?.currency_code"
+                                                [mask]="maskConfig.maxnumber_count">
+
                                         </div>
                                     </div>
-                                    <div class="row mb-2">
+                                    <div class="row mb-2">  
                                         <div class="col-sm-4">
                                             <label for="offerMargin"
                                                 class="w-100 col-form-label  text-lg-end text-sm-start">Margin</label>
@@ -195,11 +188,14 @@
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                             <!-- Inventory -->
                             <div class="card mb-2" [formGroup]="offerForm">
                                 <div class="card-header">
-                                    <div class="card-title">Inventory</div>
+                                    <div class="card-title">Inventory
+                                       
+                                    </div>
                                 </div>
 
                                 <div class="card-body">
@@ -212,8 +208,7 @@
 
                                         <div class="col-sm-8">
                                             <input type="text" class="form-control" id="offerSku"
-                                                [ngClass]="{'form-control is-invalid': !offerForm.get('sellerSku')?.valid && offerForm.get('sellerSku')?.touched,'form-control':true}"
-                                                formControlName="sellerSku">
+                                                [mask]="maskConfig.brand_sku_count" formControlName="sellerSku">
                                             <small class="text-muted">Stock Keeping Unit</small>
                                         </div>
                                     </div>
@@ -247,12 +242,12 @@
 
                                         <div class="col-sm-8">
                                             <div class="input-group rounded border input-group-date-range">
-                                                <div class="p-2">
+                                                <div class="px-2 align-self-center">
                                                     <i class="bi bi-calendar"></i>
                                                 </div>
                                                 <input type="text" datePicker class="form-control border-0"
-                                                   formControlName="dateRange">
-                                                
+                                                    formControlName="dateRange">
+
                                             </div>
                                         </div>
                                     </div>
@@ -279,7 +274,10 @@
                             <!-- Description -->
                             <div class="card mb-2" [formGroup]="descriptionForm">
                                 <div class="card-header">
-                                    <div class="card-title">Description</div>
+                                    <div class="card-title">Description
+
+                                       
+                                    </div>
                                 </div>
                                 <div class="card-body">
                                     <div class="row mb-2">
@@ -317,9 +315,7 @@
 
                                         <div class="col-sm-8">
                                             <div class="border rounded">
-                                                <div textEditor [data]="this.descriptionForm.get('description')?.value"
-                                                    (changes)="textEditorChanged($event,this.descriptionForm.controls['description'])">
-                                                </div>
+                                                <quill-editor formControlName="description"></quill-editor>
                                             </div>
 
                                         </div>
@@ -331,7 +327,9 @@
                             <!-- Attributes -->
                             <div class="card mb-2">
                                 <div class="card-header">
-                                    <div class="card-title">More details</div>
+                                    <div class="card-title">More details
+                                   
+                                    </div>
                                     <small class="text-muted"> Invalid details will not be saved</small>
 
                                 </div>
@@ -386,10 +384,12 @@
                                 <form [formGroup]="mediaForm">
                                     <div class="card-body">
                                         <div class="media-grid">
-                                            <media-chooser class="img__wrap" *ngFor="let media of mediaFormControlNames"
-                                                [src]="mediaForm.get(media.formControlName)?.value"
-                                                [title]="media.title"
-                                                (output)="loadImage($event,media.formControlName)"></media-chooser>
+                                            <div class="media" *ngFor="let media of mediaFormControlNames">
+                                                <media-chooser [src]="mediaForm.get(media.formControlName)?.value"
+                                                    [title]="media.title" [config]="productImageConfig"
+                                                    (output)="loadImage($event,media.formControlName)"></media-chooser>
+                                            </div>
+
                                         </div>
                                     </div>
 
@@ -403,7 +403,7 @@
                                 <div class="card-title">
                                     Variants
                                 </div>
-                                <div [formGroup]="variationForm" *ngIf="!existOptionHeaders">
+                                <div [formGroup]="variationForm" *ngIf="!existOptionHeaders" class="py-2">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" value="" id="has-variants"
                                             formControlName="hasVariant">
@@ -422,7 +422,7 @@
                                             <div class="row mb-2" [formGroup]="option">
                                                 <div class="col-sm-4">
                                                     <div class="d-flex mb-2">
-                                                        <button class="btn btn-clean"
+                                                        <button class="btn "
                                                             (click)="removeVariantOptionHeader(optionIndex)">
                                                             <i class="bi bi-trash-fill"></i>
                                                         </button>
@@ -468,6 +468,9 @@
                                                                     *ngIf="feature.get('error')?.value.isError">
                                                                     {{ feature.get('error')?.value.message }}
                                                                 </ngb-alert>
+                                                                <small class="p-2 small">
+                                                                    index[{{feature.get('optionOrder')?.value}}] id[{{feature.get('optionOrder')?.value}}]
+                                                                </small>
                                                             </li>
                                                         </ng-container>
                                                         <ng-template #optionInputGroupNone>
@@ -643,8 +646,7 @@
                                                                 <i class="bi bi-calendar"></i>
 
                                                             </div>
-                                                            <input type="text" class="form-control border-0" 
-                                                             >
+                                                            <input type="text" class="form-control border-0">
 
                                                         </div>
                                                         <div class="w-100 text-end">
@@ -665,7 +667,8 @@
                                                         *ngFor="let prod of productVariationControls;let i = index">
                                                         <!-- new variant -->
                                                         <ng-container [formGroupName]="i">
-                                                            <tr class="table-row" lineThrough [status]="prod.get('status')?.value">
+                                                            <tr class="table-row" lineThrough
+                                                                [status]="prod.get('status')?.value">
                                                                 <td class="table-cell sticky-cell-start">
                                                                     <div class="table-cell-content d-flex align-items-center"
                                                                         *ngIf="!prod.get('edit')?.value">
@@ -683,7 +686,8 @@
                                                                                     <ng-container
                                                                                         *ngIf="option.get('header')?.value">
                                                                                         {{ !isFirst ? '/' : ''}}
-                                                                                        {{prod.get('variantOptions.'+i+'.inputRef.name')?.value}}
+                                                                                        {{prod.get('variantOptions.'+i+'.inputRef.name')?.value}}<br>
+                                                                                        <small> {{prod.get('variantOptions.'+i+'.inputRef.id')?.value}}</small>
                                                                                     </ng-container>
 
                                                                                 </span>
@@ -742,14 +746,11 @@
                                                                         Your price
                                                                     </div>
                                                                     <div class="table-cell-content">
-                                                                        <div class="input-group prod-var-input" >
-                                                                            <span
-                                                                                class="input-group-text currency-text text-muted">
-                                                                                {{ buyCurrency?.currency_code }}
-                                                                            </span>
-                                                                            <input type="number" class="form-control" formControlName="price">
-                                                                        </div>
-
+                                                                        <input type="text"
+                                                                            class="form-control input-number text-end"
+                                                                            formControlName="price"
+                                                                            [suffix]=" ' ' + buyCurrency?.currency_code"
+                                                                            [mask]="maskConfig.maxnumber_count">
                                                                     </div>
                                                                 </td>
                                                                 <td
@@ -758,14 +759,12 @@
                                                                         Selling price
                                                                     </div>
                                                                     <div class="table-cell-content">
-                                                                        <div class="input-group prod-var-input">
-                                                                            <span
-                                                                                class="input-group-text currency-text text-muted">
-                                                                                {{ buyCurrency?.currency_code }}
-                                                                            </span>
-                                                                            <input type="number" class="form-control"
-                                                                                formControlName="sellingPrice">
-                                                                        </div>
+
+                                                                        <input type="text"
+                                                                            class="form-control input-number text-end"
+                                                                            formControlName="sellingPrice"
+                                                                            [suffix]=" ' ' + buyCurrency?.currency_code"
+                                                                            [mask]="maskConfig.maxnumber_count">
                                                                     </div>
                                                                 </td>
                                                                 <td
@@ -774,9 +773,10 @@
                                                                         Qty
                                                                     </div>
                                                                     <div class="table-cell-content">
-                                                                        <input type="number"
-                                                                            class="form-control prod-var-input"
-                                                                            formControlName="quantity">
+                                                                        <input type="text"
+                                                                            class="form-control input-number  text-end"
+                                                                            formControlName="quantity"
+                                                                            [mask]="maskConfig.maxnumber_count">
                                                                     </div>
                                                                 </td>
                                                                 <td
@@ -807,19 +807,20 @@
                                                                                 <i class="bi bi-calendar"></i>
 
                                                                             </div>
-                                                                            <input type="text" datePicker formControlName="dateRange"
+                                                                            <input type="text" datePicker
+                                                                                formControlName="dateRange"
                                                                                 class="form-control border-0 date-picker">
                                                                         </div>
                                                                     </div>
                                                                 </td>
                                                                 <td [ngClass]="{'table-cell sticky-cell-end':true}">
                                                                     <div class="table-cell-content gap-2">
-                                                                        <button class="btn btn-clean"
+                                                                        <button class="btn "
                                                                             (click)="removeVariant(prod,i)"
                                                                             *ngIf="prod.get('status')?.value!==4">
                                                                             <i class="bi bi-trash-fill"></i>
                                                                         </button>
-                                                                        <button class="btn btn-clean"
+                                                                        <button class="btn "
                                                                             (click)="restoreVariant(prod)"
                                                                             *ngIf="prod.get('status')?.value==4">
                                                                             <i class="bi bi-arrow-clockwise"></i>

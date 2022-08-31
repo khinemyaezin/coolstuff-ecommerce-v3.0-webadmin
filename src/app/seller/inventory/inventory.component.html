@@ -1,10 +1,12 @@
-<main class="container mt-2">
+<main class="container">
     <ngb-alert type="primary" class="d-flex justify-content-between align-items-center" [dismissible]="false"
         *ngIf="saveBtnOn">
         <strong>You have unsaved {{ chnagedVariNumber }} changes.</strong>
         <button type="button" class="btn btn-outline-primary" aria-label="Save" (click)="submit()">Save</button>
     </ngb-alert>
-
+    <div class="d-flex justify-content-center py-3 align-items-center">
+        <h5 class="m-0">Inventory</h5>
+    </div>
     <div class="card" style="height: 100%;">
         <div class="card-header">
             <div class="card-title">Manage Inventory</div>
@@ -97,7 +99,7 @@
                 </table>
             </div>
             <div class="d-flex justify-content-between py-3">
-                <app-pagination [links]="paginationLinks" [urlFetch]="URL"></app-pagination>
+                <app-pagination [links]="paginationLinks"></app-pagination>
             </div>
 
         </div>
@@ -242,8 +244,7 @@
                 </div>
                 <div class="rps-table-cell--content ">
                     <div class="mx-auto product-image-container">
-                        <img class="product-image rounded" [src]="vari.get('media_1_image')?.value"
-                            (error)="pgService.setDefaultImageURL($event)">
+                        <img class="product-image rounded" [src]="vari.get('media_1_image')?.value?.path">
 
                     </div>
 
@@ -265,9 +266,9 @@
 
                 <div class="rps-table-cell--content" *ngIf="vari.get('edit')?.value">
                     <div class="form-group position-relative">
-                        <input type="text" class="form-control" ngNumber formControlName="buy_price" 
-                        [suffix]=" ' ' + vari.get('product')?.value?.currency.currency_code" 
-                        [mask]="maskConfig.maxnumber_count">
+                        <input type="text" class="form-control" ngNumber formControlName="buy_price"
+                            [suffix]=" ' ' + vari.get('product')?.value?.currency.currency_code"
+                            [mask]="maskConfig.maxnumber_count">
                         <p *ngIf="vari.get('buy_price')?.dirty"
                             class="def-val position-absolute top-0 start-0 badge rounded-pill ">
                             <i class="bi bi-x text-danger"></i>
@@ -286,8 +287,8 @@
                 <div class="rps-table-cell--content">
                     <div class="form-group position-relative">
                         <input type="text" class="form-control" formControlName="selling_price"
-                        [suffix]=" ' ' + vari.get('product')?.value?.currency.currency_code" 
-                        [mask]="maskConfig.maxnumber_count">
+                            [suffix]=" ' ' + vari.get('product')?.value?.currency.currency_code"
+                            [mask]="maskConfig.maxnumber_count">
                         <p *ngIf="vari.get('selling_price')?.dirty"
                             class="def-val position-absolute top-0 start-0 badge rounded-pill">
                             <i class="bi bi-x text-danger"></i>
@@ -357,10 +358,10 @@
                 </div>
                 <div class="rps-table-cell--content">
                     <div class="btn-group" role="group" aria-label="Basic example">
-                        <button class="btn btn-sm btn-clean">
+                        <button class="btn btn-sm ">
                             <i class="bi bi-save"></i>
                         </button>
-                        <button class="btn btn-sm btn-clean">
+                        <button class="btn btn-sm ">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>

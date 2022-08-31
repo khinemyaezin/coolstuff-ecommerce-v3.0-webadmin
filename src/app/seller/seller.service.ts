@@ -24,6 +24,6 @@ export class SellerService {
         httpParams = httpParams.set(data.key, data.value);
       });
     }
-    return this.http.GET('regions', undefined, httpParams);
+    return this.http.GET('regions',httpParams);
   }
 }
