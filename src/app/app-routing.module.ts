@@ -38,7 +38,7 @@ const routes: Routes = [
   {
     path: 'seller-central',
     component: SellerHomeComponent,
-    //canActivate: [SellerGuard],
+    canActivate: [SellerGuard],
     children: [
       {
         path:'profile',
@@ -49,15 +49,19 @@ const routes: Routes = [
         component: InventoryComponent,
       },
       {
-        path: 'add-a-product',
+        path: 'add-a-product2',
         component: ProductSetupComponent,
+      },
+      {
+        path: 'add-a-product2/:id',
+        component: ProductSetupComponent,
+      },
+      {
+        path: 'add-a-product',
+        component: ProductAdditionalSetupComponent,
       },
       {
         path: 'add-a-product/:id',
-        component: ProductSetupComponent,
-      },
-      {
-        path: 'add-a-product2',
         component: ProductAdditionalSetupComponent,
       },
     ],

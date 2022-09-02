@@ -41,6 +41,8 @@ import { RadioInputDirective } from './core-components/radio-input.directive';
 import { ValidationDirective } from './core-components/validation.directive';
 import { ImageDirective } from './core-components/image.directive';
 import { OptionGroupFilterPipe } from './seller/product-additional-setup/option-group-filter.pipe';
+import { TypeaheadDirective } from './core-components/typeahead/typeahead.directive';
+import { TypeaheadCustomComponent } from './core-components/typeahead-custom/typeahead-custom.component';
 // const config: SocketIoConfig = {
 //   url: 'http://localhost:8084',
 //   options: { autoConnect: false },
@@ -76,6 +78,8 @@ import { OptionGroupFilterPipe } from './seller/product-additional-setup/option-
     ValidationDirective,
     ImageDirective,
     OptionGroupFilterPipe,
+    TypeaheadDirective,
+    TypeaheadCustomComponent,
   ],
   imports: [
     BrowserModule,

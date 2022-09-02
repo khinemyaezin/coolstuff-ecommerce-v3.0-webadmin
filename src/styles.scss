@@ -27,6 +27,30 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #6b8398;
 }
+
+// Placeholder
+$placeholder-color : $gray-500;
+::placeholder {
+  color: $placeholder-color !important;
+  font-style: italic;
+}
+// ::-webkit-input-placeholder {
+//   color: $placeholder-color;
+//   font-style: italic;
+// }
+// :-moz-placeholder {
+//   color: $placeholder-color;
+//   font-style: italic;
+// }
+// ::-moz-placeholder {
+//   color: $placeholder-color;
+//   font-style: italic;
+// }
+// :-ms-input-placeholder {
+//   color: $placeholder-color;
+//   font-style: italic;
+// }
+
 // Badge
 /* badge success*/
 .badge-soft-success {
@@ -438,7 +462,7 @@ body {
     right: 0;
     width: 100%;
     height: 100%;
-    background-color: #6b8398;
+    background-color: $body-bg;
   }
   &.no-image .no-image-content {
     display: block;

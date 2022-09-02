@@ -1354,7 +1354,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getVariantOptionItems(headerId: string) {
-    return this.http.GET(`variant-options/headers/${headerId}/details`);
+    return this.http.GET(`options/headers/${headerId}/details`);
   }
 
   getAttributes(
@@ -1660,7 +1660,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
       switchMap((changes) =>
         this.getAttributes(
           changes,
-          this.categoryForm.value.categorySelected.level_category_id
+          this.categoryForm.get('categorySelected')?.value.level_category_id
         ).pipe(
           map((values: any) => {
             if (values.status == 200) {
