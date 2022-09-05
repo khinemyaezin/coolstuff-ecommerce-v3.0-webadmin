@@ -49,19 +49,15 @@ const routes: Routes = [
         component: InventoryComponent,
       },
       {
-        path: 'add-a-product2',
-        component: ProductSetupComponent,
-      },
-      {
-        path: 'add-a-product2/:id',
-        component: ProductSetupComponent,
-      },
-      {
         path: 'add-a-product',
         component: ProductAdditionalSetupComponent,
       },
       {
         path: 'add-a-product/:id',
+        component: ProductAdditionalSetupComponent,
+      },
+      {
+        path: 'add-a-product/:id/:vid',
         component: ProductAdditionalSetupComponent,
       },
     ],

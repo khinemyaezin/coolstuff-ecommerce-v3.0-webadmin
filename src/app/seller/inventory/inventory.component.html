@@ -57,19 +57,23 @@
                     </div>
 
                 </div>
+                <div>
+                    <a [routerLink]="'/seller-central/add-a-product'" class="btn btn-secondary " type="button"
+                        id="btn-add-product">Add a product</a>
+                </div>
             </div>
 
             <div class="table-responsive" [formGroup]="productFormGroup" id="productForm">
 
                 <table>
                     <thead class="table-header-container">
-                        <tr class="rps-table-row rps-table-row--head">
+                        <tr class="rps-table-row rps-table-row-head">
                             <th scope="col">No</th>
                             <th scope="col">Status</th>
                             <ng-container *ngFor="let col of tableHeader">
                                 <th scope="col" *ngIf="col.show"> {{col.title}}</th>
                             </ng-container>
-                            <th scope="col" class="operation">Operation</th>
+                            <th scope="col" class="sticky-end">Operation</th>
                         </tr>
                     </thead>
                     <ng-container formArrayName="products">
@@ -150,7 +154,7 @@
                                             [src]="prod.get('image')?.value ? prod.get('image')?.value.link : 'assets/img/def-stock.jpg'">
                                     </div>
                                 </div>
-                                <div class="flex-grow-1 pg-name-box text-break">
+                                <div class="flex-grow-1 pg-name-box ">
                                     <a>{{prod.get('name')?.value}}</a>
                                 </div>
                                 <div class="pg-close-box">
@@ -172,15 +176,15 @@
 
     <ng-template #variantTemplate let-vari="vari" let-index="index" let-childIndex="childIndex" let-trigger="trigger"
         let-isStandAlone="isStandAlone" let-isParent="isParent">
-        <tr class="rps-table-row variant-item" [formGroup]="vari" [attr.data-id]="vari.get('id')?.value">
-            <th class="rps-table-cell count text-break order-count">
+        <tr class="rps-table-row" [formGroup]="vari" [attr.data-id]="vari.get('id')?.value">
+            <th class="rps-table-cell">
                 <span *ngIf="isParent">{{index+1}}</span>
 
             </th>
-            <td class="rps-table-cell status order-status">
-                <div class="rps-table-cell--content text-break ">
+            <td class="rps-table-cell">
+                <div class="rps-table-cell-content  ">
 
-                    <div class="rps-table-cell--heading">
+                    <div class="rps-table-cell-heading">
 
                     </div>
                     <ng-container [ngSwitch]="vari.get('biz_status')?.value">
@@ -203,21 +207,20 @@
 
                 </div>
             </td>
-            <td class="rps-table-cell name text-break order-name">
-                <div class="rps-table-cell--heading">
+            <td class="rps-table-cell">
+                <div class="rps-table-cell-heading">
                     Name
                 </div>
-                <div class="rps-table-cell--content text-break p-0">
+                <div class="rps-table-cell-content word-break">
                     <div *ngIf="!isStandAlone && isParent; then toggleArrow else plainText"></div>
 
                     <ng-template #toggleArrow>
-                        <button class="btn btn-toggle align-items-center rounded gap-2 p-0"
+                        <button class="btn btn-toggle align-items-center rounded gap-2 p-0" menu-arrow="true"
                             [attr.aria-expanded]="!vari.get('collapse')?.value"
                             (click)="trigger.toggle();getVariants(vari)">
-                            <a [routerLink]="['../add-a-product/'+vari.get('product')?.value?.id]"
-                                class="text-nowrap overflow-hidden">
+
+                            <a [routerLink]="['../add-a-product/'+vari.get('product')?.value?.id]">
                                 {{vari.get('product')?.value?.title}}</a>
-                            <span class="menu-arrow ms-auto"></span>
 
                         </button>
                         <a [routerLink]="['../add-a-product/' + vari.get('product')?.value?.id + '/' + vari.get('id')?.value]"
@@ -238,11 +241,11 @@
                 </div>
 
             </td>
-            <td class="rps-table-cell image-col text-break order-image">
-                <div class="rps-table-cell--heading">
+            <td class="rps-table-cell">
+                <div class="rps-table-cell-heading">
                     Image
                 </div>
-                <div class="rps-table-cell--content ">
+                <div class="rps-table-cell-content ">
                     <div class="mx-auto product-image-container">
                         <img class="product-image rounded" [src]="vari.get('media_1_image')?.value?.path">
 
@@ -250,21 +253,21 @@
 
                 </div>
             </td>
-            <td class="rps-table-cell sku-col text-break order-sku">
-                <div class="rps-table-cell--heading">
+            <td class="rps-table-cell">
+                <div class="rps-table-cell-heading">
                     SKU
                 </div>
-                <div class="rps-table-cell--content ">
+                <div class="rps-table-cell-content ">
                     {{vari.get('seller_sku')?.value}}
                 </div>
             </td>
 
-            <td class="rps-table-cell price-col text-break">
-                <div class="rps-table-cell--heading">
+            <td class="rps-table-cell">
+                <div class="rps-table-cell-heading">
                     Price
                 </div>
 
-                <div class="rps-table-cell--content" *ngIf="vari.get('edit')?.value">
+                <div class="rps-table-cell-content" *ngIf="vari.get('edit')?.value">
                     <div class="form-group position-relative">
                         <input type="text" class="form-control" ngNumber formControlName="buy_price"
                             [suffix]=" ' ' + vari.get('product')?.value?.currency.currency_code"
@@ -279,12 +282,12 @@
                 </div>
 
             </td>
-            <td class="rps-table-cell price-col text-break ">
-                <div class="rps-table-cell--heading">
+            <td class="rps-table-cell">
+                <div class="rps-table-cell-heading">
                     Selling price
                 </div>
 
-                <div class="rps-table-cell--content">
+                <div class="rps-table-cell-content">
                     <div class="form-group position-relative">
                         <input type="text" class="form-control" formControlName="selling_price"
                             [suffix]=" ' ' + vari.get('product')?.value?.currency.currency_code"
@@ -299,12 +302,12 @@
                 </div>
 
             </td>
-            <td class="rps-table-cell price-col text-break order-qty">
-                <div class="rps-table-cell--heading">
+            <td class="rps-table-cell">
+                <div class="rps-table-cell-heading">
                     Qty
                 </div>
 
-                <div class="rps-table-cell--content text-end">
+                <div class="rps-table-cell-content text-end">
                     <div class="form-group position-relative">
                         <input type="number" class="form-control text-end" formControlName="qty">
                         <p *ngIf="vari.get('qty')?.dirty"
@@ -316,19 +319,19 @@
 
                 </div>
             </td>
-            <td class="rps-table-cell prodgroup-col text-break order-pg">
-                <div class="rps-table-cell--heading">
+            <td class="rps-table-cell">
+                <div class="rps-table-cell-heading">
                     Prod Group
                 </div>
-                <div class="rps-table-cell--content">
+                <div class="rps-table-cell-content">
                     -
                 </div>
             </td>
-            <td class="rps-table-cell condition text-break order-condition">
-                <div class="rps-table-cell--heading">
+            <td class="rps-table-cell">
+                <div class="rps-table-cell-heading">
                     Condition
                 </div>
-                <div class="rps-table-cell--content">
+                <div class="rps-table-cell-content">
                     <div class="form-group position-relative">
                         <select id="plain-select" class="form-select" formControlName="condition"
                             [compareWith]="compareCondition">
@@ -340,11 +343,11 @@
 
                 </div>
             </td>
-            <td class="rps-table-cell date-range text-break order-daterange">
-                <div class="rps-table-cell--heading">
+            <td class="rps-table-cell">
+                <div class="rps-table-cell-heading">
                     Date range
                 </div>
-                <div class="rps-table-cell--content text-end">
+                <div class="rps-table-cell-content text-end">
                     {{vari.get('start_at')?.value | date :
                     'mediumDate'}}<br>
                     {{vari.get('expired_at')?.value | date :
@@ -352,11 +355,11 @@
                 </div>
             </td>
 
-            <td class="rps-table-cell operation text-break order-operation">
-                <div class="rps-table-cell--heading">
+            <td class="rps-table-cell sticky-end">
+                <div class="rps-table-cell-heading">
 
                 </div>
-                <div class="rps-table-cell--content">
+                <div class="rps-table-cell-content">
                     <div class="btn-group" role="group" aria-label="Basic example">
                         <button class="btn btn-sm ">
                             <i class="bi bi-save"></i>

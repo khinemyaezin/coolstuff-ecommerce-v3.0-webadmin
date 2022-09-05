@@ -60,16 +60,8 @@ export class SellerHomeComponent implements OnInit {
           routerLink: '/seller-central/add-a-product',
           collapse: true,
           children: [],
-        },
-        {
-          id: 'inventory-product2',
-          title: 'Add a product',
-          icon: '',
-          routerLink: '/seller-central/add-a-product2',
-          collapse: true,
-          children: [],
-        },
-      ],
+        }
+      ]
     },
     // {
     //   id: "my-order",

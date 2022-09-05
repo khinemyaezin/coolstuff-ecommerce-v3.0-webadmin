@@ -1,4 +1,4 @@
-<div class="container mb-2">
+<div class="container">
     <ul ngbNav #nav="ngbNav" class="nav-tabs">
 
         <li [ngbNavItem]="1">
@@ -45,77 +45,24 @@
         <li [ngbNavItem]="2">
             <ng-template ngbNavContent>
                 <form [formGroup]="productForm" (ngSubmit)="submit()">
-                    <input type="submit" value="Submit">
+                    <ng-container *ngTemplateOutlet="heading; context:{ submitBtn: true }">
+                    </ng-container>
                     <div class="row g-2">
-                        <div class="col-lg-8 order-sm-2 order-md-1">
+                        <div class="col-lg-4 ">
+                            <!-- <div id="messageBox">
+                                <p class="mb-2" *ngFor="let alert of productAlerts | async | keyvalue">
+                                    <ngb-alert [dismissible]="false" class="mb-0" [type]="alert.value.type">{{
+                                        alert.value.message }}</ngb-alert>
+                                </p>
+                            </div> -->
+                            <ng-container *ngTemplateOutlet="vitalInfo; context: { formGroup: productForm}">
+                            </ng-container>
+                            <ng-container *ngTemplateOutlet="productStatus; context: { formGroup: productForm}">
+                            </ng-container>
+                        </div>
+                        <div class="col-lg-8">
                             <!-- Product Information -->
-                            <div class="card mb-2">
-                                <div class="card-header">
-                                    <div class="card-title">
-                                        <span class="position-relative">
-                                            Vital Information
-                                        </span>
 
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row mb-2">
-                                        <div class="col-sm-4">
-                                            <label for="product-name"
-                                                class="w-100 col-form-label  text-lg-end text-sm-start">Title</label>
-                                        </div>
-                                        <div class="col-sm-8">
-                                            <input type="text" aria-label="First name" id="product-name"
-                                                formControlName="title" placeholder="Product Title"
-                                                class="form-control form-validation">
-                                        </div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-sm-4">
-                                            <label for="brand-name"
-                                                class="w-100 col-form-label  text-lg-end text-sm-start">Brand</label>
-                                        </div>
-
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control form-validation"
-                                                aria-label="First name" id="brand-name" formControlName="brand"
-                                                placeholder="Brand Name">
-                                        </div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-sm-4">
-                                            <label for="manufacturer"
-                                                class="w-100 col-form-label  text-lg-end text-sm-start">Manufacturer</label>
-                                        </div>
-
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control form-validation"
-                                                aria-label="First name" id="manufacturer" formControlName="manufacturer"
-                                                placeholder="Manufactured from">
-                                        </div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-sm-4">
-                                            <label for="material-type"
-                                                class="w-100 col-form-label  text-lg-end text-sm-start">Material
-                                                Type</label>
-                                        </div>
-
-                                        <div class="col-sm-8">
-                                            <select formControlName="packType" class="form-select form-validation"
-                                                [compareWith]="compare">
-                                                <option [value]='null' disabled>Select</option>
-                                                <option [ngValue]="matype" *ngFor=" let matype of packTypeList">
-                                                    {{matype.title}}
-                                                </option>
-                                            </select>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-                            </div>
                             <div *ngIf="!productForm.controls['hasVariant'].value" formArrayName="variants">
                                 <div *ngFor="let variant of getVariants.controls; let i = index">
                                     <!-- Media  -->
@@ -145,60 +92,37 @@
                             </div>
 
                         </div>
-                        <div class="col-lg-4 order-sm-1 order-md-2">
-                            <!-- <div id="messageBox">
-                                <p class="mb-2" *ngFor="let alert of productAlerts | async | keyvalue">
-                                    <ngb-alert [dismissible]="false" class="mb-0" [type]="alert.value.type">{{
-                                        alert.value.message }}</ngb-alert>
-                                </p>
-                            </div> -->
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="card-title">Product Status</div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="form-check" *ngFor="let bizStatus of businessStatus;let i=index">
-                                        <input class="form-check-input" type="radio" name="status"
-                                            [id]="'biz-status-'+i" formControlName="status" [value]=" bizStatus.value ">
-                                        <label class="form-check-label" [for]="'biz-status-'+i">
-                                            {{ bizStatus.title }}
-                                        </label>
-                                    </div>
-                                </div>
-                                <hr class="m-0">
-                                <div class="card-header">
-                                    <div class="card-title">Payment</div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-2">
-                                        <label for="prodCurrency" class="form-label ">Purchased with</label>
-                                        <select class="form-select" id="prodCurrency" formControlName="currency"
-                                            [compareWith]="compare">
-                                            <option [value]="null" disabled selected>Select</option>
-                                            <option [ngValue]="currency" *ngFor="let currency of currencyByRegions;">
-                                                {{ currency.currency_code }}<br>
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-2">
-                                        <label for="prodCurrency" class="form-label ">Sell with</label>
-                                        <select class="form-select" id="prodCurrency">
-                                            <option [value]="null" disabled selected>Select</option>
-                                            <option [ngValue]="currency" *ngFor="let currency of currencyByRegions;">
-                                                {{ currency.currency_code }}<br>
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <hr class="m-0">
-                                <div class="card-header">
-                                    <div class="card-title">Organization</div>
-                                </div>
-                                <hr class="m-0">
-                                <div class="card-body">
-                                    <h6>Tag</h6>
-                                    <input type="text" class="form-control" placeholder="shirt, red">
-                                </div>
+
+                    </div>
+                </form>
+            </ng-template>
+        </li>
+        <li [ngbNavItem]="3">
+            <ng-template ngbNavContent>
+                <form [formGroup]="productForm" (ngSubmit)="submit()">
+                    <ng-container *ngTemplateOutlet="heading; context:{ submitBtn: true }">
+                    </ng-container>
+                    <div class="row g-2">
+                        <div class="col-lg-4 ">
+                            <ng-container *ngTemplateOutlet="variantInfo; context: { formGroup: productForm}">
+                            </ng-container>
+                            <ng-container *ngTemplateOutlet="productStatus; context: { formGroup: productForm}">
+                            </ng-container>
+                        </div>
+                        <div class="col-lg-8">
+                            <div *ngFor="let variant of getVariants.controls; let i = index">
+                                <ng-container *ngTemplateOutlet="medias; context: { formGroup: variant, index : i}">
+                                </ng-container>
+                                <!-- Pricing -->
+                                <ng-container *ngTemplateOutlet="pricing; context:{ formGroup: variant, index : i}">
+                                </ng-container>
+                                <!-- Inventory  -->
+                                <ng-container *ngTemplateOutlet="inventory; context: { formGroup: variant, index : i}">
+                                </ng-container>
+                                <!-- Description  -->
+                                <ng-container
+                                    *ngTemplateOutlet="description; context: { formGroup: variant, index : i}">
+                                </ng-container>
                             </div>
                         </div>
                     </div>
@@ -211,14 +135,118 @@
 </div>
 
 <ng-template #heading let-submitBtn="submitBtn">
+
     <div class="d-flex justify-content-between py-3 align-items-center">
-        <button type="button" backButton name="Products" icon="bi bi-chevron-left"
-            [routerLink]="'/seller-central/inventory'"></button>
-        <h5 class="m-0">Product Setup</h5>
-        <button type="button" *ngIf="submitBtn" class="btn text-primary">Submit</button>
+
+        <div class=" flex-grow-1">
+            <h5 class="">Product Setup</h5>
+            <p class="text-muted small pe-2">
+                When adding products here, do not ignore to fill all the required fields completely and follow the
+                product adding rules.
+            </p>
+        </div>
+        <div class="d-flex gap-2 no-wrap">
+            <button type="button" backButton name="Products" icon="bi bi-chevron-left"
+                [routerLink]="'/seller-central/inventory'"></button>
+            <input type="submit" *ngIf="submitBtn" class="btn text-primary" value="Submit">
+        </div>
+    </div>
+
+</ng-template>
+<ng-template #vitalInfo let-formGroup="formGroup">
+    <div class="card mb-2" [formGroup]="formGroup">
+        <div class="card-header">
+            <div class="card-title">
+                <span class="position-relative">
+                    Vital Information
+                </span>
+
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="mb-2">
+                <label for="product-name" class="form-label">Title</label>
+                <input type="text" aria-label="First name" id="product-name" formControlName="title"
+                    placeholder="Product Title" class="form-control form-validation">
+            </div>
+
+
+            <div class="mb-2">
+                <label for="brand-name" class="form-label">Brand</label>
+                <input type="text" class="form-control form-validation" aria-label="First name" id="brand-name"
+                    formControlName="brand" placeholder="Brand Name">
+            </div>
+
+            <div class="mb-2">
+                <label for="manufacturer" class="form-label">Manufacturer</label>
+                <input type="text" class="form-control form-validation" aria-label="First name" id="manufacturer"
+                    formControlName="manufacturer" placeholder="Manufactured from">
+            </div>
+
+            <div class="mb-2">
+                <label for="material-type" class="form-label">Material
+                    Type</label>
+                <select formControlName="packType" class="form-select form-validation" [compareWith]="compare">
+                    <option [value]='null' disabled>Select</option>
+                    <option [ngValue]="matype" *ngFor=" let matype of packTypeList">
+                        {{matype.title}}
+                    </option>
+                </select>
+            </div>
+
+
+        </div>
     </div>
 </ng-template>
-
+<ng-template #productStatus let-formGroup="formGroup">
+    <div class="card" [formGroup]="formGroup">
+        <div class="card-header">
+            <div class="card-title">Product Status</div>
+        </div>
+        <div class="card-body">
+            <div class="form-check" *ngFor="let bizStatus of businessStatus;let i=index">
+                <input class="form-check-input" type="radio" name="status" [id]="'biz-status-'+i"
+                    formControlName="status" [value]=" bizStatus.value ">
+                <label class="form-check-label" [for]="'biz-status-'+i">
+                    {{ bizStatus.title }}
+                </label>
+            </div>
+        </div>
+        <hr class="m-0">
+        <div class="card-header">
+            <div class="card-title">Payment</div>
+        </div>
+        <div class="card-body">
+            <div class="mb-2">
+                <label for="prodCurrency" class="form-label ">Purchased with</label>
+                <select class="form-select" id="prodCurrency" formControlName="currency" [compareWith]="compare">
+                    <option [value]="null" disabled selected>Select</option>
+                    <option [ngValue]="currency" *ngFor="let currency of currencyByRegions;">
+                        {{ currency.currency_code }}<br>
+                    </option>
+                </select>
+            </div>
+            <div class="mb-2">
+                <label for="prodCurrency" class="form-label ">Sell with</label>
+                <select class="form-select" id="prodCurrency">
+                    <option [value]="null" disabled selected>Select</option>
+                    <option [ngValue]="currency" *ngFor="let currency of currencyByRegions;">
+                        {{ currency.currency_code }}<br>
+                    </option>
+                </select>
+            </div>
+        </div>
+        <hr class="m-0">
+        <div class="card-header">
+            <div class="card-title">Organization</div>
+        </div>
+        <hr class="m-0">
+        <div class="card-body">
+            <h6>Tag</h6>
+            <input type="text" class="form-control" placeholder="shirt, red">
+        </div>
+    </div>
+</ng-template>
 <ng-template #pricing let-formGroup="formGroup" let-index="index">
     <div class="card mb-2" [formGroup]="formGroup">
         <div class="card-header">
@@ -261,12 +289,12 @@
 
                 </div>
             </div>
-            <div class="row mb-2">
+            <!-- <div class="row mb-2">
                 <div class="col-sm-4">
                     <label for="offerMargin" class="w-100 col-form-label  text-lg-end text-sm-start">Margin</label>
                 </div>
                 <div class="col-sm-8 d-flex align-items-center">
-                    <!-- <span>{{marginPercentage | percent:'1.2-2'}}</span> -->
+                    <span>{{marginPercentage | percent:'1.2-2'}}</span>
                 </div>
             </div>
             <div class="row mb-2">
@@ -275,10 +303,10 @@
                 </div>
                 <div class="col-sm-8  d-flex align-items-center">
                     <span>
-                        <!-- {{profit|currency:'Ks':'symbol':'1.2-2':'en-US'}} -->
+                        {{profit|currency:'Ks':'symbol':'1.2-2':'en-US'}}
                     </span>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </ng-template>
@@ -385,7 +413,7 @@
 <ng-template #medias let-formGroup="formGroup" let-index="index" let-collapsed="collapsed">
     <div class="card mb-2" [formGroup]="formGroup">
         <div class="card-header">
-            <div class="card-title">Medias</div>
+            <div class="card-title">Product Images</div>
         </div>
         <div class="card-body">
             <div class="media-grid">
@@ -476,8 +504,9 @@
                                 </button>
                                 <div class="auto-complete">
                                     <typeahead-options [optionFormGroup]="option" [optionFormControlName]="'header'"
-                                        [formatter]="formatter" [editable]='false' [source]="optionHeaderTypeaheadConfig"
-                                         [placeholder]="'Search...'" (selectItem)="onSelectVariantOption(option,optionIndex)">
+                                        [formatter]="formatter" [editable]='false'
+                                        [source]="optionHeaderTypeaheadConfig" [placeholder]="'Search...'"
+                                        (selectItem)="onSelectVariantOptionHeader(option,optionIndex)">
                                     </typeahead-options>
 
                                 </div>
@@ -539,7 +568,6 @@
                                 <th class="table-cell column-heading sticky-cell-start">
                                     <span class="btn-toggle " (click)="filterFormCollapsed.toggle()"
                                         *ngIf="getVariants.length !== 0" [attr.aria-expanded]="!isFilterFormCollapsed">
-                                        <span class="menu-arrow"></span>
                                     </span>
                                     <span *ngFor="let option of options">
                                         <ng-container *ngIf="option.get('header')?.value">
@@ -551,9 +579,6 @@
                                 <ng-container *ngFor="let option of options">
                                     <ng-container *ngIf="option.get('header')?.value">
                                         <th class="table-cell column-heading">
-                                            <span>
-                                                {{option.get('header')?.value.title}}
-                                            </span>
                                             <span class="ms-1">{{option.get('header')?.value?.title}} Map</span>
                                         </th>
                                     </ng-container>
@@ -726,7 +751,7 @@
                                                                 {{prod.get('variantOptions')?.value[i].get('inputRef.name')?.value}}
                                                                 <!-- {{prod.get('variantOptions')?.value[i].get('inputRef.id')?.value}} -->
                                                             </ng-container>
-                                                            
+
                                                         </span>
                                                         <br>
 
@@ -738,18 +763,17 @@
 
                                         </td>
                                         <ng-container
-                                            *ngFor="let varOpt of $any(prod).get('variantOptions').value; let varOptIndex=index">
+                                            *ngFor="let varOpt of $any(prod).get('variantOptions')?.value; let varOptIndex=index">
                                             <td class="table-cell" *ngIf="varOpt.get('header')?.value">
                                                 <div class="table-cell-heading">
-                                                    <span class="ms-1">Map</span>
                                                 </div>
                                                 <div class="table-cell-content">
                                                     <typeahead-options [class]="'form-control input-number'"
                                                         [optionFormGroup]="varOpt" [optionFormControlName]="'detail'"
                                                         [formatter]="formatter" [editable]='false' [source]="{
-                                                            url: 'options/headers/'+options[varOptIndex].get('header')?.value.id+'/details'
+                                                            url: 'options/headers/'+ varOpt.get('header')?.value?.id + '/details'
                                                         }"
-                                                        [placeholder]="'Search in '+ options[varOptIndex].get('header')?.value.title">
+                                                        [placeholder]="'Search in '+ varOpt.get('header')?.value?.title">
                                                     </typeahead-options>
                                                 </div>
                                             </td>
@@ -847,4 +871,24 @@
         </div>
     </div>
 
+</ng-template>
+<ng-template #variantInfo let-formGroup="formGroup">
+    <div class="card mb-2" [formGroup]="formGroup">
+        <div class="card-header">
+            <small class="text-primary">{{formGroup.get('brand')?.value}}</small>
+            <div class="card-title">{{formGroup.get('title')?.value}}</div>
+        </div>
+        <div class="card-body">
+            <ol class="nav-variants" *ngIf="variants">
+                <li *ngFor="let brothers of variantsMap|keyvalue" >
+                    <input type="radio" [id]="'brothers-'+brothers.key" name="selectVariants" (change)="routeChange($event)"
+                    [value]="'/seller-central/add-a-product/'+paramProductId+'/'+brothers.key"
+                        [checked]=" paramVariantId == brothers.key " />
+                    <label class="wrapper text-capitalize" [for]="'brothers-'+brothers.key">
+                        {{brothers.value.title}}
+                    </label>
+                </li>
+            </ol>
+        </div>
+    </div>
 </ng-template>

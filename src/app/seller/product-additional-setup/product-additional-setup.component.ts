@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   OnDestroy,
   OnInit,
@@ -24,27 +25,13 @@ import {
   distinctUntilChanged,
   forkJoin,
   lastValueFrom,
-  map,
-  Observable,
   Subject,
-  switchMap,
   takeUntil,
 } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
 import { MaskConfig } from 'src/app/services/core';
 import { MediaChooserConfig } from 'src/app/core-components/media-chooser/media-chooser.component';
-interface MoreDetail {
-  id: string;
-  headerId: string;
-  name: string;
-  code: string;
-  description: string;
-  allowDetailCustomName: number;
-  needDetailMapping: number;
-  details: any[];
-  units: any[];
-  value: FormGroup;
-}
+
 @Component({
   selector: 'app-product-additional-setup',
   templateUrl: './product-additional-setup.component.html',
@@ -70,7 +57,7 @@ export class ProductAdditionalSetupComponent
     packType: new FormControl(null, { validators: Validators.required }),
     currency: new FormControl(null, { validators: Validators.required }),
     variants: new FormArray([]),
-    hasVariant: new FormControl(false),
+    hasVariant: new FormControl<boolean>(false),
   });
   filterControlForm: FormGroup = new FormGroup({
     selectAll: new FormControl(false),
@@ -99,11 +86,16 @@ export class ProductAdditionalSetupComponent
   };
 
   paramProductId: null | string = null;
+  paramVariantId: null | string = null;
+
   conditionOptions: any[] = [];
   packTypeList: any[] = [];
   currencyByRegions: any[] = [];
   deletedProducts = new Map();
-  standAlone: any;
+  standAloneVariant: any;
+  defImportProduct: any = null;
+  variantsMap!: Map<string, any>;
+
   options: any[] = [];
   attributes: FormArray = new FormArray<FormGroup>([]);
   isFilterFormCollapsed = true;
@@ -112,8 +104,8 @@ export class ProductAdditionalSetupComponent
     { title: 'Active', value: 2 },
     { title: 'Draft', value: 6 },
   ];
-  public maskConfig: MaskConfig = this.http.config.mask;
 
+  public maskConfig: MaskConfig = this.http.config.mask;
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   get getVariants(): FormArray {
@@ -140,27 +132,16 @@ export class ProductAdditionalSetupComponent
     public sellerService: SellerService,
     public popup: PopupService,
     public activatedRoute: ActivatedRoute,
-    public router: Router
+    public router: Router,
+    private ref: ChangeDetectorRef
   ) {}
 
   ngAfterViewInit(): void {
-    if (this.paramProductId) {
+    if (this.paramProductId && this.paramVariantId) {
+      this.tabs.select(3);
+    } else if (this.paramProductId) {
       this.tabs.select(2);
     } else {
-      // test
-      this.selectCategory({
-        id: '19',
-        biz_status: 2,
-        title: 'Tops, T-Shirts & Shirts',
-        depth: 5,
-        path: 'root > Clohing, Shoes & Watches > Fashion > Man > Clothing > Tops, T-Shirts & Shirts',
-        lft: 90,
-        rgt: 91,
-        level_category_id: 39,
-        created_at: null,
-        updated_at: null,
-      });
-      //this.productForm.controls['hasVariant'].setValue(true);
     }
   }
 
@@ -173,13 +154,44 @@ export class ProductAdditionalSetupComponent
     this.init();
     const routeParams = this.activatedRoute.snapshot.paramMap;
     const id = routeParams.get('id');
+    const vid = routeParams.get('vid');
     this.paramProductId = id;
-    this.standAlone = this.createVariant();
-    if (id) {
-      this.importProduct(id, null);
-    } else {
-      this.getVariants.push(this.standAlone);
+    this.paramVariantId = vid;
+
+    const redirect = ()=> {
+      if (id && vid) {
+        this.initVariantById();
+      } else if (id) {
+        this.importProduct(id, null);
+      } else {
+        this.getVariants.push(this.standAloneVariant);
+        this.selectCategory({
+          id: '19',
+          biz_status: 2,
+          title: 'Tops, T-Shirts & Shirts',
+          depth: 5,
+          path: 'root > Clohing, Shoes & Watches > Fashion > Man > Clothing > Tops, T-Shirts & Shirts',
+          lft: 90,
+          rgt: 91,
+          level_category_id: 39,
+          created_at: null,
+          updated_at: null,
+        });
+      }
     }
+
+    this.activatedRoute.params
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((param:any) => {
+        console.log('route change', param);
+        
+        this.paramProductId = param?.id;
+        this.paramVariantId = param?.vid;
+        redirect();
+      });
+
+    this.standAloneVariant = this.createVariant();
+    redirect();
 
     // sample
     //this.getVariants.push(this.createVariant());
@@ -283,13 +295,13 @@ export class ProductAdditionalSetupComponent
     this.importCategory(category);
 
     // Get attributes by category
-    const getDepAttri = this.getAttributes(
-      '',
-      this.categoryForm.value.categorySelected.level_category_id,
-      'optionDetails,optionUnits'
-    );
-
-    forkJoin([getDepAttri]).subscribe((values: any[]) => {
+    lastValueFrom(
+      this.getAttributes(
+        '',
+        this.categoryForm.value.categorySelected.level_category_id,
+        'optionDetails,optionUnits'
+      )
+    ).then((values: any[]) => {
       if (values[0] && values[0].status == 200) {
         values[0].details.data.forEach((header: any) => {
           const attribute = this.fb.group({
@@ -311,9 +323,12 @@ export class ProductAdditionalSetupComponent
           this.attributes.push(attribute);
         });
       }
-
       this.tabs.select(2);
     });
+    this.importAttributesToDefaultVariant(
+      this.categoryForm.get('categorySelected')?.value.level_category_id,
+      this.getVariants
+    );
   }
 
   importCategory(category: any) {
@@ -325,7 +340,6 @@ export class ProductAdditionalSetupComponent
     //   ' > '
     // );
     this.categoryForm.controls['categorySelected'].setValue(category);
-    console.log('category', this.categoryForm.value);
   }
 
   /** Description */
@@ -363,7 +377,7 @@ export class ProductAdditionalSetupComponent
 
   /** Attributes */
 
-  private createAttribute(attribute: any) {
+  private createAttribute(attribute: any, variantMapping = false) {
     return new FormGroup({
       id: new FormControl(attribute.id),
       title: new FormControl(),
@@ -371,17 +385,21 @@ export class ProductAdditionalSetupComponent
         attribute.allow_dtls_custom_name
       ),
       needDetailMapping: new FormControl<boolean>(attribute.need_dtls_mapping),
-      optionHeader: new FormControl<any>({
-        id: attribute.fk_varopt_hdr_id,
-        title: attribute.title,
-      }),
+      optionHeader: new FormControl<any>(
+        variantMapping
+          ? attribute.varopt_hdr
+          : {
+              id: attribute.fk_varopt_hdr_id,
+              title: attribute.title,
+            }
+      ),
       optionDetailArray: new FormControl([]),
-      optionDetail: new FormControl(attribute?.fk_varopt_dtl_id, {
-        validators: Validators.required,
+      optionDetail: new FormControl(attribute?.varopt_dtl, {
+        validators: [Validators.required, Validators.minLength(1)],
       }),
       optionUnitArray: new FormControl([]),
-      optionUnit: new FormControl(attribute?.fk_varopt_unit_id),
-      value: new FormControl(),
+      optionUnit: new FormControl(attribute?.varopt_unit),
+      value: new FormControl(attribute?.value),
     });
   }
 
@@ -392,7 +410,7 @@ export class ProductAdditionalSetupComponent
           variants.controls.forEach((variant) => {
             (variant.get('attributes') as FormArray).clear();
             resp.details.data.forEach((attribute: any) => {
-              Object.assign(attribute,{
+              Object.assign(attribute, {
                 fk_varopt_hdr_id: attribute.id,
               });
               (variant.get('attributes') as FormArray).push(
@@ -404,19 +422,6 @@ export class ProductAdditionalSetupComponent
       }
     );
   }
-
-  // getOptionDetails(optionHeaderId: string, attribute: FormGroup) {
-  //   alert('hi');
-  //   if (attribute.get('optionDetailArray')?.value.length != 0) return;
-  //   this.getVariantOptionItems(optionHeaderId).subscribe({
-  //     next: (value) => {
-  //       if (value.status == 200) {
-  //         attribute.get('optionDetailArray')?.setValue(value.details.data);
-  //       }
-  //     },
-  //     error: (err) => {},
-  //   });
-  // }
 
   /** Variants */
 
@@ -443,7 +448,7 @@ export class ProductAdditionalSetupComponent
     hdr3: any = null,
     title3: any = null
   ): FormGroup {
-    let product = this.fb.group({
+    return this.fb.group({
       formId: new FormControl(this.pgService.randomInt(1, 1000)),
       selected: new FormControl(false),
       edit: new FormControl(false),
@@ -486,58 +491,68 @@ export class ProductAdditionalSetupComponent
       media_9_video: new FormControl(null),
       attributes: new FormArray([]),
     });
-    return product;
   }
 
   onChangeVariantCheckBox() {
     this.productForm.controls['hasVariant'].valueChanges
       .pipe(takeUntil(this.destroy$))
       .subscribe((change: boolean) => {
-        this.switchStandAloneOrVariants(change);
+        this.getVariants.clear();
+        if (!change) {
+          if (
+            !this.pgService.isEmptyID(this.standAloneVariant.get('id').value)
+          ) {
+            this.standAloneVariant.get('status')?.patchValue(2);
+          }
+          this.getVariants.push(this.standAloneVariant);
+        } else {
+          if (
+            !this.pgService.isEmptyID(this.standAloneVariant.get('id').value)
+          ) {
+            this.standAloneVariant.get('status')?.patchValue(4);
+          }
+        }
       });
   }
 
-  switchStandAloneOrVariants(checked: boolean) {
-    this.getVariants.clear();
-    if (!checked) {
-      this.getVariants.push(this.standAlone);
-    }
-  }
+  removeVariantOptionHeader(optionGroupIndex: number) {
+    if (!this.options[optionGroupIndex].get('header')?.value) return;
 
-  removeVariantOptionHeader(optionIndex: number) {
-    if (!this.options[optionIndex].get('header')?.value) return;
-
-    let variantsFormArray = this.getVariants;
-    let optionsItems = <FormArray>this.options[optionIndex].get('list');
-    let optionIdIndexZero = optionsItems.controls[0].get('id')?.value;
+    let optionsItems = <FormArray>this.options[optionGroupIndex].get('list');
+    const optionIdIndexZero = optionsItems.controls[0].get('id')?.value;
 
     const indexArray = [...Array(this.options.length).keys()];
-    indexArray.splice(optionIndex, 1);
-    const desiredIndex = [...indexArray, optionIndex];
+    indexArray.splice(optionGroupIndex, 1);
+    const desiredIndex = [...indexArray, optionGroupIndex];
 
-    for (let i = variantsFormArray.controls.length - 1; i >= 0; i--) {
-      const optionIdInVariants = variantsFormArray.controls[i]
+    for (let i = this.getVariants.controls.length - 1; i >= 0; i--) {
+      const optionIdInVariants = this.getVariants.controls[i]
         .get('variantOptions')
-        ?.value[optionIndex].get('inputRef.id')?.value;
+        ?.value[optionGroupIndex].get('inputRef.id')?.value;
 
-      const variantId = variantsFormArray.controls[i].get('id')?.value;
+      const variantId = this.getVariants.controls[i].get('id')?.value;
 
       if (optionIdInVariants !== optionIdIndexZero) {
         if (!this.pgService.isEmptyID(variantId)) {
-          this.deletedProducts.set(variantId, variantsFormArray.controls[i]);
+          this.deletedProducts.set(variantId, this.getVariants.controls[i]);
         }
-        variantsFormArray.removeAt(i);
+        this.getVariants.removeAt(i);
       } else {
         /** Reorder options array of a product */
-
-        let optionItemsInVariant =
-          variantsFormArray.controls[i].get('variantOptions')?.value;
-
+        const removeLast = (optionGroup: FormGroup, index: number) => {
+          if (this.options.length - 1 == index) {
+            optionGroup.get('header')?.setValue(null);
+            optionGroup.get('details')?.setValue(null);
+          }
+        };
         this.reorder(
-          optionItemsInVariant,
+          this.getVariants.controls[i].get('variantOptions')?.value,
           desiredIndex,
-          optionItemsInVariant.length
+          this.getVariants.controls[i].get('variantOptions')?.value.length,
+          removeLast
         );
+        // this.getVariants.controls[i].get('variantOptions')?.setValue(orderedArray);
+        // console.log(this.getVariants.controls[i].get('variantOptions')?.value);
       }
     }
 
@@ -571,8 +586,8 @@ export class ProductAdditionalSetupComponent
       });
       this.productForm.get('hasVariant')?.setValue(false);
     }
-    this.checkedVariantCard = !this.hasOptionHeaders();
-    this.switchStandAloneOrVariants(false);
+    this.checkedVariantCard = isLastOption == 0;
+    //this.switchStandAloneOrVariants(false);
   }
 
   reorder(
@@ -589,17 +604,19 @@ export class ProductAdditionalSetupComponent
       original[i] = temp[i];
       if (callback) callback(original[i], i);
     }
+    return temp;
   }
 
-  onSelectVariantOption(optionGroup: FormGroup, optionOrderIndex: number) {
-    console.log(optionGroup);
-
+  onSelectVariantOptionHeader(
+    optionGroup: FormGroup,
+    optionOrderIndex: number
+  ) {
     //Reset
     const optionItems = optionGroup.controls['list'] as FormArray;
     optionItems.clear();
     optionItems.push(this.createVariantOptionItem(optionOrderIndex));
 
-    this.checkedVariantCard = !this.hasOptionHeaders();
+    this.checkedVariantCard = false;
   }
 
   onChangeOptionItem(
@@ -1084,13 +1101,35 @@ export class ProductAdditionalSetupComponent
     return this.http.GET(`products/${id}`, httpParam);
   }
 
-  /** Import ----------------------------------------------------------- */
+  saveProduct(product: any) {
+    return this.http.POST('products', product);
+  }
+
+  updateProduct(product: any, id: string) {
+    return this.http.PUT(`products/${id}`, product);
+  }
+
+  getVariantById(productId: string, variantId: string) {
+    let param = new HttpParams();
+    param = param.append(
+      'relationships',
+      'product,condition,media_1_image,media_2_image,media_3_image,media_4_image,media_5_image,media_6_image,media_7_image,media_8_video,media_9_video,variantOption1Dtl,variantOption2Dtl,variantOption3Dtl'
+    );
+    param = param.append('brothers', true);
+    param = param.append(
+      'product',
+      'myBrand,category,packType,currency,variantOption1Hdr,variantOption2Hdr,variantOption3Hdr'
+    );
+    return this.http.GET(`products/${productId}/${variantId}`, param);
+  }
+
+  /** Import Export----------------------------------------------------------- */
 
   async importProduct(productId: any, variantId: any) {
-    let loading = await this.popup.showLoading('please wait').then((e: any) => {
-      return e;
-    });
-    loading.present();
+    // let loading = await this.popup.showLoading('please wait').then((e: any) => {
+    //   return e;
+    // });
+    // loading.present();
     const product = await lastValueFrom(
       this.getProductById(productId, variantId)
     )
@@ -1100,24 +1139,20 @@ export class ProductAdditionalSetupComponent
       .catch(() => {
         return null;
       });
+    this.defImportProduct = product;
     this.importVitalInfoForm(product);
     this.importCategory(product.category);
-    //this.importAttributes(product);
-    //this.importDescription(product, variantId);
     await this.importVariants(product);
-    this.checkedVariantCard = !this.hasOptionHeaders();
+    // this.checkedVariantCard = !this.hasOptionHeaders();
     //this.identifyProductStatus();
-    loading.dismiss();
+    //loading.dismiss();
   }
 
   async importVariants(data: any) {
-    this.productForm.controls['hasVariant'].setValue(
-      data.variant_option1_hdr ? true : false,
-      {
-        emitEvent: false,
-      }
-    );
-    if (this.productForm.controls['hasVariant'].value) {
+    this.productForm.controls['hasVariant'].patchValue(data.has_variant, {
+      emitEvent: false,
+    });
+    if (data.has_variant) {
       for (let i = 0; i < this.options.length; i++) {
         let optionHeader = data['variant_option' + (i + 1) + '_hdr'];
 
@@ -1140,7 +1175,9 @@ export class ProductAdditionalSetupComponent
       variantFormGroup.controls['id'].setValue(variant.id);
       variantFormGroup.controls['variantOptions'].value.forEach(
         (option: FormGroup, i: number) => {
-          option.get('detail')?.setValue(variant.variant_option1_dtl);
+          option.get('detail')?.setValue(variant[`variant_option${i + 1}_dtl`]);
+          if (variant[`variant_option${i + 1}_dtl`])
+            option.get('detail')?.markAsDirty();
           option.get('header')?.setValue(this.options[i].get('header')?.value);
         }
       );
@@ -1155,15 +1192,24 @@ export class ProductAdditionalSetupComponent
         start: this.pgService.dateFormat(variant.start_at),
         end: this.pgService.dateFormat(variant.expired_at),
       });
-
+      if (variant.features) {
+        const features = variantFormGroup.controls['features'] as FormArray;
+        features.clear();
+        variant.features.forEach((f: string) => {
+          features.push(new FormControl(f));
+        });
+        features.push(new FormControl(''));
+      }
       if (variant.attributes) {
-        (variantFormGroup.controls['attributes'] as FormArray).clear();
         variant.attributes.forEach((attribute: any) => {
+          let attriFormGroup = this.createAttribute(attribute, true);
+          attriFormGroup.get('optionDetail')?.markAsDirty();
           (variantFormGroup.controls['attributes'] as FormArray).push(
-            this.createAttribute(attribute)
+            attriFormGroup
           );
         });
       }
+      variantFormGroup.controls['description'].setValue(variant.prod_desc);
 
       variantFormGroup.controls['media_1_image'].setValue(
         variant.media_1_image
@@ -1208,14 +1254,153 @@ export class ProductAdditionalSetupComponent
           )).controls['inputRef'] = this.options[i].get('list').controls[index];
         }
       }
-      this.standAlone = variantFormGroup;
+      this.standAloneVariant = variantFormGroup;
       this.getVariants.push(variantFormGroup);
+      this.ref.detectChanges();
     }
-    if (this.productForm.controls['hasVariant'].value) {
+    if (data.has_variant) {
       this.importAttributesToDefaultVariant(
         this.categoryForm.get('categorySelected')?.value.level_category_id,
-        this.getVariants)
+        this.getVariants
+      );
     }
+  }
+
+  importVariant(variant: any) {
+    let variantFormGroup: FormGroup = this.createVariant();
+    variantFormGroup.controls['id'].setValue(variant.id);
+    variantFormGroup.controls['condition'].setValue(variant.condition);
+    variantFormGroup.controls['price'].setValue(variant.buy_price);
+    variantFormGroup.controls['sellingPrice'].setValue(variant.selling_price);
+    variantFormGroup.controls['quantity'].setValue(variant.qty);
+    variantFormGroup.controls['sellerSku'].setValue(variant.seller_sku);
+    variantFormGroup.controls['dateRange'].setValue({
+      start: this.pgService.dateFormat(variant.start_at),
+      end: this.pgService.dateFormat(variant.expired_at),
+    });
+    if (variant.features) {
+      const features = variantFormGroup.controls['features'] as FormArray;
+      features.clear();
+      variant.features.forEach((f: string) => {
+        features.push(new FormControl(f));
+      });
+      features.push(new FormControl(''));
+    }
+    if (variant.attributes) {
+      variant.attributes.forEach((attribute: any) => {
+        let attriFormGroup = this.createAttribute(attribute, true);
+        attriFormGroup.get('optionDetail')?.markAsDirty();
+        (variantFormGroup.controls['attributes'] as FormArray).push(
+          attriFormGroup
+        );
+      });
+    }
+    variantFormGroup.controls['description'].setValue(variant.prod_desc);
+
+    variantFormGroup.controls['media_1_image'].setValue(variant.media_1_image);
+    variantFormGroup.controls['media_2_image'].setValue(variant.media_2_image);
+    variantFormGroup.controls['media_3_image'].setValue(variant.media_3_image);
+    variantFormGroup.controls['media_4_image'].setValue(variant.media_4_image);
+    variantFormGroup.controls['media_5_image'].setValue(variant.media_5_image);
+    variantFormGroup.controls['media_6_image'].setValue(variant.media_6_image);
+    variantFormGroup.controls['media_7_image'].setValue(variant.media_7_image);
+    variantFormGroup.controls['media_8_video'].setValue(variant.media_8_video);
+    variantFormGroup.controls['media_9_video'].setValue(variant.media_9_video);
+    this.getVariants.push(variantFormGroup);
+    this.ref.detectChanges();
+  }
+
+  exportVariants(variant: any, hasVariant: boolean) {
+    return {
+      biz_status: variant.get('status')?.value,
+      seller_sku: variant.get('sellerSku')?.value,
+      fk_varopt_1_hdr_id: hasVariant
+        ? variant.get('variantOptions')?.value[0].get('header').value?.id
+        : null,
+      fk_varopt_1_dtl_id: hasVariant
+        ? variant.get('variantOptions')?.value[0].get('detail').value?.id
+        : null,
+      var_1_title: hasVariant
+        ? variant.get('variantOptions')?.value[0].get('inputRef.name')?.value
+        : null,
+      fk_varopt_2_hdr_id: hasVariant
+        ? variant.get('variantOptions')?.value[1].get('header').value?.id
+        : null,
+      fk_varopt_2_dtl_id: hasVariant
+        ? variant.get('variantOptions')?.value[1].get('detail').value?.id
+        : null,
+      var_2_title: hasVariant
+        ? variant.get('variantOptions')?.value[1].get('inputRef.name')?.value
+        : null,
+      fk_varopt_3_hdr_id: hasVariant
+        ? variant.get('variantOptions')?.value[2].get('header').value?.id
+        : null,
+      fk_varopt_3_dtl_id: hasVariant
+        ? variant.get('variantOptions')?.value[2].get('detail').value?.id
+        : null,
+      var_3_title: hasVariant
+        ? variant.get('variantOptions')?.value[2].get('inputRef.name')?.value
+        : null,
+      buy_price: this.pgService.safeNum(variant.controls['price'].value),
+      selling_price: this.pgService.safeNum(variant.get('sellingPrice')?.value),
+      qty: this.pgService.safeNum(variant.controls['quantity'].value),
+      condition_desc: '',
+      start_at: this.pgService.dateTransform(
+        variant.get('dateRange')?.value?.start
+      ),
+      expired_at: this.pgService.dateTransform(
+        variant.get('dateRange')?.value?.end
+      ),
+      fk_condition_id: variant.get('condition')?.value?.id,
+      prod_desc: variant.get('description')?.value,
+      features: variant.get('features')?.value.filter((e: any) => {
+        return !this.pgService.isEmptyOrSpaces(e);
+      }),
+      attributes: (variant.get('attributes') as FormArray).controls
+        .filter((attribute: AbstractControl<FormGroup>) => {
+          if (
+            attribute.get('allowDetailCustomName')?.value &&
+            this.pgService.isEmptyOrSpaces(attribute.get('value')?.value)
+          ) {
+            return false;
+          }
+          if (
+            attribute.get('needDetailMapping')?.value &&
+            attribute.get('optionDetail')?.value == null
+          ) {
+            return false;
+          }
+          // if (
+          //   attribute.get('optionUnit')?.value == null
+          // ) {
+          //   return false;
+          // }
+          return true;
+        })
+        .map((filteredAttribute: AbstractControl<FormGroup>) => {
+          return {
+            id: filteredAttribute.get('id')?.value,
+            fk_varopt_hdr_id: (
+              filteredAttribute.get('optionHeader')?.value as any
+            )?.id,
+            fk_varopt_dtl_id: (
+              filteredAttribute.get('optionDetail')?.value as any
+            )?.id,
+            fk_varopt_unit_id: null,
+            value: filteredAttribute.get('value')?.value,
+          };
+        }),
+      id: variant.value.id,
+      media_1_image: variant.get('media_1_image')?.value?.id ?? null,
+      media_2_image: variant.get('media_2_image')?.value?.id ?? null,
+      media_3_image: variant.get('media_3_image')?.value?.id ?? null,
+      media_4_image: variant.get('media_4_image')?.value?.id ?? null,
+      media_5_image: variant.get('media_5_image')?.value?.id ?? null,
+      media_6_image: variant.get('media_6_image')?.value?.id ?? null,
+      media_7_image: variant.get('media_7_image')?.value?.id ?? null,
+      media_8_video: variant.get('media_8_video')?.value?.id ?? null,
+      media_9_video: variant.get('media_9_video')?.value?.id ?? null,
+    } as any;
   }
 
   /* Utility */
@@ -1259,7 +1444,137 @@ export class ProductAdditionalSetupComponent
     // this.productAlertsController.next(this._productAlerts);
   }
 
-  submit() {
-    console.log(this.productForm);
+  async submit() {
+    let param: any = {
+      id: this.productForm.value.id,
+      biz_status: this.productForm.value.status,
+      title: this.productForm.value.title,
+      manufacture: this.productForm.value.manufacturer,
+      brand: this.productForm.value.brand,
+      package_qty: 0,
+      fk_brand_id: this.authService.user.brand.id,
+      fk_category_id: this.categoryForm.value.categorySelected?.id,
+      fk_packtype_id: this.productForm.value.packType?.id,
+      fk_prod_group_id: null,
+      fk_currency_id: this.productForm.value.currency?.id,
+      hasVariant: this.productForm.value.hasVariant,
+      variants: this.getVariants.controls.map(
+        (variant: AbstractControl<FormGroup>) => {
+          return this.exportVariants(
+            variant,
+            this.productForm.value.hasVariant
+          );
+        }
+      ),
+    };
+    if (this.productForm.value.hasVariant) {
+      param.fk_varopt_1_hdr_id = this.options[0].value.header?.id;
+      param.fk_varopt_2_hdr_id = this.options[1].value.header?.id;
+      param.fk_varopt_3_hdr_id = this.options[2].value.header?.id;
+    }
+    /** Deleted products import */
+    for (const [key, value] of this.deletedProducts.entries()) {
+      let delProd: any = this.exportVariants(value, param.hasVariant);
+      delProd.biz_status = 4;
+      param.variants.push(delProd);
+    }
+    if (
+      !this.defImportProduct?.has_variant &&
+      param.hasVariant &&
+      !this.pgService.isEmptyID(this.standAloneVariant.get('id')?.value)
+    ) {
+      param.variants.push(
+        this.exportVariants(this.standAloneVariant, param.hasVariant)
+      );
+    }
+    console.log(param);
+
+    const loadingRef = await this.popup.showLoading('Please wait');
+    loadingRef.present();
+
+    if (this.pgService.isEmptyID(param.id)) {
+      this.saveProduct(param).subscribe({
+        next: (response) => {
+          loadingRef.dismiss();
+          if (response.status == 200) {
+            this.popup.showTost('Success');
+          } else {
+            this.popup.showTost('Something went wrong');
+            console.log(response);
+          }
+        },
+        error: (e) => {
+          this.popup.showTost('Something went wrong');
+          console.log(e);
+        },
+      });
+    } else {
+      this.updateProduct(param, param.id).subscribe({
+        next: (response) => {
+          loadingRef.dismiss();
+          if (response.status == 200) {
+            this.popup.showTost('Success');
+          } else {
+            this.popup.showTost('Something went wrong');
+            console.log(response);
+          }
+        },
+        error: (e) => {
+          this.popup.showTost('Something went wrong');
+          console.log(e);
+        },
+      });
+    }
+  }
+
+  /** Variant by ID tab */
+
+  initVariantById() {
+    if (this.paramProductId && this.paramVariantId) {
+      this.prepareVariantById(this.paramProductId, this.paramVariantId);
+    } else return;
+  }
+
+  async prepareVariantById(productId: string, variantId: string) {
+    const loadingRef = await this.popup.showLoading('Please wait');
+    loadingRef.present();
+    let variantResponse = await lastValueFrom(
+      this.getVariantById(productId, variantId)
+    ).then(
+      (resp) => {
+        if (resp.status == 200) {
+          return resp.details;
+        } else return null;
+      },
+      (error) => {
+        console.log(`GetVariantById[${productId}/${variantId}]`, error);
+
+        return null;
+      }
+    );
+    loadingRef.dismiss();
+    if (variantResponse == null) {
+      this.popup.showTost('Unable to get your product!');
+      return;
+    }
+    this.variantsMap = new Map(Object.entries(variantResponse));
+    this.variantsMap.forEach((value: any, key: string) => {
+      value['title'] = [
+        value.var_1_title,
+        value.var_2_title,
+        value.var_3_title,
+      ].reduce((prev, current) => {
+        return prev + (prev !== '' && current ? ' / ' : '') + (current ?? '');
+      }, '');
+    });
+    this.importVitalInfoForm(variantResponse[variantId]['product']);
+    this.importCategory(variantResponse[variantId]['product']['category']);
+
+    this.getVariants.clear();
+    this.importVariant(variantResponse[variantId]);
+  }
+  routeChange(value: any) {
+    const url = value.target.value;
+    this.router.navigateByUrl(url);
   }
 }
