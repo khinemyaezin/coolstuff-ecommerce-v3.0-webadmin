@@ -25,6 +25,8 @@ import {
   distinctUntilChanged,
   forkJoin,
   lastValueFrom,
+  map,
+  Observable,
   Subject,
   takeUntil,
 } from 'rxjs';
@@ -46,7 +48,6 @@ export class ProductAdditionalSetupComponent
     categorySearch: new FormControl(''),
     categorySearchResult: new FormControl([]),
     categorySelected: new FormControl({ path: '' }),
-    lvlCategory: new FormControl(null),
   });
   productForm: FormGroup = new FormGroup({
     id: new FormControl(),
@@ -116,13 +117,9 @@ export class ProductAdditionalSetupComponent
     return this.productForm.get('currency')?.value;
   }
 
-  // get hasOptionHeaders() {
-  //   return (
-  //     this.options.reduce((prev: any, curr: any) => {
-  //       return prev + curr.get('header')?.value ? 1 : 0;
-  //     }, 0) !== 0
-  //   );
-  // }
+  get categoryBreadcrumb():string {
+    return this.categoryForm.get('categorySelected')?.value?.path;
+  }
 
   constructor(
     public pgService: ControllerService,
@@ -151,51 +148,46 @@ export class ProductAdditionalSetupComponent
   }
 
   ngOnInit(): void {
+    const param: Observable<{ id: any; vid: any }> =
+      this.activatedRoute.params.pipe(
+        map((p: any) => {
+          return {
+            id: p?.id,
+            vid: p?.vid,
+          };
+        })
+      );
+    param.pipe(takeUntil(this.destroy$)).subscribe((value) => {
+      
+      this.paramProductId = value.id;
+      this.paramVariantId = value.vid;
+      this.standAloneVariant = this.createVariant();
+      this.redirect(value.id, value.vid);
+    });
     this.init();
-    const routeParams = this.activatedRoute.snapshot.paramMap;
-    const id = routeParams.get('id');
-    const vid = routeParams.get('vid');
-    this.paramProductId = id;
-    this.paramVariantId = vid;
+  }
 
-    const redirect = ()=> {
-      if (id && vid) {
-        this.initVariantById();
-      } else if (id) {
-        this.importProduct(id, null);
-      } else {
-        this.getVariants.push(this.standAloneVariant);
-        this.selectCategory({
-          id: '19',
-          biz_status: 2,
-          title: 'Tops, T-Shirts & Shirts',
-          depth: 5,
-          path: 'root > Clohing, Shoes & Watches > Fashion > Man > Clothing > Tops, T-Shirts & Shirts',
-          lft: 90,
-          rgt: 91,
-          level_category_id: 39,
-          created_at: null,
-          updated_at: null,
-        });
-      }
+  redirect(id: string | null, vid: string | null) {
+    if (id && vid) {
+      this.initVariantById();
+    } else if (id) {
+      this.importProduct(id, null);
+    } else {
+      this.getVariants.push(this.standAloneVariant);
+      this.ref.detectChanges();
+      // this.selectCategory({
+      //   id: '19',
+      //   biz_status: 2,
+      //   title: 'Tops, T-Shirts & Shirts',
+      //   depth: 5,
+      //   path: 'root > Clohing, Shoes & Watches > Fashion > Man > Clothing > Tops, T-Shirts & Shirts',
+      //   lft: 90,
+      //   rgt: 91,
+      //   level_category_id: 39,
+      //   created_at: null,
+      //   updated_at: null,
+      // });
     }
-
-    this.activatedRoute.params
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((param:any) => {
-        console.log('route change', param);
-        
-        this.paramProductId = param?.id;
-        this.paramVariantId = param?.vid;
-        redirect();
-      });
-
-    this.standAloneVariant = this.createVariant();
-    redirect();
-
-    // sample
-    //this.getVariants.push(this.createVariant());
-    //this.productForm.valueChanges.subscribe((changes) => console.log(changes));
   }
 
   init() {
@@ -278,10 +270,10 @@ export class ProductAdditionalSetupComponent
               //$('#browse-category').removeClass('query');
               this.categoryForm.get('categorySearchResult')?.setValue(
                 resp.details.map((category: any) => {
-                  category.path = category.path.replace(
-                    new RegExp('/', 'g'),
-                    ' > '
-                  );
+                  // category.path = category.path.replace(
+                  //   new RegExp('/', 'g'),
+                  //   ' > '
+                  // );
                   return category;
                 })
               );
@@ -293,48 +285,17 @@ export class ProductAdditionalSetupComponent
 
   selectCategory(category: any) {
     this.importCategory(category);
-
-    // Get attributes by category
-    lastValueFrom(
-      this.getAttributes(
-        '',
-        this.categoryForm.value.categorySelected.level_category_id,
-        'optionDetails,optionUnits'
-      )
-    ).then((values: any[]) => {
-      if (values[0] && values[0].status == 200) {
-        values[0].details.data.forEach((header: any) => {
-          const attribute = this.fb.group({
-            id: new FormControl('-1'),
-            headerId: new FormControl(header.id),
-            name: new FormControl(header.title),
-            code: new FormControl(header.code),
-            description: new FormControl(),
-            allowDetailCustomName: new FormControl(
-              header.allow_dtls_custom_name
-            ),
-            needDetailMapping: new FormControl(header.need_dtls_mapping),
-            details: new FormControl(header.option_details),
-            units: new FormControl(
-              header.option_units ? header.option_units : []
-            ),
-            //value: this.createAttribute() as FormGroup,
-          });
-          this.attributes.push(attribute);
-        });
-      }
-      this.tabs.select(2);
-    });
+    
     this.importAttributesToDefaultVariant(
       this.categoryForm.get('categorySelected')?.value.level_category_id,
       this.getVariants
     );
+    this.tabs.select(2)
   }
 
   importCategory(category: any) {
     this.categoryForm.controls['categorySearch'].setValue('');
     this.categoryForm.controls['categorySearchResult'].setValue([]);
-    this.categoryForm.controls['lvlCategory'].setValue(category);
     // category.category.path = (<string>category.path).replace(
     //   new RegExp('/', 'g'),
     //   ' > '
@@ -1109,6 +1070,10 @@ export class ProductAdditionalSetupComponent
     return this.http.PUT(`products/${id}`, product);
   }
 
+  updateVariant(variant: any, productId: string, variantId: string) {
+    return this.http.PUT(`products/${productId}/${variantId}`, variant);
+  }
+
   getVariantById(productId: string, variantId: string) {
     let param = new HttpParams();
     param = param.append(
@@ -1126,10 +1091,10 @@ export class ProductAdditionalSetupComponent
   /** Import Export----------------------------------------------------------- */
 
   async importProduct(productId: any, variantId: any) {
-    // let loading = await this.popup.showLoading('please wait').then((e: any) => {
-    //   return e;
-    // });
-    // loading.present();
+    let loading = await this.popup.showLoading('please wait').then((e: any) => {
+      return e;
+    });
+    loading.present();
     const product = await lastValueFrom(
       this.getProductById(productId, variantId)
     )
@@ -1143,9 +1108,8 @@ export class ProductAdditionalSetupComponent
     this.importVitalInfoForm(product);
     this.importCategory(product.category);
     await this.importVariants(product);
-    // this.checkedVariantCard = !this.hasOptionHeaders();
-    //this.identifyProductStatus();
-    //loading.dismiss();
+
+    loading.dismiss();
   }
 
   async importVariants(data: any) {
@@ -1403,6 +1367,83 @@ export class ProductAdditionalSetupComponent
     } as any;
   }
 
+  exportVariant(variant: any, vMap: any) {
+    return {
+      biz_status: variant.get('status')?.value,
+      seller_sku: variant.get('sellerSku')?.value,
+      fk_varopt_1_hdr_id: vMap['fk_varopt_1_hdr_id'],
+      fk_varopt_1_dtl_id: vMap['fk_varopt_1_dtl_id'],
+      var_1_title: vMap['var_1_title'],
+      fk_varopt_2_hdr_id: vMap['fk_varopt_2_hdr_id'],
+      fk_varopt_2_dtl_id: vMap['fk_varopt_2_dtl_id'],
+      var_2_title: vMap['var_2_title'],
+      fk_varopt_3_hdr_id: vMap['fk_varopt_3_hdr_id'],
+      fk_varopt_3_dtl_id: vMap['fk_varopt_3_dtl_id'],
+      var_3_title: vMap['var_3_title'],
+
+      selling_price: this.pgService.safeNum(variant.get('sellingPrice')?.value),
+      buy_price: this.pgService.safeNum(variant.controls['price'].value),
+      qty: this.pgService.safeNum(variant.controls['quantity'].value),
+      condition_desc: '',
+      start_at: this.pgService.dateTransform(
+        variant.get('dateRange')?.value?.start
+      ),
+      expired_at: this.pgService.dateTransform(
+        variant.get('dateRange')?.value?.end
+      ),
+      fk_condition_id: variant.get('condition')?.value?.id,
+      prod_desc: variant.get('description')?.value,
+
+      features: variant.get('features')?.value.filter((e: any) => {
+        return !this.pgService.isEmptyOrSpaces(e);
+      }),
+      attributes: (variant.get('attributes') as FormArray).controls
+        .filter((attribute: AbstractControl<FormGroup>) => {
+          if (
+            attribute.get('allowDetailCustomName')?.value &&
+            this.pgService.isEmptyOrSpaces(attribute.get('value')?.value)
+          ) {
+            return false;
+          }
+          if (
+            attribute.get('needDetailMapping')?.value &&
+            attribute.get('optionDetail')?.value == null
+          ) {
+            return false;
+          }
+          // if (
+          //   attribute.get('optionUnit')?.value == null
+          // ) {
+          //   return false;
+          // }
+          return true;
+        })
+        .map((filteredAttribute: AbstractControl<FormGroup>) => {
+          return {
+            id: filteredAttribute.get('id')?.value,
+            fk_varopt_hdr_id: (
+              filteredAttribute.get('optionHeader')?.value as any
+            )?.id,
+            fk_varopt_dtl_id: (
+              filteredAttribute.get('optionDetail')?.value as any
+            )?.id,
+            fk_varopt_unit_id: null,
+            value: filteredAttribute.get('value')?.value,
+          };
+        }),
+      id: variant.value.id,
+      media_1_image: variant.get('media_1_image')?.value?.id ?? null,
+      media_2_image: variant.get('media_2_image')?.value?.id ?? null,
+      media_3_image: variant.get('media_3_image')?.value?.id ?? null,
+      media_4_image: variant.get('media_4_image')?.value?.id ?? null,
+      media_5_image: variant.get('media_5_image')?.value?.id ?? null,
+      media_6_image: variant.get('media_6_image')?.value?.id ?? null,
+      media_7_image: variant.get('media_7_image')?.value?.id ?? null,
+      media_8_video: variant.get('media_8_video')?.value?.id ?? null,
+      media_9_video: variant.get('media_9_video')?.value?.id ?? null,
+    } as any;
+  }
+
   /* Utility */
 
   compare(a: any, b: any) {
@@ -1504,6 +1545,7 @@ export class ProductAdditionalSetupComponent
           }
         },
         error: (e) => {
+          loadingRef.dismiss();
           this.popup.showTost('Something went wrong');
           console.log(e);
         },
@@ -1572,9 +1614,65 @@ export class ProductAdditionalSetupComponent
 
     this.getVariants.clear();
     this.importVariant(variantResponse[variantId]);
+
   }
+
   routeChange(value: any) {
     const url = value.target.value;
     this.router.navigateByUrl(url);
+  }
+
+  onSubmitByVariant() {
+    // only for product that has variants
+    const vMap = this.variantsMap.get(this.paramVariantId as string);
+
+    const param: any = {
+      updated_columns: [
+        'biz_status',
+        'seller_sku',
+        'buy_price',
+        'selling_price',
+        'qty',
+        'fk_condition_id',
+        'features',
+        'prod_desc',
+        'start_at',
+        'expired_at',
+        'media_1_image',
+        'media_2_image',
+        'media_3_image',
+        'media_4_image',
+        'media_5_image',
+        'media_6_image',
+        'media_7_image',
+        'media_8_video',
+        'media_9_video',
+      ],
+      custom_columns: ['attributes'],
+      variant: this.getVariants.controls.map(
+        (variant: AbstractControl<FormGroup>) => {
+          return this.exportVariant(variant, vMap);
+        }
+      )[0],
+    };
+    console.log(param);
+    this.updateVariant(
+      param,
+      this.paramProductId as string,
+      this.paramVariantId as string
+    ).subscribe({
+      next: (resp) => {
+        console.log(resp);
+
+        if (resp.status == 200) {
+          this.popup.showTost('Success');
+        } else {
+          this.popup.showTost('Unable to proceed your request');
+        }
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
   }
 }

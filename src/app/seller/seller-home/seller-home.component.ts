@@ -25,32 +25,32 @@ export class SellerHomeComponent implements OnInit {
     {
       id: 'profile',
       title: 'Profile',
-      icon: '',
+      icon: 'bi bi-person-fill',
       routerLink: 'profile',
-      collapse: true,
+      collapse: false,
       children: [],
     },
     {
       id: 'page',
       title: 'My Store',
-      icon: '',
+      icon: 'bi bi-shop',
       routerLink: 'page',
-      collapse: true,
+      collapse: false,
       children: [],
     },
     {
       id: 'inventory',
       title: 'Inventory',
-      icon: '',
+      icon: 'bi bi-cart-fill',
       routerLink: '',
-      collapse: true,
+      collapse: false,
       children: [
         {
           id: 'inventory-manage',
           title: 'Product lists',
           icon: '',
           routerLink: '/seller-central/inventory',
-          collapse: true,
+          collapse: false,
           children: [],
         },
         {
@@ -58,7 +58,7 @@ export class SellerHomeComponent implements OnInit {
           title: 'Add a product',
           icon: '',
           routerLink: '/seller-central/add-a-product',
-          collapse: true,
+          collapse: false,
           children: [],
         }
       ]
@@ -82,16 +82,16 @@ export class SellerHomeComponent implements OnInit {
     {
       id: 'settings',
       title: 'Settings',
-      icon: '',
+      icon: 'bi bi-gear-fill',
       routerLink: '',
-      collapse: true,
+      collapse: false,
       children: [
         {
           id: 'plan',
           title: 'Plan',
           icon: '',
           routerLink: '',
-          collapse: true,
+          collapse: false,
           children: [],
         },
         {
@@ -99,7 +99,7 @@ export class SellerHomeComponent implements OnInit {
           title: 'Billing',
           icon: '',
           routerLink: '',
-          collapse: true,
+          collapse: false,
           children: [],
         },
         {
@@ -107,7 +107,7 @@ export class SellerHomeComponent implements OnInit {
           title: 'Users and permissions',
           icon: '',
           routerLink: '',
-          collapse: true,
+          collapse: false,
           children: [],
         },
         {
@@ -115,7 +115,7 @@ export class SellerHomeComponent implements OnInit {
           title: 'Payments',
           icon: '',
           routerLink: '',
-          collapse: true,
+          collapse: false,
           children: [],
         },
         {
@@ -123,7 +123,7 @@ export class SellerHomeComponent implements OnInit {
           title: 'Checkout',
           icon: '',
           routerLink: '',
-          collapse: true,
+          collapse: false,
           children: [],
         },
         {
@@ -131,7 +131,7 @@ export class SellerHomeComponent implements OnInit {
           title: 'Shipping and delivery',
           icon: '',
           routerLink: '',
-          collapse: true,
+          collapse: false,
           children: [],
         },
         {
@@ -139,31 +139,24 @@ export class SellerHomeComponent implements OnInit {
           title: 'Taxes',
           icon: '',
           routerLink: '',
-          collapse: true,
+          collapse: false,
           children: [],
         },
       ],
     },
-    {
-      id: "logout",
-      title: "Logout",
-      icon: "",
-      routerLink: '../logout',
-      collapse: true,
-      children: [],
-    },
+    
   ];
 
   constructor(
     private auth: AuthService,
-    private alert: PopupService,
+    
     private offcanvasService: NgbOffcanvas
   ) {}
 
   ngOnInit(): void {
     this.accountName = this.auth.user?.first_name;
-    this.accountImagePath = this.auth.user?.image_url;
-    this.navBrand = this.auth.user?.brand.image_profile_url;
+    this.accountImagePath = this.auth.user?.profile_image;
+    this.navBrand = this.auth.user?.brand.profile_image;
   }
   open(content:any) {
     this.offcanvasService.open(content, {ariaLabelledBy: 'offcanvas-basic-title'});

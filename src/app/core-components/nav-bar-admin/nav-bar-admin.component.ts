@@ -7,11 +7,11 @@ import { AuthService } from 'src/app/auth/auth.service';
   styleUrls: ['./nav-bar-admin.component.scss']
 })
 export class NavBarAdminComponent implements OnInit {
-  brandProfileUrl = "";
+  brandProfileUrl:any;
   constructor(private auth: AuthService) { }
 
   ngOnInit(): void {
-    this.brandProfileUrl = this.auth.user.brand.image_profile_url;
+    this.brandProfileUrl = this.auth.user.brand.profile_image;
 
   }
 

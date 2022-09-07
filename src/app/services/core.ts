@@ -27,10 +27,12 @@ export interface ViewResult<T> {
 }
 
 export interface User {
+  id:string,
+  status:number,
   first_name: string;
   last_name: string;
   nrc_value: string;
-  image_url: string;
+  profile_image: string;
   email: string;
   phone: string;
   address: string;

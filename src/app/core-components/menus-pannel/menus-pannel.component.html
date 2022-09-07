@@ -1,6 +1,6 @@
 <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: menus }"></ng-container>
 <ng-template #recursiveListTmpl let-list="list">
-    <ul>
+    <ul >
         <li *ngFor="let item of list" class="nav-item navbar-collapse ">
             
             <button *ngIf="item.children.length > 0; else noButtons"
@@ -14,7 +14,7 @@
             <ng-template #noButtons>
                 <div class="btn btn-toggle btn-toggle-hover align-items-center rounded gap-2"  aria-expanded="false">
                     <i [class]="item.icon" *ngIf="item.icon && item.icon!==''"></i>
-                    <a [routerLink]="item.routerLink" class="text-nowrap" aria-label="Close" (click)="offControl?.close()">{{item.title}}</a>
+                    <a [routerLink]="item.routerLink" class="text-nowrap w-100 text-start" aria-label="Close" (click)="offControl?.close()">{{item.title}}</a>
                 </div>
             </ng-template>
 

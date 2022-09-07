@@ -43,6 +43,10 @@ import { ImageDirective } from './core-components/image.directive';
 import { OptionGroupFilterPipe } from './seller/product-additional-setup/option-group-filter.pipe';
 import { TypeaheadDirective } from './core-components/typeahead/typeahead.directive';
 import { TypeaheadCustomComponent } from './core-components/typeahead-custom/typeahead-custom.component';
+import { CategoryBreadcrumbPipe } from './core-components/category-breadcrumb.pipe';
+import { PasswordStrengthMeterModule } from 'angular-password-strength-meter';
+import { PasswordsInputDirective } from './core-components/passwords-input.directive';
+
 // const config: SocketIoConfig = {
 //   url: 'http://localhost:8084',
 //   options: { autoConnect: false },
@@ -80,6 +84,8 @@ import { TypeaheadCustomComponent } from './core-components/typeahead-custom/typ
     OptionGroupFilterPipe,
     TypeaheadDirective,
     TypeaheadCustomComponent,
+    CategoryBreadcrumbPipe,
+    PasswordsInputDirective,
   ],
   imports: [
     BrowserModule,
@@ -108,6 +114,8 @@ import { TypeaheadCustomComponent } from './core-components/typeahead-custom/typ
     NgxMaskModule.forRoot(),
     NgbModule,
     //SocketIoModule.forRoot(config),
+    PasswordStrengthMeterModule.forRoot()
+
   ],
   providers: [
     DatePipe,

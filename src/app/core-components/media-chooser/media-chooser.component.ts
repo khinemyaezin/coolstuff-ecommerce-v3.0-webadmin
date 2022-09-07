@@ -16,37 +16,40 @@ import { PopupService } from 'src/app/services/popup.service';
 import { Media } from '../media-chooser-model/media-chooser-model.component';
 
 export interface ImageCropperConfig {
-  base64: string,
-  ratio: number,
+  base64: string;
+  ratio: number;
 }
 export interface MediaChooserConfig {
   ratio?: string;
-  pagination: number
+  pagination: number;
 }
 @Component({
   selector: 'media-chooser',
   templateUrl: './media-chooser.component.html',
   styleUrls: ['./media-chooser.component.scss'],
 })
-export class MediaChooserComponent implements OnInit,OnChanges {
-  @ViewChild('wrapper') imageWrapper!:ElementRef;
+export class MediaChooserComponent implements OnInit, OnChanges {
+  @ViewChild('wrapper') imageWrapper!: ElementRef;
   @Input('src') media: any = {};
   @Input('title') title = '';
+  @Input('editable') editable: boolean = true;
   @Input('config') config: MediaChooserConfig = {
-    pagination : 12
+    pagination: 12,
   };
   @Output('output') output = new EventEmitter<Media>();
 
   constructor(
     public pgService: ControllerService,
     private popup: PopupService,
-    private render:Renderer2
+    private render: Renderer2
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-   if(this.imageWrapper)
-    this.render.removeClass(this.imageWrapper.nativeElement,'no-image');
-    
+    try{
+      if (this.imageWrapper && changes['media']['currentValue']['path']) {
+        this.render.removeClass(this.imageWrapper.nativeElement, 'no-image');
+      }
+    }catch(e){}
   }
 
   ngOnInit(): void {}
@@ -60,7 +63,6 @@ export class MediaChooserComponent implements OnInit,OnChanges {
   }
   onError() {
     console.log('error');
-    this.render.addClass(this.imageWrapper.nativeElement,'no-image');
+    this.render.addClass(this.imageWrapper.nativeElement, 'no-image');
   }
-
 }

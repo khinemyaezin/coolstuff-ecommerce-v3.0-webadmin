@@ -1,12 +1,12 @@
 <div class="img__wrap" #wrapper>
-    <img class="rounded" [src]="media?.path" (error)="onError()" />
+    <img class="rounded" [src]="media?.path" (error)="onError()" media-chooser="true" />
     <span class="no-image-content">
         <span><i class="bi bi-image"></i>
         </span>
     </span>
-    <div class="backdrop"></div>
+    <div class="backdrop" *ngIf="editable"></div>
 
-    <span class="img__description">
+    <span class="img__description" *ngIf="editable">
         <div class="w-100 p-2">{{title}}</div>
         <ul>
             <li>

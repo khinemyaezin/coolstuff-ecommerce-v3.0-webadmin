@@ -32,8 +32,18 @@
                                     <li class="list-group-item list-group-item-action" role="button" type="button"
                                         *ngFor="let c of categoryForm.get('categorySearchResult')?.value"
                                         (click)="selectCategory(c)">
-                                        <a class="">{{c.title}}</a><br>
-                                        <small class="text-muted">{{c.path}}</small>
+                                        <p><strong class="text-primary">{{c.title}}</strong></p>
+                                        <!-- <small class="text-muted">{{c.path}}</small> -->
+                                        <nav aria-label="breadcrumb" class="small">
+                                            <ol class="breadcrumb mb-0">
+                                                <ng-container
+                                                    *ngFor="let c of c.path | categoryBreadcrumb;let isLast = last">
+                                                    <li class="breadcrumb-item {{isLast ? 'active':''}}">
+                                                        {{c}}
+                                                    </li>
+                                                </ng-container>
+                                            </ol>
+                                        </nav>
                                     </li>
                                 </ul>
                             </div>
@@ -47,6 +57,7 @@
                 <form [formGroup]="productForm" (ngSubmit)="submit()">
                     <ng-container *ngTemplateOutlet="heading; context:{ submitBtn: true }">
                     </ng-container>
+
                     <div class="row g-2">
                         <div class="col-lg-4 ">
                             <!-- <div id="messageBox">
@@ -99,7 +110,7 @@
         </li>
         <li [ngbNavItem]="3">
             <ng-template ngbNavContent>
-                <form [formGroup]="productForm" (ngSubmit)="submit()">
+                <form [formGroup]="productForm" (ngSubmit)="onSubmitByVariant()">
                     <ng-container *ngTemplateOutlet="heading; context:{ submitBtn: true }">
                     </ng-container>
                     <div class="row g-2">
@@ -123,6 +134,10 @@
                                 <ng-container
                                     *ngTemplateOutlet="description; context: { formGroup: variant, index : i}">
                                 </ng-container>
+                                <!-- Attributes  -->
+                                <ng-container
+                                    *ngTemplateOutlet="attributeCard; context: { formGroup: variant, index : i}">
+                                </ng-container>
                             </div>
                         </div>
                     </div>
@@ -140,10 +155,19 @@
 
         <div class=" flex-grow-1">
             <h5 class="">Product Setup</h5>
-            <p class="text-muted small pe-2">
+            <!-- <p class="text-muted small pe-2">
                 When adding products here, do not ignore to fill all the required fields completely and follow the
                 product adding rules.
-            </p>
+            </p> -->
+            <nav aria-label="breadcrumb" class="small">
+                <ol class="breadcrumb mb-0">
+                    <ng-container *ngFor="let c of categoryBreadcrumb | categoryBreadcrumb;let isLast = last">
+                        <li class="breadcrumb-item {{isLast ? 'active':''}}">
+                            {{c}}
+                        </li>
+                    </ng-container>
+                </ol>
+            </nav>
         </div>
         <div class="d-flex gap-2 no-wrap">
             <button type="button" backButton name="Products" icon="bi bi-chevron-left"
@@ -319,9 +343,8 @@
         <div class="card-body">
             <div class="row mb-2">
                 <div class="col-sm-4">
-                    <label for="offerSku" class="w-100 col-form-label  text-lg-end text-sm-start">SKU</label>
+                    <label for="offerSku" class="w-100 col-form-label text-lg-end text-sm-start">SKU</label>
                 </div>
-
                 <div class="col-sm-8">
                     <input type="text" class="form-control" id="offerSku" placeholder="Stock keeping unit.."
                         [mask]="maskConfig.brand_sku_count" formControlName="sellerSku">
@@ -880,9 +903,10 @@
         </div>
         <div class="card-body">
             <ol class="nav-variants" *ngIf="variants">
-                <li *ngFor="let brothers of variantsMap|keyvalue" >
-                    <input type="radio" [id]="'brothers-'+brothers.key" name="selectVariants" (change)="routeChange($event)"
-                    [value]="'/seller-central/add-a-product/'+paramProductId+'/'+brothers.key"
+                <li *ngFor="let brothers of variantsMap|keyvalue">
+                    <input type="radio" [id]="'brothers-'+brothers.key" name="selectVariants"
+                        (change)="routeChange($event)"
+                        [value]="'/seller-central/add-a-product/'+paramProductId+'/'+brothers.key"
                         [checked]=" paramVariantId == brothers.key " />
                     <label class="wrapper text-capitalize" [for]="'brothers-'+brothers.key">
                         {{brothers.value.title}}

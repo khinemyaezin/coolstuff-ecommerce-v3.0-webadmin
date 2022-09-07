@@ -1,6 +1,9 @@
 @import "../../../custom-scss/bootstrap-variable.scss";
 $rps-table-heading-color: #edf2f9;
 
+.table-responsive {
+  min-height: 100%;
+}
 .table-responsive table {
   margin: 0;
   padding: 0;
@@ -21,7 +24,7 @@ $rps-table-heading-color: #edf2f9;
 
   .rps-table-row.rps-table-row-head {
     th {
-      padding: 0.5em;
+      padding: 1rem 0.5rem ;
       white-space: nowrap;
       vertical-align: middle;
     }
@@ -31,7 +34,7 @@ $rps-table-heading-color: #edf2f9;
       z-index: 2;
       box-shadow: -0.1rem -0.1rem 0 0 rgba(225, 227, 229, 1);
       filter: drop-shadow(-0.1rem 0 0 rgba(225, 227, 229, 1));
-      padding-right: 0px;
+      //padding-right: 0px;
       margin-right: 0px;
       background-color: $rps-table-heading-color;
     }
@@ -64,13 +67,13 @@ $rps-table-heading-color: #edf2f9;
     }
 
     .rps-table-cell-content {
-      overflow: hidden;
+      //overflow: hidden;
       &.word-break {
-        max-width: 15rem;
-        .btn-toggle {
-          flex-flow: row wrap;
-          word-break: break-word;
-        }
+        width: 15rem;
+        // .btn-toggle {
+        //   flex-flow: row wrap;
+        //   word-break: break-word;
+        // }
       }
       .product-image-container {
         width: 4rem !important;
@@ -105,5 +108,11 @@ $rps-table-heading-color: #edf2f9;
         text-align: end;
       }
     }
+  }
+}
+
+#controls-bar {
+  #searchbox {
+    max-width: 20rem;
   }
 }

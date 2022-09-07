@@ -42,6 +42,7 @@ interface HttpOptions {
 export class ServerService {
   private _CONFIG!: CONFIG;
   private _SYSTEM: any;
+  private sessionURL = 'sessions/user';
 
   constructor(
     private http: HttpClient,
@@ -65,14 +66,13 @@ export class ServerService {
           this._CONFIG = next[0] as CONFIG;
           this._SYSTEM = next[1];
 
-          this.GET('sessions/user').subscribe({
+          this.GET(this.sessionURL).subscribe({
             next: (body: any) => {
               this.auth.signin(body.details);
               res();
             },
             error: (err) => {
               console.log(err);
-              //this.router.navigateByUrl('/');
               res();
             },
           });
@@ -104,7 +104,7 @@ export class ServerService {
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        if (err.status == HttpStatusCode.Unauthorized) {
+        if (err.status == HttpStatusCode.Unauthorized && myurl !== this.sessionURL) {
           this.router.navigate(['/signin']);
         }
         throw `error in source. Details:${err.statusText} `;
@@ -235,6 +235,11 @@ export class ServerService {
     }
     return options;
   }
+
+  logout() {
+    this.GET('logout')
+  }
+
 }
 
 export enum CsHttpObserveType {

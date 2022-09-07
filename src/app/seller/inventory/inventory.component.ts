@@ -112,7 +112,6 @@ export class InventoryComponent implements OnInit {
     return this.variantsChanges.size;
   }
 
-
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
@@ -143,16 +142,20 @@ export class InventoryComponent implements OnInit {
           this.conditions = values[1].details.data;
         }
       }
-    );
-    console.log(this.productFormGroup.value);
-    
+    ).catch((e)=>{
+
+    })
   }
 
   prepare(variants: any) {
     const vari = this.fb.group(variants) as FormGroup;
-    vari.get('buy_price')?.addValidators([Validators.required,Validators.min(0)]);
-    vari.get('selling_price')?.addValidators([Validators.required,Validators.min(0)]);
-    vari.get('qty')?.addValidators([Validators.required,Validators.min(0)]);
+    vari
+      .get('buy_price')
+      ?.addValidators([Validators.required, Validators.min(0)]);
+    vari
+      .get('selling_price')
+      ?.addValidators([Validators.required, Validators.min(0)]);
+    vari.get('qty')?.addValidators([Validators.required, Validators.min(0)]);
     vari.addControl(
       'title',
       this.fb.control(
@@ -193,8 +196,8 @@ export class InventoryComponent implements OnInit {
       condition: variants['condition'].id,
     });
     return vari;
-  }  
-  
+  }
+
   traceChanges(variant: AbstractControl, control: string) {
     const id = variant.get('id')?.value;
 
@@ -208,7 +211,7 @@ export class InventoryComponent implements OnInit {
           selling_price: variant.get('selling_price')?.value,
           qty: variant.get('qty')?.value,
           condition: variant.get('condition')?.value.id,
-        });        
+        });
         const jsonDefault = this.defaultVariants.get(id);
 
         if (jsonChanges != JSON.stringify(jsonDefault)) {
@@ -298,40 +301,39 @@ export class InventoryComponent implements OnInit {
         (variant: AbstractControl) => {
           return {
             id: variant.get('id')?.value,
-            buy_price: variant.get('buy_price')?.value ?? 0.0,
-            selling_price: variant.get('selling_price')?.value ?? 0.0,
+            buy_price: this.pgService.safeNum(variant.get('buy_price')?.value),
+            selling_price: this.pgService.safeNum(
+              variant.get('selling_price')?.value
+            ),
             qty: variant.get('qty')?.value ?? 0,
-            condition: variant.get('condition')?.value?.id,
+            fk_condition_id: variant.get('condition')?.value?.id,
           };
         }
       ),
     };
-    this.http.PUT('prod-variants', values).subscribe({
-      next: (result: any) => {
-        if (result.status == 200) {
-          // this.popup.alert('Success!').then(() => {
-          //   // Reset states
-            
-          // });
-          this.productFormGroup.markAsPristine();
-            //$(`.def-value`).css('display', 'none');
-
+    this.http
+      .PUT(`brands/${this.auth.user.brand.id}/inventory/variants`, values)
+      .subscribe({
+        next: (result: any) => {
+          if (result.status == 200) {
+            this.productFormGroup.markAsPristine();
             values.variants.forEach((v) => {
               this.defaultVariants.set(v.id, {
                 buy_price: v['buy_price'],
                 selling_price: v['selling_price'],
                 qty: v['qty'],
-                condition: v['condition'],
+                condition: v['fk_condition_id'],
               });
             });
 
             this.variantsChanges.clear();
-        } else {
-        }
-      },
-      error: (err) => { console.log(err);
-      },
-    });
+          } else {
+          }
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
     console.log(values);
   }
 }

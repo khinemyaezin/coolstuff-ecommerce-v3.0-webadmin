@@ -1,5 +1,8 @@
 @import "../../../custom-scss/bootstrap-variable.scss";
 
+.container {
+  max-width: 1000px;
+}
 .brand-profile {
   position: relative;
   .brand-cover {
@@ -31,7 +34,7 @@
       position: absolute;
       overflow: hidden;
       border-radius: 50%;
-      bottom: 0;
+      top: -3rem;
       align-self: flex-start;
       left: 0;
       margin-right: 16px;
@@ -62,8 +65,8 @@
       width: 100%;
       flex-grow: 1;
       background-color: $white;
-      padding: $spacer;
-      line-height: 0.5rem;
+      padding: 1rem;
+      //line-height: 0.5rem;
       .badge {
         //transform: translate(-50%, -50%) !important;
         transform: translate(80%, -20%) !important;
@@ -71,6 +74,28 @@
         right: 0;
         top: 0;
         color: $primary;
+      }
+      #showcase {
+        p {
+          padding: 0;
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+.user-profile {
+  .profile {
+    ::ng-deep .img__wrap {
+      position: relative !important;
+      display: block !important;
+      height: 10rem !important;
+      border-radius: 50% !important;
+      overflow: hidden !important;
+      img {
+        height: 10rem !important;
+        width: 10rem !important;
+        object-fit: contain;
       }
     }
   }

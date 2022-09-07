@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { PopupService } from 'src/app/services/popup.service';
 import { ServerService } from 'src/app/services/server.service';
@@ -9,7 +9,8 @@ import { ServerService } from 'src/app/services/server.service';
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
-  
+  @ViewChild('nav') public nav!: any;
+  activeTabId= 1;
   brandFormGroup: FormGroup = new FormGroup({
     'brand-name': new FormControl('Apple', Validators.required),
     'brand-cover': new FormControl(),
@@ -23,6 +24,14 @@ export class RegisterComponent implements OnInit {
     'user-address': new FormControl('yangon', Validators.required),
     'password': new FormControl('123'),
   });
+
+  get tabPercentager() {
+    const total = 100/2;
+    const result = total*(this.activeTabId-1);
+    console.log(result);
+    
+    return result;
+  }
   constructor(private http:ServerService,private alert:PopupService) { }
 
   ngOnInit(): void {
@@ -36,8 +45,8 @@ export class RegisterComponent implements OnInit {
       brand: {
         title: this.brandFormGroup.get('brand-name')?.value,
         region_id: '146',
-        image_profile_url: null,
-        image_cover_url: null,
+        profile_image: null,
+        cover_image: null,
       },
       user: {
         first_name: this.accountFormGroup.get('user-firstname')?.value,

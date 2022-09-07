@@ -258,10 +258,10 @@ $placeholder-color : $gray-500;
     color: $white;
   }
   &.btn-toggle-hover[aria-expanded="true"] {
-    color: $primary;
+    //color: $primary;
   }
   &.btn-toggle-hover[aria-expanded="true"]:hover {
-    color: $white;
+    //color: $white;
   }
   &[aria-expanded="true"][menu-arrow="true"]::after {
     transform: rotate(90deg);

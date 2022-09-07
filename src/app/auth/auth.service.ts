@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { User, UserTypes } from '../services/core';
+import { ServerService } from '../services/server.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,10 +16,12 @@ export class AuthService {
 
   public signin(request: any) {
     this.curUser = {
+      id:request.user.id,
+      status:request.user.status,
       first_name: request.user.first_name,
       last_name: request.user.last_name,
       nrc_value: request.user.nrc_value,
-      image_url: request.user.image_url,
+      profile_image: request.user.profile_image,
       email: request.user.email,
       phone: request.user.phone,
       address: request.user.address,
