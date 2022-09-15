@@ -9,7 +9,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IConfig } from 'ngx-mask';
 import {
   Subject,
   takeUntil,
@@ -18,7 +17,7 @@ import {
   forkJoin,
 } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
-import { PaginationLink } from 'src/app/core-components/pagination/pagination.component';
+import { Pagination, PaginationComponent } from 'src/app/core-components/pagination/pagination.component';
 import { ControllerService } from 'src/app/services/controller.service';
 import { PopupService } from 'src/app/services/popup.service';
 import { ServerService } from 'src/app/services/server.service';
@@ -43,7 +42,7 @@ export class InventoryComponent implements OnInit {
     pageStyleGrid: new FormControl(true),
   });
   conditions: any = [];
-  paginationLinks: PaginationLink[] = [];
+  pagination!: Pagination;
 
   productMenuStatus = {
     pending: 1,
@@ -121,33 +120,44 @@ export class InventoryComponent implements OnInit {
 
   ngOnInit(): void {
     this.init();
+
+    this.productCriFormGroup.get('name')?.valueChanges
+    .pipe(takeUntil(this.destroy$),debounceTime(300)).subscribe(
+      (changes:string)=>{
+
+        let params = new HttpParams();
+        params = params.set('search', changes);
+        lastValueFrom(this.getProducts(params))
+          .then((result: any) => {
+            if(result.status == 200 ) {
+              this.importProducts(result.details)
+            }
+          })
+          .catch(() => {
+            return null;
+          });
+       
+      }
+    )
   }
 
   async init() {
     const getProducts = this.getProducts();
     const getConditions = this.sellerService.getConditionList();
 
-    await lastValueFrom(forkJoin([getProducts, getConditions])).then(
-      (values: any[]) => {
+    await lastValueFrom(forkJoin([getProducts, getConditions]))
+      .then((values: any[]) => {
         if (values[0] && values[0].status == 200) {
-          (<FormArray>this.productFormGroup.get('products')).clear();
-          values[0].details.data.forEach((variants: any) => {
-            (<FormArray>this.productFormGroup.get('products')).push(
-              this.prepare(variants)
-            );
-          });
-          this.paginationLinks = values[0].details.links;
+         this.importProducts(values[0].details);
         }
         if (values[1] && values[1].status == 200) {
           this.conditions = values[1].details.data;
         }
-      }
-    ).catch((e)=>{
-
-    })
+      })
+      .catch((e) => {});
   }
 
-  prepare(variants: any) {
+  createInventoryProduct(variants: any) {
     const vari = this.fb.group(variants) as FormGroup;
     vari
       .get('buy_price')
@@ -234,13 +244,25 @@ export class InventoryComponent implements OnInit {
       });
   }
 
+  importProducts(resp: any) {
+    (<FormArray>this.productFormGroup.get('products')).clear();
+
+    resp.data.map((variants: any) => {
+      (<FormArray>this.productFormGroup.get('products')).push(
+        this.createInventoryProduct(variants)
+      );
+    });
+
+    this.pagination  = PaginationComponent.convertPaginationObject(resp);
+  }
+
   /** Http */
   async getVariants(product: any) {
     let variants = <FormArray>product.get('variants');
     if (variants.controls.length !== 0) return;
     let params = new HttpParams();
-    params = params.set('product_id', product.get('product')?.value?.id);
-    params = params.set('filter_variants', product.get('id')?.value);
+    params = params.set('productId', product.get('product')?.value?.id);
+    params = params.set('filterVariants', product.get('id')?.value);
     const products = await lastValueFrom(this.getProducts(params))
       .then((result: any) => {
         return result.status == 200 ? result.details : null;
@@ -252,7 +274,7 @@ export class InventoryComponent implements OnInit {
       return;
     }
     products.forEach((e: any) => {
-      variants.push(this.prepare(e));
+      variants.push(this.createInventoryProduct(e));
     });
   }
 
@@ -263,28 +285,19 @@ export class InventoryComponent implements OnInit {
     );
   }
 
-  async URL(url: string | null) {
+  async pageChange(url: string | null) {
     if (url) {
-      const products = await lastValueFrom(this.http.fetch(url))
+      const productsResponse = await lastValueFrom(this.http.fetch(url))
         .then((result) => {
           return result.status == 200 ? result.details : null;
         })
         .catch(() => {
           return null;
         });
-      if (!products) {
+      if (!productsResponse) {
         return;
       }
-
-      (<FormArray>this.productFormGroup.get('products')).clear();
-
-      products.data.map((variants: any) => {
-        (<FormArray>this.productFormGroup.get('products')).push(
-          this.prepare(variants)
-        );
-      });
-
-      this.paginationLinks = products.links;
+      this.importProducts(productsResponse)
     }
   }
 

@@ -27,8 +27,6 @@ export class SignInComponent implements OnInit {
   ngOnInit(): void {}
 
   login() {
-    if (!this.loginFormGroup.valid) return;
-
     // Prepare to login.
     let param = {
       email: this.loginFormGroup.controls['email'].value,
@@ -38,9 +36,7 @@ export class SignInComponent implements OnInit {
     this.http.POST('login', param).subscribe({
       next: (body) => {
         if (body.status == 200) {
-          this.authService.signin(body.details);
-          this.authService.identifyUser();
-          
+          this.authService.signin(body.details);          
         }
       },
       error: (e) => {

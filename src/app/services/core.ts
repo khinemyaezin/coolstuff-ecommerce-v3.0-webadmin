@@ -27,23 +27,23 @@ export interface ViewResult<T> {
 }
 
 export interface User {
-  id:string,
-  status:number,
+  id: string;
+  status: number;
   first_name: string;
   last_name: string;
   nrc_value: string;
-  profile_image: string;
+  profile_image: any;
   email: string;
   phone: string;
   address: string;
   brand: any;
-  user_type: any;
+  user_type: UserTypes;
   user_roles: [];
 }
 export const enum UserTypes {
-  ADMIN = 'admin',
-  SELLER = 'brand_owner',
-  USER = 'user',
+  ADMIN = '1',
+  SELLER = '2',
+  USER = '3',
 }
 
 export interface Product {
@@ -64,4 +64,23 @@ export interface Product {
   created_at: string;
   updated_at: string;
   variants: any;
+}
+export interface Category {
+  id: string|null;
+  biz_status: number;
+  title: string;
+  full_path: string;
+  lft: number;
+  rgt: number;
+  created_at: string;
+  updated_at: string;
+}
+export interface CategoryLeave {
+  id: string|null;
+  biz_status: number;
+  title: string;
+  full_path: string;
+  lft: number;
+  rgt: number;
+  lvl_id:string|null
 }

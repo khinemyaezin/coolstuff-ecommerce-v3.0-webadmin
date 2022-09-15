@@ -10,5 +10,7 @@ $spacer:1.6rem;
 $alert-padding-y: 1rem;
 $alert-padding-x:  $spacer;
 $alert-margin-bottom:  $spacer * .5;
+$font-family-base:"Inter", sans-serif;
+
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";

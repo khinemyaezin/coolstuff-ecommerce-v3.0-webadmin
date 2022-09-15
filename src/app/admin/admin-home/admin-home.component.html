@@ -1,2 +1,37 @@
-<h1>hello</h1>      
-<router-outlet></router-outlet>
+<div>
+    <nav class="navbar navbar-expand-lg bg-light shadow-sm sticky-top">
+      <div class="container">
+        <a class="navbar-toggler" role="button" type="button" (click)="open(content)" aria-controls="side-menu">
+          <i class="bi bi-list"></i>
+        </a>
+        <a class="navbar-brand" href="#">
+            <img [src]="''" alt="" height="50">
+          </a>
+        <div>
+          <user-controls-menu></user-controls-menu>
+        </div>
+  
+      </div>
+    </nav>
+    <div class="d-flex">
+      <div class="offcanvas-expand " style="min-width: 21.875rem;">
+        <ng-template *ngTemplateOutlet="menuTemplate ; context:{ offcanvas: null }"></ng-template>
+      </div>
+      <main class="offcanvas-enabled">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+  </div>
+  
+  <ng-template #content let-offcanvas>
+    <ng-template *ngTemplateOutlet="menuTemplate; context:{ offcanvas: offcanvas } "></ng-template>
+  </ng-template>
+  
+  <ng-template #menuTemplate let-offcanvas="offcanvas">
+    <div class="offcanvas-body px-0">
+      <div class="py-5">
+        <menus [menus]="menus" [offcanvas]="offcanvas"></menus>
+        <!-- <a (click)="">Logout</a> -->
+      </div>
+    </div>
+  </ng-template>

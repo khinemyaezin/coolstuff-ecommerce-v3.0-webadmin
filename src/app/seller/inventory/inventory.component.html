@@ -1,4 +1,4 @@
-<main class="container">
+<main class="container pb-2">
 
     <ng-container *ngTemplateOutlet="heading; context:{ submitBtn: true }">
     </ng-container>
@@ -8,7 +8,7 @@
             <div class="card-title">Manage Inventory</div>
         </div>
         <div class="card-body">
-            <div class="d-flex flex-wrap mb-3 gap-2" id="controls-bar">
+            <div class="d-flex flex-wrap mb-3 gap-2 controls-bar">
                 <div [formGroup]="productCriFormGroup" class="flex-grow-1">
                     <div class="input-group border rounded" id="searchbox">
                         <input class="form-control border-0 rounded-end" type="text" placeholder="Search SKU, Name"
@@ -42,7 +42,10 @@
                         <ng-template ngFor let-prod let-i="index" [ngForOf]="productVariationControls">
                             <tbody [formGroupName]="i">
                                 <ng-container
-                                    *ngTemplateOutlet="variantTemplate; context:{ vari: prod, index: i , isStandAlone: prod.get('product')?.value?.variant_option1_hdr == null ,isParent: true, trigger: variantCollapse}">
+                                    *ngTemplateOutlet="variantTemplate; context:{ 
+                                        vari: prod, index: i , isStandAlone: prod.get('product')?.value?.variant_option1_hdr == null ,
+                                        isParent: true, trigger: variantCollapse, offset:inventoryProductPagination.offset
+                                    }">
                                 </ng-container>
                             </tbody>
                             <ng-container [formGroupName]="i">
@@ -64,8 +67,8 @@
 
                 </table>
             </div>
-            <div class="d-flex justify-content-between py-3">
-                <app-pagination [links]="paginationLinks"></app-pagination>
+            <div class="d-flex justify-content-end py-3">
+                <app-pagination #inventoryProductPagination [source]="pagination" (pageChange)="pageChange($event)"></app-pagination>
             </div>
 
         </div>
@@ -139,7 +142,7 @@
 
 </main>
 
-<ng-template #heading let-submitBtn="submitBtn">
+<ng-template #heading >
 
     <div class="d-flex justify-content-between py-3 align-items-center flex-wrap gap-3">
 
@@ -157,11 +160,10 @@
 
 </ng-template>
 <ng-template #variantTemplate let-vari="vari" let-index="index" let-childIndex="childIndex" let-trigger="trigger"
-    let-isStandAlone="isStandAlone" let-isParent="isParent">
+    let-isStandAlone="isStandAlone" let-isParent="isParent" let-offset="offset">
     <tr class="rps-table-row" [formGroup]="vari" [attr.data-id]="vari.get('id')?.value">
         <th class="rps-table-cell">
-            <span *ngIf="isParent">{{index+1}}</span>
-
+            <span *ngIf="isParent">{{offset+index}}</span>
         </th>
         <td class="rps-table-cell">
             <div class="rps-table-cell-content  ">
@@ -188,11 +190,11 @@
 
             </div>
         </td>
-        <td class="rps-table-cell">
+        <td class="rps-table-cell max-width">
             <div class="rps-table-cell-heading">
                 Name
             </div>
-            <div class="rps-table-cell-content word-break">
+            <div class="rps-table-cell-content">
                 <div *ngIf="!isStandAlone && isParent; then toggleArrow else plainText"></div>
 
                 <ng-template #toggleArrow>

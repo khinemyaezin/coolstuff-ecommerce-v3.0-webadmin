@@ -25,7 +25,7 @@ export class BackButtonDirective implements OnInit,OnDestroy,AfterViewInit{
 
     let title = document.createElement('span');
     title.innerHTML = this.name;
-    this.render.setStyle(this.elementRef.nativeElement, 'margin-left', '-1rem');
+    //this.render.setStyle(this.elementRef.nativeElement, 'margin-left', '-1rem');
     this.render.appendChild(this.elementRef.nativeElement,icon);
     this.render.appendChild(this.elementRef.nativeElement,title);
   }

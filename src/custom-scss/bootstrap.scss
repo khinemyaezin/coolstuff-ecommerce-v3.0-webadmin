@@ -15,16 +15,12 @@
       margin-bottom: 0px;
     }
   }
-
   .card-footer {
     text-transform: unset;
   }
   .card-header {
     padding: 1.5rem 1.5rem 0.5rem 1.5rem;
   }
-  // .card-body {
-  //   padding-top: 1.5rem;
-  // }
   .card-footer {
     padding: 0.5rem 1.5rem 1.5rem 1.5rem;
   }
@@ -49,6 +45,10 @@
   visibility: visible !important;
   z-index: 0;
   flex: 0 1 21.875rem;
+  // background-color: $white;
+  // padding-right: 2rem;
+  // box-shadow: $box-shadow;
+  // box-sizing: border-box;
 
   .offcanvas-body {
     @include media-breakpoint-up(md) {
@@ -59,7 +59,7 @@
     }
   }
 
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down(lg) {
     // z-index: $zindex-offcanvas;
     display: none;
     width: 0px;

@@ -1,6 +1,6 @@
 <nav aria-label="Page navigation example">
     <ul class="pagination">
-        <ng-template ngFor let-page let-index="index" [ngForOf]="links">
+        <ng-template ngFor let-page let-index="index" [ngForOf]="paginationLink">
             <li [ngClass]="{ 'page-item': true, 'active': page.active, 'disabled': !page.url  }">
                 <a class="page-link" role="button" [innerHTML]="page?.label" (click)="fetch(page.url)">
                 </a>

@@ -22,7 +22,7 @@ export class SellerGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (this.auth.isLogin()) return true;
+    if (this.auth.isSeller) return true;
     else {
       this.router.navigate(['/signin']);
       return false;

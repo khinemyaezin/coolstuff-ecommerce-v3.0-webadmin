@@ -34,7 +34,7 @@ export class SellerHomeComponent implements OnInit {
       id: 'page',
       title: 'My Store',
       icon: 'bi bi-shop',
-      routerLink: 'page',
+      routerLink: 'store',
       collapse: false,
       children: [],
     },

@@ -210,7 +210,7 @@
                             <label class="col-sm-4 col-form-label text-lg-end text-sm-start">New Password</label>
                             <div class="col-sm-8">
                                 <div class="d-flex position-relative">
-                                    <input type="password" passwordShowHide class="form-control"
+                                    <input type="password" passwordShowHide class="form-control" autocomplete="on"
                                         placeholder="New Password" formControlName="newPassword">
 
                                 </div>
@@ -227,7 +227,7 @@
                             <label class="col-sm-4 col-form-label text-lg-end text-sm-start">Confirm Password</label>
                             <div class="col-sm-8">
                                 <div class="d-flex position-relative">
-                                    <input type="password" class="form-control" placeholder="Confirm Password"
+                                    <input type="password" class="form-control" placeholder="Confirm Password" autocomplete="on"
                                         formControlName="confirmPassword" passwordShowHide>
                                 </div>
                                 <div *ngIf="authenForm.dirty" class="py-1">

@@ -18,7 +18,7 @@
                             <label for="category-name" class="form-label">Browse </label>
                             <div class="input-group border">
                                 <input type="text" class="form-control border-0 " list="datalistOptions"
-                                    id="category-name" placeholder="Search category" formControlName="categorySearch">
+                                    id="category-name" placeholder="Search category" formControlName="search">
                                 <span class="p-1 spinner">
                                     <div class="spinner-border" role="status">
                                         <span class="visually-hidden">Loading...</span>
@@ -30,14 +30,14 @@
 
                                 <ul class="list-group list-group-flush py-3" id="category-query-data">
                                     <li class="list-group-item list-group-item-action" role="button" type="button"
-                                        *ngFor="let c of categoryForm.get('categorySearchResult')?.value"
+                                        *ngFor="let c of categoryForm.get('searchResultList')?.value"
                                         (click)="selectCategory(c)">
                                         <p><strong class="text-primary">{{c.title}}</strong></p>
                                         <!-- <small class="text-muted">{{c.path}}</small> -->
                                         <nav aria-label="breadcrumb" class="small">
                                             <ol class="breadcrumb mb-0">
                                                 <ng-container
-                                                    *ngFor="let c of c.path | categoryBreadcrumb;let isLast = last">
+                                                    *ngFor="let c of c.full_path | categoryBreadcrumb;let isLast = last">
                                                     <li class="breadcrumb-item {{isLast ? 'active':''}}">
                                                         {{c}}
                                                     </li>
@@ -897,11 +897,10 @@
 </ng-template>
 <ng-template #variantInfo let-formGroup="formGroup">
     <div class="card mb-2" [formGroup]="formGroup">
-        <div class="card-header">
+        <div class="card-body">
             <small class="text-primary">{{formGroup.get('brand')?.value}}</small>
             <div class="card-title">{{formGroup.get('title')?.value}}</div>
-        </div>
-        <div class="card-body">
+            <hr>
             <ol class="nav-variants" *ngIf="variants">
                 <li *ngFor="let brothers of variantsMap|keyvalue">
                     <input type="radio" [id]="'brothers-'+brothers.key" name="selectVariants"

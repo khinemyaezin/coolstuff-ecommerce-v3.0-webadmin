@@ -30,8 +30,8 @@ import {
   Subject,
   takeUntil,
 } from 'rxjs';
-import { HttpParams } from '@angular/common/http';
-import { MaskConfig } from 'src/app/services/core';
+import { HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { Category, CategoryLeave, MaskConfig } from 'src/app/services/core';
 import { MediaChooserConfig } from 'src/app/core-components/media-chooser/media-chooser.component';
 
 @Component({
@@ -45,9 +45,9 @@ export class ProductAdditionalSetupComponent
   @ViewChild('nav') public tabs!: any;
 
   categoryForm: FormGroup = new FormGroup({
-    categorySearch: new FormControl(''),
-    categorySearchResult: new FormControl([]),
-    categorySelected: new FormControl({ path: '' }),
+    search: new FormControl(''),
+    searchResultList: new FormControl([]),
+    data: new FormControl<CategoryLeave|null>(null),
   });
   productForm: FormGroup = new FormGroup({
     id: new FormControl(),
@@ -118,7 +118,7 @@ export class ProductAdditionalSetupComponent
   }
 
   get categoryBreadcrumb():string {
-    return this.categoryForm.get('categorySelected')?.value?.path;
+    return this.categoryForm.get('data')?.value?.path;
   }
 
   constructor(
@@ -175,18 +175,6 @@ export class ProductAdditionalSetupComponent
     } else {
       this.getVariants.push(this.standAloneVariant);
       this.ref.detectChanges();
-      // this.selectCategory({
-      //   id: '19',
-      //   biz_status: 2,
-      //   title: 'Tops, T-Shirts & Shirts',
-      //   depth: 5,
-      //   path: 'root > Clohing, Shoes & Watches > Fashion > Man > Clothing > Tops, T-Shirts & Shirts',
-      //   lft: 90,
-      //   rgt: 91,
-      //   level_category_id: 39,
-      //   created_at: null,
-      //   updated_at: null,
-      // });
     }
   }
 
@@ -257,23 +245,17 @@ export class ProductAdditionalSetupComponent
   /** Category */
 
   browseCategory() {
-    this.categoryForm.controls['categorySearch'].valueChanges
+    this.categoryForm.controls['search'].valueChanges
       .pipe(debounceTime(1000), distinctUntilChanged())
       .subscribe((changes: any) => {
         if (this.pgService.isEmptyOrSpaces(changes)) {
-          this.categoryForm.controls['categorySearchResult'].setValue([]);
+          this.categoryForm.controls['searchResultList'].setValue([]);
         } else {
           // Request categories.
           lastValueFrom(this.getCategory(changes)).then((resp: any) => {
-            //$('#browse-category').removeClass('query');
             if (resp.status == 200) {
-              //$('#browse-category').removeClass('query');
-              this.categoryForm.get('categorySearchResult')?.setValue(
-                resp.details.map((category: any) => {
-                  // category.path = category.path.replace(
-                  //   new RegExp('/', 'g'),
-                  //   ' > '
-                  // );
+              this.categoryForm.get('searchResultList')?.setValue(
+                resp.details.map((category: Category) => {
                   return category;
                 })
               );
@@ -283,24 +265,20 @@ export class ProductAdditionalSetupComponent
       });
   }
 
-  selectCategory(category: any) {
+  selectCategory(category: CategoryLeave) {
     this.importCategory(category);
     
     this.importAttributesToDefaultVariant(
-      this.categoryForm.get('categorySelected')?.value.level_category_id,
+      this.categoryForm.get('data')?.value.lvl_id,
       this.getVariants
     );
     this.tabs.select(2)
   }
 
-  importCategory(category: any) {
-    this.categoryForm.controls['categorySearch'].setValue('');
-    this.categoryForm.controls['categorySearchResult'].setValue([]);
-    // category.category.path = (<string>category.path).replace(
-    //   new RegExp('/', 'g'),
-    //   ' > '
-    // );
-    this.categoryForm.controls['categorySelected'].setValue(category);
+  importCategory(category: CategoryLeave) {
+    this.categoryForm.controls['search'].setValue('');
+    this.categoryForm.controls['searchResultList'].setValue([]);
+    this.categoryForm.controls['data'].setValue(category);
   }
 
   /** Description */
@@ -415,7 +393,7 @@ export class ProductAdditionalSetupComponent
       edit: new FormControl(false),
       id: new FormControl('-1'),
       status: new FormControl(2),
-      sellerSku: new FormControl(''),
+      sellerSku: new FormControl(this.pgService.randomString(10)),
       variantOptions: new FormControl([
         this.fb.group({
           header: new FormControl(hdr1),
@@ -1053,7 +1031,7 @@ export class ProductAdditionalSetupComponent
     let httpParam = new HttpParams();
     httpParam = httpParam.set(
       'relationships',
-      'variants,myBrand,category,packType,currency,variantOption1Hdr,variantOption2Hdr,variantOption3Hdr'
+      'variants,myBrand,category,lvlCategory,packType,currency,variantOption1Hdr,variantOption2Hdr,variantOption3Hdr'
     );
     httpParam = httpParam.set(
       'variants',
@@ -1104,9 +1082,26 @@ export class ProductAdditionalSetupComponent
       .catch(() => {
         return null;
       });
+    if(!product) {
+      loading.dismiss();
+      return;
+    }
     this.defImportProduct = product;
     this.importVitalInfoForm(product);
-    this.importCategory(product.category);
+
+    let categoryLeave:CategoryLeave = {
+      id: null,
+      biz_status: 0,
+      title: '',
+      full_path: '',
+      lft: 0,
+      rgt: 0,
+      lvl_id: null
+    }
+    Object.assign(categoryLeave, product.category);
+    categoryLeave.lvl_id = product.fk_lvlcategory_id;    
+    this.importCategory(categoryLeave);
+    
     await this.importVariants(product);
 
     loading.dismiss();
@@ -1224,7 +1219,7 @@ export class ProductAdditionalSetupComponent
     }
     if (data.has_variant) {
       this.importAttributesToDefaultVariant(
-        this.categoryForm.get('categorySelected')?.value.level_category_id,
+        this.categoryForm.get('data')?.value.lvl_id,
         this.getVariants
       );
     }
@@ -1471,7 +1466,7 @@ export class ProductAdditionalSetupComponent
   get optionHeaderTypeaheadConfig() {
     return {
       url: `categories/${
-        this.categoryForm.get('categorySelected')?.value.level_category_id
+        this.categoryForm.get('data')?.value.lvl_id
       }/attributes`,
     };
   }
@@ -1486,6 +1481,7 @@ export class ProductAdditionalSetupComponent
   }
 
   async submit() {
+    
     let param: any = {
       id: this.productForm.value.id,
       biz_status: this.productForm.value.status,
@@ -1494,7 +1490,8 @@ export class ProductAdditionalSetupComponent
       brand: this.productForm.value.brand,
       package_qty: 0,
       fk_brand_id: this.authService.user.brand.id,
-      fk_category_id: this.categoryForm.value.categorySelected?.id,
+      fk_category_id: this.categoryForm.value.data?.id,
+      fk_lvlcategory_id: this.categoryForm.value.data?.lvl_id,
       fk_packtype_id: this.productForm.value.packType?.id,
       fk_prod_group_id: null,
       fk_currency_id: this.productForm.value.currency?.id,
@@ -1610,6 +1607,19 @@ export class ProductAdditionalSetupComponent
       }, '');
     });
     this.importVitalInfoForm(variantResponse[variantId]['product']);
+
+    let categoryLeave:CategoryLeave = {
+      id: null,
+      biz_status: 0,
+      title: '',
+      full_path: '',
+      lft: 0,
+      rgt: 0,
+      lvl_id: null
+    }
+    Object.assign(categoryLeave, variantResponse[variantId]['product']['category']);
+    categoryLeave.lvl_id =variantResponse[variantId]['product']['fk_lvlcategory_id'];    
+    this.importCategory(categoryLeave);
     this.importCategory(variantResponse[variantId]['product']['category']);
 
     this.getVariants.clear();

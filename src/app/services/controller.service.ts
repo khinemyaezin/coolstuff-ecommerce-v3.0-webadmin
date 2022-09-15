@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { ElementRef, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { easepick, LockPlugin, PresetPlugin, RangePlugin } from '@easepick/bundle';
 import * as moment from 'moment';
 @Injectable({
@@ -9,7 +10,7 @@ export class ControllerService {
   readonly DATEPIPE_FORMAT = 'dd-MM-YYYY h:mm:ss a'; //h:mm:ss a
   readonly MOMENT_FORMAT = 'DD-MM-YYYY h:mm:ss a';
 
-  constructor(private datepie: DatePipe) {}
+  constructor(private datepie: DatePipe,private router:Router) {}
 
   /** Date Utility */
   dateTransform(date: Date) {
@@ -19,7 +20,7 @@ export class ControllerService {
     return moment(date, this.MOMENT_FORMAT).toDate();
   }
   /** Nested Tree */
-  traverse(data: any) {
+  traverse(data: any):any[] {
     const tree: any = [];
     const treeObj = [tree];
     data.forEach(
@@ -132,7 +133,6 @@ export class ControllerService {
       },
     });
   }
-
   /** IO */
   readImage(src: any):Promise<any> {
     return new Promise((resolve, reject) => {

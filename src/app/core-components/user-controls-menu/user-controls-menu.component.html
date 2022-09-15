@@ -1,0 +1,9 @@
+<div ngbDropdown style="max-width: 210px;">
+    <button class="icontext me-4 btn" ngbDropdownToggle id="nav-user-controls-dropdown">
+        <img class="icon icon-xs rounded-circle" [src]="userImage">
+        <div class="text"> Hi, {{userName}} </div>
+    </button>
+    <div ngbDropdownMenu aria-labelledby="nav-user-controls-dropdown" class="dropdown-menu dropdown-menu-end">
+        <button ngbDropdownItem (click)="logout()">Logout</button>
+    </div>
+</div>

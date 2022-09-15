@@ -1,12 +1,13 @@
 @import "custom-scss/flexbin.scss";
 @import "custom-scss/bootstrap.scss";
+@import "custom-scss/quill.scss";
 
 html,
 body {
   height: 100%;
   position: relative;
   margin: 0;
-  font-family: "Inter", sans-serif;
+ // font-family: "Inter", sans-serif;
 }
 ::-webkit-scrollbar {
   width: 8px !important;
@@ -29,7 +30,7 @@ body {
 }
 
 // Placeholder
-$placeholder-color : $gray-500;
+$placeholder-color: $gray-500;
 ::placeholder {
   color: $placeholder-color !important;
   font-style: italic;
@@ -257,12 +258,12 @@ $placeholder-color : $gray-500;
     background-color: $primary;
     color: $white;
   }
-  &.btn-toggle-hover[aria-expanded="true"] {
-    //color: $primary;
-  }
-  &.btn-toggle-hover[aria-expanded="true"]:hover {
-    //color: $white;
-  }
+  // &.btn-toggle-hover[aria-expanded="true"] {
+  //   //color: $primary;
+  // }
+  // &.btn-toggle-hover[aria-expanded="true"]:hover {
+  //   //color: $white;
+  // }
   &[aria-expanded="true"][menu-arrow="true"]::after {
     transform: rotate(90deg);
   }
@@ -274,13 +275,6 @@ $placeholder-color : $gray-500;
     transition: transform 0.35s ease;
     transform-origin: 0.5em 50%;
   }
-  // .menu-arrow {
-  //   width: 1.1em;
-  //   line-height: 0;
-  //   content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%280,0,0,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
-  //   transition: transform 0.35s ease;
-  //   transform-origin: 0.5em 50%;
-  // }
 }
 
 .media-grid {
@@ -292,7 +286,7 @@ $placeholder-color : $gray-500;
   .media {
     height: 100%;
     overflow: hidden;
-      aspect-ratio: 1/1;
+    aspect-ratio: 1/1;
     .img__wrap {
       height: 100%;
       aspect-ratio: 1/1;
@@ -468,9 +462,8 @@ $placeholder-color : $gray-500;
     opacity: 1;
   }
   &.no-image::before {
-    
     position: absolute;
-    content:'';
+    content: "";
     top: 0;
     bottom: 0;
     left: 0;
@@ -518,5 +511,29 @@ $placeholder-color : $gray-500;
     width: 100%;
     background-color: #6b8398;
     z-index: 3000;
+  }
+}
+.icontext {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  .icon {
+    position: relative;
+    margin-right: 10px;
+    flex-shrink: 0;
+    flex-grow: 0;
+  }
+  .icon-xs {
+    width: 36px;
+    height: 36px;
+  }
+  .text {
+    width: 100%;
+    line-height: 1.25;
+  }
+}
+.controls-bar {
+  #searchbox {
+    max-width: 20rem;
   }
 }

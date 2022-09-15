@@ -1,52 +1,126 @@
-<div class="card">
-    <div class="card-header">
-        <div class="card-title">
-            Product Attributes setup
-        </div>
-    </div>
-    <div class="card-body">
-        Departments
-        <ul class="list-group list-group-flush py-3">
-            <li *ngFor="let value of categoryList?.data; let i = index"
-                class="list-group-item list-group-item-action" role="button" (click)="showDetailTab(value)">
+<div class="container  pb-3">
 
-                <ul class="list-unstyled">
-                    <li>{{value?.title}}</li>
-                    <li><small class="text-muted">{{value.path}}</small></li>
-                </ul>
-                <i class="bi bi-chevron-right ms-auto"></i>
+    <ul ngbNav #nav="ngbNav">
+        <li [ngbNavItem]="1">
+            <ng-template ngbNavContent>
+                <ng-container *ngTemplateOutlet="heading; context:{ 
+                    backBtn: false,
+                    title: 'Attributes Setup'
+                }">
+                </ng-container>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Departments
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap mb-3 gap-2 controls-bar">
+                            <div class="flex-grow-1">
+                                <div class="input-group" id="searchbox">
+                                    <input class="form-control rounded-end" type="text" placeholder="Search " [formControl]="optionSearch">
+                                    <i
+                                        class="bi bi-search position-absolute top-50 end-0 translate-middle-y text-muted fs-base me-3"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="">
+                                <thead class="table-header-container">
+                                    <tr class="rps-table-row rps-table-row-head">
+                                        <th scope="col">No</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Path</th>
+                                    </tr>
+                                </thead>
 
-            </li>
-        </ul>
-        <app-pagination [links]="paginationLinks" (pageChange)="pageChange($event)"></app-pagination>
-    </div>
-</div>
-<div class="card">
-    <div class="card-header">
-        <div class="card-title">
-            {{category?.title}}
-        </div>
-        <small>{{category?.path}}</small>
-    </div>
-    <div class="card-body">
-        <div class="container">
-            <div class="row row-cols-1 row-cols-sm-1 row-cols-md-6">
-                <div class="col py-2 py-sm-1" *ngFor="let value of variantOptionHeaders">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="value.checked"
-                            [id]="value.id">
-                        <label class="form-check-label" [for]="value.id">
-                            {{value.title}}
-                        </label>
+                                <tbody>
+                                    <tr class="rps-table-row" *ngFor="let value of categoryList?.data; let i = index"
+                                        (click)="showDetailTab(value)">
+                                        <td class="rps-table-cell">
+                                            <div class="rps-table-cell-content">
+                                                {{paginationRef.offset+i}}
+                                            </div>
+                                        </td>
+                                        <td class="rps-table-cell">
+                                            <div class="rps-table-cell-content">
+                                                {{value?.title}}
+                                            </div>
+                                        </td>
+                                        <td class="rps-table-cell">
+                                            <div class="rps-table-cell-content">
+                                                {{value.path}}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+
+
+
+                            </table>
+                        </div>
+
+                    </div>
+                    <div class="card-footer d-flex justify-content-end">
+                        <app-pagination #paginationRef [source]="pagination" (pageChange)="pageChange($event)">
+                        </app-pagination>
+
                     </div>
                 </div>
+            </ng-template>
+        </li>
+        <li [ngbNavItem]="2">
+            <ng-template ngbNavContent>
+                <ng-container *ngTemplateOutlet="heading; context:{ 
+                    backBtn: true,
+                    title: 'Attributes by departments'
+                }"> </ng-container>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title mb-2">
+                            {{category?.title}}
+                        </div>
+                        <small>{{category?.path}}</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="container">
+                            <div class="row row-cols-1 row-cols-sm-1 row-cols-md-6">
+                                <div class="col py-2 py-sm-1" *ngFor="let value of variantOptionHeaders">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" [(ngModel)]="value.checked"
+                                            [id]="value.id">
+                                        <label class="form-check-label" [for]="value.id">
+                                            {{value.title}}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
+                    </div>
+                    <div class="card-footer d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary" (click)="save()">Save</button>
+                    </div>
+                </div>
+            </ng-template>
+        </li>
 
-            </div>
-        </div>
-
-    </div>
-    <div class="card-footer d-flex justify-content-end">
-        <button type="button" class="btn btn-primary" (click)="save()">Save</button>
-    </div>
+    </ul>
+    <div [ngbNavOutlet]="nav" class="mt-2"></div>
 </div>
+<ng-template #heading let-backBtn="backBtn" let-title="title" let-subtitle="subtitle">
+
+    <div class="d-flex justify-content-between py-3 align-items-center flex-wrap gap-3">
+
+        <div class=" flex-grow-1">
+            <h5 class="">{{title}}</h5>
+            <p class="text-muted small pe-2 mb-0" *ngIf="subtitle">
+                {{subtitle}}
+            </p>
+        </div>
+        <div class="d-flex gap-2 align-items-center" *ngIf="backBtn">
+            <button type="button" backButton name="Back" icon="bi bi-chevron-left" (click)="nav.select(1)"></button>
+        </div>
+    </div>
+
+</ng-template>

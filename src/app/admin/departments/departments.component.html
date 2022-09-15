@@ -1,0 +1,118 @@
+<div class="container">
+    <ng-container *ngTemplateOutlet="heading; context:{ 
+        backBtn: true,
+        title: 'Departments'
+    }">
+    </ng-container>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Department manager</div>
+        </div>
+        <div class="card-body">
+            <!-- <ul class="px-2" *ngIf="style == 1">
+                <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: catFormGroup.get('list')?.value }">
+                </ng-container>
+            </ul> -->
+            <div class="d-flex flex-wrap mb-3 gap-2 controls-bar">
+                <div class="flex-grow-1">
+                    <div class="input-group" id="searchbox">
+                        <input class="form-control rounded-end" type="text" placeholder="Search " [formControl]="filter">
+                        <i
+                            class="bi bi-search position-absolute top-50 end-0 translate-middle-y text-muted fs-base me-3"></i>
+                    </div>
+                </div>
+            </div>
+            <ul class="tree">
+                <ng-container *ngTemplateOutlet="recursiveListTmpl2; context:{ list: catFormGroup.get('list')?.value }">
+                </ng-container>
+            </ul>
+
+        </div>
+        <div class="card-footer d-flex justify-content-end gap-2">
+            
+        </div>
+    </div>
+</div>
+<ng-template #heading let-title="title" let-subtitle="subtitle">
+    <div class="d-flex justify-content-between py-3 align-items-center flex-wrap gap-3">
+
+        <div class=" flex-grow-1">
+            <h5 class="">{{title}}</h5>
+            <p class="text-muted small pe-2 mb-0" *ngIf="subtitle">
+                {{subtitle}}
+            </p>
+        </div>
+
+    </div>
+
+</ng-template>
+<ng-template #controls let-data="data">
+    <span class="node-btn-group">
+        <a class="ms-2 node-btn" role="button" (click)="showNewDepartmentForm(data)">Add</a>
+        <a class="ms-2 node-btn" role="button">Remove</a>
+    </span>
+</ng-template>
+<ng-template #recursiveListTmpl2 let-list="list">
+    <li *ngFor="let item of list; let myfirst = first">
+        <span class="node w-100">
+            <a role="button" class="tree-item" (click)="getSubDepartments(item)">
+                {{ item.name }}
+            </a>
+            <ng-container *ngTemplateOutlet="controls; context:{ data: item }"></ng-container>
+        </span>
+        <ul *ngIf="item.children !== undefined || item.children.length > 0" style="padding-left: 20px;">
+            <ng-container *ngTemplateOutlet="recursiveListTmpl2; context:{ list: item.children }"></ng-container>
+        </ul>
+    </li>
+</ng-template>
+<ng-template #recursiveListTmpl let-list="list">
+    <li *ngFor="let item of list" class="nav-item navbar-collapse ">
+        <button class="btn align-items-center rounded  mycollapse collapsed" type="button"
+            [attr.data-bs-toggle]="'collapse'" [attr.data-bs-target]="'#coll-'+item.id" aria-expanded="false"
+            aria-controls="flush-collapseOne" (click)="getSubDepartments(item)">
+            <span class="fa fa-angle-right me-2 menu-arrow" aria-hidden="true"></span>
+            <span>{{ item.name }}</span>
+        </button>
+
+        <ul class="fw-normal py-0 ps-4 small card-body" *ngIf="item.children.length > 0">
+            <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: item.children }"></ng-container>
+        </ul>
+    </li>
+</ng-template>
+<ng-template #newDepartmentModel let-modal>
+    <form [formGroup]='catNewFormGroup' class="card-body" (ngSubmit)="save(modal)">
+        <div class="modal-header">
+            <h4 class="modal-title" id="modal-basic-title">Add new department</h4>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+        <div class="modal-body">
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1 ">
+                    <li class="breadcrumb-item small" aria-current="page"
+                        *ngFor="let p of catNewFormGroup.get('path')?.value; let first=first">
+                        {{p}}
+                    </li>
+                    <li class="breadcrumb-item small" aria-current="page"></li>
+                </ol>
+
+            </nav>
+            <hr>
+            <div class="mb-3">
+                <label for="ew-depname" class="form-label">Name</label>
+                <input type="text" id="new-depname" class="form-control mb-2" formControlName="name"
+                    placeholder="New department name">
+                <ol>
+                    <li><small class="text-muted">Name should not be exceed 100 words</small></li>
+                </ol>
+            </div>
+
+
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" (click)="modal.close()">Cancel</button>
+            <input class="btn btn-primary" value="Save" type="submit" [disabled]="!catNewFormGroup.valid">
+        </div>
+    </form>
+</ng-template>

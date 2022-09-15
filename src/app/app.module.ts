@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { QuillConfigModule, QuillModule } from 'ngx-quill';
 import { environment } from 'src/environments/environment';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, NgControl, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -46,6 +46,12 @@ import { TypeaheadCustomComponent } from './core-components/typeahead-custom/typ
 import { CategoryBreadcrumbPipe } from './core-components/category-breadcrumb.pipe';
 import { PasswordStrengthMeterModule } from 'angular-password-strength-meter';
 import { PasswordsInputDirective } from './core-components/passwords-input.directive';
+import { UserControlsMenuComponent } from './core-components/user-controls-menu/user-controls-menu.component';
+import { DepartmentsComponent } from './admin/departments/departments.component';
+import { PagenotfoundComponent } from './core-components/pagenotfound/pagenotfound.component';
+import { Router } from '@angular/router';
+import { AuthRouteHandlerService } from './services/auth-route-handler.service';
+import { StoreComponent } from './seller/store/store.component';
 
 // const config: SocketIoConfig = {
 //   url: 'http://localhost:8084',
@@ -86,6 +92,10 @@ import { PasswordsInputDirective } from './core-components/passwords-input.direc
     TypeaheadCustomComponent,
     CategoryBreadcrumbPipe,
     PasswordsInputDirective,
+    UserControlsMenuComponent,
+    DepartmentsComponent,
+    PagenotfoundComponent,
+    StoreComponent,
   ],
   imports: [
     BrowserModule,
@@ -96,39 +106,36 @@ import { PasswordsInputDirective } from './core-components/passwords-input.direc
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    ImageCropperModule, 
-    QuillConfigModule.forRoot({
+    ImageCropperModule,
+
+    QuillModule.forRoot({
       modules: {
-        syntax: true,
         toolbar: [
           ['bold', 'italic', 'underline'],
           [{ list: 'ordered' }, { list: 'bullet' }],
         ],
-        theme: 'snow',
-        placeholder: 'Description |',
-        themes:'snow'
       },
+      theme: 'snow',
+      placeholder: "Description"
     }),
-    QuillModule.forRoot(),
-   
+
     NgxMaskModule.forRoot(),
     NgbModule,
     //SocketIoModule.forRoot(config),
-    PasswordStrengthMeterModule.forRoot()
-
+    PasswordStrengthMeterModule.forRoot(),
   ],
   providers: [
     DatePipe,
     ServerService,
-    // {
-    //   // processes all errors
-    //   provide: HTTP_INTERCEPTORS,
-    //   useFactory: function(router: Router) {
-    //     return new AuthRouteHandlerService(router);
-    //   },
-    //   multi: true,
-    //   deps: [Router]
-    // },
+    {
+      // processes all errors
+      provide: HTTP_INTERCEPTORS,
+      useFactory: function (router: Router) {
+        return new AuthRouteHandlerService(router);
+      },
+      multi: true,
+      deps: [Router],
+    },
     {
       provide: APP_INITIALIZER,
       useFactory: (config: ServerService) => () => config.init(),

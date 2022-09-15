@@ -5,7 +5,7 @@
         <i class="bi bi-list"></i>
       </a>
       <a class="navbar-brand" href="#">
-        <img [src]="navBrand" alt="" height="50" >
+       
       </a>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
@@ -16,15 +16,19 @@
             <a class="nav-link" [routerLink]="'/admin/product-attributes'">ProductAttributes</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="'/seller'">seller</a>
+            <a class="nav-link" [routerLink]="'/seller-central'">seller</a>
           </li>
         </ul>
       </div>
+      <div>
+        <user-controls-menu></user-controls-menu>
+      </div>
+
     </div>
   </nav>
   <div class="d-flex">
     <div class="offcanvas-expand " style="min-width: 21.875rem;">
-      <ng-template *ngTemplateOutlet="menuTemplate ; context:{ offcanvas: null }" ></ng-template>
+      <ng-template *ngTemplateOutlet="menuTemplate ; context:{ offcanvas: null }"></ng-template>
     </div>
     <main class="offcanvas-enabled">
       <router-outlet></router-outlet>

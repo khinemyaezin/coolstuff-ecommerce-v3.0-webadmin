@@ -9,7 +9,7 @@ import {
   HttpStatusCode,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { map, forkJoin, lastValueFrom, catchError } from 'rxjs';
 import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
@@ -47,7 +47,8 @@ export class ServerService {
   constructor(
     private http: HttpClient,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    private activeRoute: ActivatedRoute
   ) {}
 
   get config() {
@@ -68,7 +69,7 @@ export class ServerService {
 
           this.GET(this.sessionURL).subscribe({
             next: (body: any) => {
-              this.auth.signin(body.details);
+              this.auth.signin(body.details,false);
               res();
             },
             error: (err) => {
@@ -104,9 +105,11 @@ export class ServerService {
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        if (err.status == HttpStatusCode.Unauthorized && myurl !== this.sessionURL) {
-          this.router.navigate(['/signin']);
-        }
+        // console.log(window.location.href);
+        
+        // if (err.status == HttpStatusCode.Unauthorized && myurl !== this.sessionURL) {
+        //   this.router.navigate(['/signin']);
+        // }
         throw `error in source. Details:${err.statusText} `;
       })
     );
@@ -237,7 +240,7 @@ export class ServerService {
   }
 
   logout() {
-    this.GET('logout')
+    return this.GET('logout')
   }
 
 }

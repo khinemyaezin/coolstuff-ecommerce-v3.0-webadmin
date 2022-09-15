@@ -15,7 +15,7 @@
             </figure>
         </div>
         <div class="d-flex justify-content-end py-2">
-            <app-pagination [links]="files.links" (pageChange)="pageChanges($event)"></app-pagination>
+            <app-pagination [source]="files" (pageChange)="pageChanges($event)"></app-pagination>
         </div>
         <div>
             <input type="file" class="form-control" formControlName="filesFormControl" accept="image/*">
