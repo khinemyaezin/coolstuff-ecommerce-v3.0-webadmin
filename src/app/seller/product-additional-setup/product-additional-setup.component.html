@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container pb-3">
     <ul ngbNav #nav="ngbNav" class="nav-tabs">
 
         <li [ngbNavItem]="1">
@@ -16,16 +16,10 @@
                     <div class="card-body">
                         <form [formGroup]="categoryForm" id="browse-category">
                             <label for="category-name" class="form-label">Browse </label>
-                            <div class="input-group border">
-                                <input type="text" class="form-control border-0 " list="datalistOptions"
+                                <input type="text" class="form-control " list="datalistOptions"
                                     id="category-name" placeholder="Search category" formControlName="search">
-                                <span class="p-1 spinner">
-                                    <div class="spinner-border" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                </span>
+                       
 
-                            </div>
                             <div class="overflow-auto">
 
                                 <ul class="list-group list-group-flush py-3" id="category-query-data">
@@ -392,7 +386,7 @@
 
                 <div class="col-sm-8">
                     <select class="form-select" formControlName="condition" id="offerCondition" [compareWith]="compare">
-                        <option [value]='null' disabled>Select</option>
+                        <option value='' disabled>Select</option>
                         <option *ngFor="let con of conditionOptions" [ngValue]="con">
                             {{con.title}}
                         </option>
@@ -777,7 +771,7 @@
 
                                                         </span>
                                                         <br>
-
+                                                        {{prod.get('id')?.value}}
 
                                                     </label>
                                                 </div>
@@ -848,7 +842,7 @@
                                             <div class="table-cell-content">
                                                 <select class="form-select" [compareWith]="compare"
                                                     formControlName="condition">
-                                                    <option value=''>Select-</option>
+                                                    <option value='' disabled>Select-</option>
                                                     <option *ngFor="let con of conditionOptions" [ngValue]="con">
                                                         {{con.title}}
                                                     </option>

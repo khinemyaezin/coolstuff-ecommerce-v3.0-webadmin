@@ -47,7 +47,7 @@ export class ProductAdditionalSetupComponent
   categoryForm: FormGroup = new FormGroup({
     search: new FormControl(''),
     searchResultList: new FormControl([]),
-    data: new FormControl<CategoryLeave|null>(null),
+    data: new FormControl<CategoryLeave | null>(null),
   });
   productForm: FormGroup = new FormGroup({
     id: new FormControl(),
@@ -117,7 +117,7 @@ export class ProductAdditionalSetupComponent
     return this.productForm.get('currency')?.value;
   }
 
-  get categoryBreadcrumb():string {
+  get categoryBreadcrumb(): string {
     return this.categoryForm.get('data')?.value?.path;
   }
 
@@ -158,7 +158,6 @@ export class ProductAdditionalSetupComponent
         })
       );
     param.pipe(takeUntil(this.destroy$)).subscribe((value) => {
-      
       this.paramProductId = value.id;
       this.paramVariantId = value.vid;
       this.standAloneVariant = this.createVariant();
@@ -220,6 +219,11 @@ export class ProductAdditionalSetupComponent
     //     }
     //     this.productAlertsController.next(this._productAlerts);
     //   });
+    this.productForm.get('title')?.setValue('Untitled 1');
+    this.productForm.get('brand')?.setValue(this.authService.user.brand.title);
+    this.productForm
+      .get('manufacturer')
+      ?.setValue(this.authService.user.brand.title);
   }
 
   /** Vital Info */
@@ -267,12 +271,12 @@ export class ProductAdditionalSetupComponent
 
   selectCategory(category: CategoryLeave) {
     this.importCategory(category);
-    
+
     this.importAttributesToDefaultVariant(
       this.categoryForm.get('data')?.value.lvl_id,
       this.getVariants
     );
-    this.tabs.select(2)
+    this.tabs.select(2);
   }
 
   importCategory(category: CategoryLeave) {
@@ -380,11 +384,11 @@ export class ProductAdditionalSetupComponent
   }
 
   private createVariant(
-    hdr1: any = null,
+    optionHdr1: any = null,
     title1: any = null,
-    hdr2: any = null,
+    optionHdr2: any = null,
     title2: any = null,
-    hdr3: any = null,
+    optionHdr3: any = null,
     title3: any = null
   ): FormGroup {
     return this.fb.group({
@@ -396,17 +400,17 @@ export class ProductAdditionalSetupComponent
       sellerSku: new FormControl(this.pgService.randomString(10)),
       variantOptions: new FormControl([
         this.fb.group({
-          header: new FormControl(hdr1),
+          header: new FormControl(optionHdr1),
           detail: new FormControl('', { validators: Validators.required }),
           inputRef: title1,
         }),
         this.fb.group({
-          header: new FormControl(hdr2),
+          header: new FormControl(optionHdr2),
           detail: new FormControl('', { validators: Validators.required }),
           inputRef: title2,
         }),
         this.fb.group({
-          header: new FormControl(hdr3),
+          header: new FormControl(optionHdr3),
           detail: new FormControl('', { validators: Validators.required }),
           inputRef: title3,
         }),
@@ -415,7 +419,7 @@ export class ProductAdditionalSetupComponent
       sellingPrice: new FormControl(0),
       quantity: new FormControl(0),
       dateRange: new FormControl({ start: new Date(), end: new Date() }),
-      condition: new FormControl(),
+      condition: new FormControl(''),
       images: new FormArray([]),
       description: new FormControl(''),
       features: new FormArray([new FormControl('')]),
@@ -437,18 +441,22 @@ export class ProductAdditionalSetupComponent
       .pipe(takeUntil(this.destroy$))
       .subscribe((change: boolean) => {
         this.getVariants.clear();
+
         if (!change) {
+          //unchecked variant
           if (
             !this.pgService.isEmptyID(this.standAloneVariant.get('id').value)
           ) {
-            this.standAloneVariant.get('status')?.patchValue(2);
+            this.standAloneVariant.get('status')?.setValue(2);
+            this.deletedProducts.delete(this.standAloneVariant.get('id').value)
           }
           this.getVariants.push(this.standAloneVariant);
         } else {
           if (
             !this.pgService.isEmptyID(this.standAloneVariant.get('id').value)
           ) {
-            this.standAloneVariant.get('status')?.patchValue(4);
+            this.standAloneVariant.get('status')?.setValue(4);
+            this.deletedProducts.set(this.standAloneVariant.get('id').value,this.standAloneVariant)
           }
         }
       });
@@ -458,6 +466,20 @@ export class ProductAdditionalSetupComponent
     if (!this.options[optionGroupIndex].get('header')?.value) return;
 
     let optionsItems = <FormArray>this.options[optionGroupIndex].get('list');
+
+    /**
+     * Check header remove case when option header exist and items empty
+     * just clear header value and return
+     */
+    if (
+      this.pgService.isEmptyOrSpaces(
+        optionsItems.controls[0].get('name')?.value
+      )
+    ) {
+      this.options[optionGroupIndex].get('header')?.setValue('');
+      return;
+    }
+
     const optionIdIndexZero = optionsItems.controls[0].get('id')?.value;
 
     const indexArray = [...Array(this.options.length).keys()];
@@ -472,16 +494,22 @@ export class ProductAdditionalSetupComponent
       const variantId = this.getVariants.controls[i].get('id')?.value;
 
       if (optionIdInVariants !== optionIdIndexZero) {
+        /**
+         * Add to deleted var
+         */
         if (!this.pgService.isEmptyID(variantId)) {
           this.deletedProducts.set(variantId, this.getVariants.controls[i]);
         }
         this.getVariants.removeAt(i);
       } else {
-        /** Reorder options array of a product */
+        /**
+         * Reorder options array of a product
+         */
         const removeLast = (optionGroup: FormGroup, index: number) => {
           if (this.options.length - 1 == index) {
             optionGroup.get('header')?.setValue(null);
-            optionGroup.get('details')?.setValue(null);
+            optionGroup.get('detail')?.setValue(null);
+            optionGroup.get('inputRef.name')?.setValue('');
           }
         };
         this.reorder(
@@ -510,23 +538,27 @@ export class ProductAdditionalSetupComponent
     this.options[this.options.length - 1].get('header').setValue(null);
     (<FormArray>this.options[this.options.length - 1].get('list')).clear();
 
-    /** check */
+    /**
+     * Check current deleted header is the last header
+     */
     const isLastOption = this.options.reduce(
       (previous: number, current: FormGroup) => {
         return previous + (current.get('header')?.value ? 1 : 0);
       },
       0
     );
+
     if (isLastOption == 0) {
       this.getVariants.controls.forEach((e) => {
         if (!this.pgService.isEmptyID(e.get('id')?.value)) {
           this.deletedProducts.set(e.get('id')?.value, e);
         }
       });
+
       this.productForm.get('hasVariant')?.setValue(false);
     }
     this.checkedVariantCard = isLastOption == 0;
-    //this.switchStandAloneOrVariants(false);
+    console.log(this.deletedProducts);
   }
 
   reorder(
@@ -593,6 +625,10 @@ export class ProductAdditionalSetupComponent
     const optionId = this.options[optionIndex].get(
       'list.' + optionInputIndex + '.id'
     )?.value;
+
+    /**
+     * Loop backward and remove from last top first
+     */
     for (let i = productFormArray.controls.length - 1; i >= 0; i--) {
       const id = productFormArray.controls[i]
         .get('variantOptions')
@@ -682,14 +718,34 @@ export class ProductAdditionalSetupComponent
     const opt3Name = variant
       .get('variantOptions')
       ?.value[2].get('inputRef.name')?.value;
+
     if (
       variants.controls.filter((e) => {
         return e.get('status')?.value !== 4;
       }).length == 1
     ) {
-      this.removeVariantFromProduct();
+      /** Last variant to convert stand alone
+       *  and return void
+       */
+      this.getVariants.controls.forEach((e) => {
+        const id = e.get('id')?.value;
+        if (
+          !this.pgService.isEmptyID(id) &&
+          this.standAloneVariant.get('id')?.value != id
+        ) {
+          this.deletedProducts.set(e.get('id')?.value, e);
+        }
+      });
+      (this.options[0] as FormGroup).reset();
+
+      this.productForm.get('hasVariant')?.setValue(false);
+      this.checkedVariantCard = !this.hasOptionHeaders();
       return;
     }
+
+    /**
+     * Not last one and continue remove process
+     */
 
     if (!this.pgService.isEmptyID(variant.get('id')?.value)) {
       variant.get('status')?.setValue(4);
@@ -779,20 +835,6 @@ export class ProductAdditionalSetupComponent
         opt3.controls.unshift(prodFormGroup.controls['inputRef']);
       }
     }
-  }
-
-  async removeVariantFromProduct() {
-    this.getVariants.controls.forEach((e) => {
-      if (!this.pgService.isEmptyID(e.get('id')?.value)) {
-        this.deletedProducts.set(e.get('id')?.value, e);
-      }
-    });
-    (this.options[0] as FormGroup).reset();
-    // .get('header')?.setValue(null);
-    // (this.options[0].get('list') as FormArray).clear();
-    this.productForm.get('hasVariant')?.setValue(false);
-    this.checkedVariantCard = !this.hasOptionHeaders();
-    console.log('deletedProducts', this.deletedProducts);
   }
 
   changeVariantOption(optionIndex: number, optionItem: FormGroup) {
@@ -1082,26 +1124,26 @@ export class ProductAdditionalSetupComponent
       .catch(() => {
         return null;
       });
-    if(!product) {
+    if (!product) {
       loading.dismiss();
       return;
     }
     this.defImportProduct = product;
     this.importVitalInfoForm(product);
 
-    let categoryLeave:CategoryLeave = {
+    let categoryLeave: CategoryLeave = {
       id: null,
       biz_status: 0,
       title: '',
       full_path: '',
       lft: 0,
       rgt: 0,
-      lvl_id: null
-    }
+      lvl_id: null,
+    };
     Object.assign(categoryLeave, product.category);
-    categoryLeave.lvl_id = product.fk_lvlcategory_id;    
+    categoryLeave.lvl_id = product.fk_lvlcategory_id;
     this.importCategory(categoryLeave);
-    
+
     await this.importVariants(product);
 
     loading.dismiss();
@@ -1118,7 +1160,7 @@ export class ProductAdditionalSetupComponent
         if (optionHeader) {
           let optionItems = this.options[i].get('list') as FormArray;
           this.options[i].get('header').setValue(optionHeader); //Set global option 1.
-
+          this.options[i].get('header').markAsDirty();
           optionItems.clear(); //Clear the array
           optionHeader.details.forEach((detail: any) => {
             optionItems.push(this.createVariantOptionItem(i, detail.var_title));
@@ -1213,16 +1255,42 @@ export class ProductAdditionalSetupComponent
           )).controls['inputRef'] = this.options[i].get('list').controls[index];
         }
       }
-      this.standAloneVariant = variantFormGroup;
+
       this.getVariants.push(variantFormGroup);
       this.ref.detectChanges();
     }
+    // Sorting
+    this.getVariants.controls.sort((a: any, b: any) => {
+      return (
+        a
+          .get('variantOptions')
+          .value[0].get('detail')
+          ?.value?.id.localeCompare(
+            b.get('variantOptions').value[0].get('detail')?.value?.id
+          ) ||
+        a.get('variantOptions').value[1].get('detail')?.value?.id -
+          b.get('variantOptions').value[1].get('detail')?.value?.id
+      );
+    });
+    //this.getVariants.patchValue(sortedArray);
+
     if (data.has_variant) {
       this.importAttributesToDefaultVariant(
         this.categoryForm.get('data')?.value.lvl_id,
         this.getVariants
       );
+      this.checkedVariantCard = false;
     }
+    /**
+     * Set def variant
+     */
+    this.standAloneVariant = this.getVariants.controls[0];
+    console.log(
+      'standALonevariant',
+      `${this.standAloneVariant.get('id').value} , ${
+        this.standAloneVariant.get('sellerSku').value
+      }`
+    );
   }
 
   importVariant(variant: any) {
@@ -1270,36 +1338,10 @@ export class ProductAdditionalSetupComponent
   }
 
   exportVariants(variant: any, hasVariant: boolean) {
-    return {
+    let result = {
       biz_status: variant.get('status')?.value,
       seller_sku: variant.get('sellerSku')?.value,
-      fk_varopt_1_hdr_id: hasVariant
-        ? variant.get('variantOptions')?.value[0].get('header').value?.id
-        : null,
-      fk_varopt_1_dtl_id: hasVariant
-        ? variant.get('variantOptions')?.value[0].get('detail').value?.id
-        : null,
-      var_1_title: hasVariant
-        ? variant.get('variantOptions')?.value[0].get('inputRef.name')?.value
-        : null,
-      fk_varopt_2_hdr_id: hasVariant
-        ? variant.get('variantOptions')?.value[1].get('header').value?.id
-        : null,
-      fk_varopt_2_dtl_id: hasVariant
-        ? variant.get('variantOptions')?.value[1].get('detail').value?.id
-        : null,
-      var_2_title: hasVariant
-        ? variant.get('variantOptions')?.value[1].get('inputRef.name')?.value
-        : null,
-      fk_varopt_3_hdr_id: hasVariant
-        ? variant.get('variantOptions')?.value[2].get('header').value?.id
-        : null,
-      fk_varopt_3_dtl_id: hasVariant
-        ? variant.get('variantOptions')?.value[2].get('detail').value?.id
-        : null,
-      var_3_title: hasVariant
-        ? variant.get('variantOptions')?.value[2].get('inputRef.name')?.value
-        : null,
+
       buy_price: this.pgService.safeNum(variant.controls['price'].value),
       selling_price: this.pgService.safeNum(variant.get('sellingPrice')?.value),
       qty: this.pgService.safeNum(variant.controls['quantity'].value),
@@ -1359,7 +1401,37 @@ export class ProductAdditionalSetupComponent
       media_7_image: variant.get('media_7_image')?.value?.id ?? null,
       media_8_video: variant.get('media_8_video')?.value?.id ?? null,
       media_9_video: variant.get('media_9_video')?.value?.id ?? null,
-    } as any;
+    };
+
+    for (let i = 1; i <= 3; i++) {
+      const hdrKey = `fk_varopt_${i}_hdr_id` as string;
+      const dtlKey = `fk_varopt_${i}_dtl_id`;
+      const valueKey = `var_${i}_title`;
+
+      let varOpts: any = {};
+      varOpts[hdrKey] = null;
+      varOpts[dtlKey] = null;
+      varOpts[valueKey] = null;
+
+      if (
+        !this.pgService.isEmptyOrSpaces(
+          variant.get('variantOptions')?.value[i - 1].get('header').value?.id
+        )
+      ) {
+        varOpts[hdrKey] = hasVariant
+          ? variant.get('variantOptions')?.value[i - 1].get('header').value?.id
+          : null;
+        varOpts[dtlKey] = hasVariant
+          ? variant.get('variantOptions')?.value[i - 1].get('detail').value?.id
+          : null;
+        varOpts[valueKey] = hasVariant
+          ? variant.get('variantOptions')?.value[i - 1].get('inputRef.name')
+              ?.value
+          : null;
+      }
+      Object.assign(result, varOpts);
+    }
+    return result;
   }
 
   exportVariant(variant: any, vMap: any) {
@@ -1481,7 +1553,7 @@ export class ProductAdditionalSetupComponent
   }
 
   async submit() {
-    
+    // Prepare Product;
     let param: any = {
       id: this.productForm.value.id,
       biz_status: this.productForm.value.status,
@@ -1496,37 +1568,40 @@ export class ProductAdditionalSetupComponent
       fk_prod_group_id: null,
       fk_currency_id: this.productForm.value.currency?.id,
       hasVariant: this.productForm.value.hasVariant,
-      variants: this.getVariants.controls.map(
-        (variant: AbstractControl<FormGroup>) => {
-          return this.exportVariants(
-            variant,
-            this.productForm.value.hasVariant
-          );
-        }
-      ),
+      variants: [],
     };
-    if (this.productForm.value.hasVariant) {
-      param.fk_varopt_1_hdr_id = this.options[0].value.header?.id;
-      param.fk_varopt_2_hdr_id = this.options[1].value.header?.id;
-      param.fk_varopt_3_hdr_id = this.options[2].value.header?.id;
+
+    for (let v of this.getVariants.controls) {
+      if (!this.deletedProducts.has(v.get('id')?.value)) {
+        param.variants.push(
+          this.exportVariants(v, this.productForm.value.hasVariant)
+        );
+      }
     }
+
+    // Prepare Variants of a product
+    if (this.productForm.value.hasVariant) {
+      param.fk_varopt_1_hdr_id = this.options[0].value.header?.id ?? null;
+      param.fk_varopt_2_hdr_id = this.options[1].value.header?.id ?? null;
+      param.fk_varopt_3_hdr_id = this.options[2].value.header?.id ?? null;
+    }
+
     /** Deleted products import */
     for (const [key, value] of this.deletedProducts.entries()) {
       let delProd: any = this.exportVariants(value, param.hasVariant);
       delProd.biz_status = 4;
       param.variants.push(delProd);
     }
-    if (
-      !this.defImportProduct?.has_variant &&
-      param.hasVariant &&
-      !this.pgService.isEmptyID(this.standAloneVariant.get('id')?.value)
-    ) {
-      param.variants.push(
-        this.exportVariants(this.standAloneVariant, param.hasVariant)
-      );
-    }
-    console.log(param);
 
+    console.log(param);
+    // console.log(
+    //   param.variants
+    //     .map((v: any) => {
+    //       return { id: v.id, sku: v.seller_sku, biz_status: v.biz_status };
+    //     })
+    //     .sort((a: any, b: any) => (a.seller_sku > b.seller_sku ? -1 : 1))
+    // );
+    //return;
     const loadingRef = await this.popup.showLoading('Please wait');
     loadingRef.present();
 
@@ -1564,6 +1639,22 @@ export class ProductAdditionalSetupComponent
         },
       });
     }
+  }
+
+  log() {
+    console.log('log deleted', this.deletedProducts);
+    console.log(
+      'log variants',
+      this.getVariants.controls
+        .map((v: any) => {
+          return {
+            id: v.get('id')?.value,
+            sku: v.get('sellerSku')?.value,
+            status: v.get('status')?.value,
+          };
+        })
+        .sort((a: any, b: any) => (a.seller_sku > b.seller_sku ? -1 : 1))
+    );
   }
 
   /** Variant by ID tab */
@@ -1608,23 +1699,26 @@ export class ProductAdditionalSetupComponent
     });
     this.importVitalInfoForm(variantResponse[variantId]['product']);
 
-    let categoryLeave:CategoryLeave = {
+    let categoryLeave: CategoryLeave = {
       id: null,
       biz_status: 0,
       title: '',
       full_path: '',
       lft: 0,
       rgt: 0,
-      lvl_id: null
-    }
-    Object.assign(categoryLeave, variantResponse[variantId]['product']['category']);
-    categoryLeave.lvl_id =variantResponse[variantId]['product']['fk_lvlcategory_id'];    
+      lvl_id: null,
+    };
+    Object.assign(
+      categoryLeave,
+      variantResponse[variantId]['product']['category']
+    );
+    categoryLeave.lvl_id =
+      variantResponse[variantId]['product']['fk_lvlcategory_id'];
     this.importCategory(categoryLeave);
     this.importCategory(variantResponse[variantId]['product']['category']);
 
     this.getVariants.clear();
     this.importVariant(variantResponse[variantId]);
-
   }
 
   routeChange(value: any) {

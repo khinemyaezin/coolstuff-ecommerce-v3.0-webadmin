@@ -349,4 +349,9 @@ export class InventoryComponent implements OnInit {
       });
     console.log(values);
   }
+
+  removeProduct(vari:FormGroup) {
+    console.log(vari.value);
+    
+  }
 }

@@ -25,7 +25,7 @@
                             </div>
                         </div>
                         <div class="table-responsive">
-                            <table class="">
+                            <table class="table table-hover">
                                 <thead class="table-header-container">
                                     <tr class="rps-table-row rps-table-row-head">
                                         <th scope="col">No</th>
@@ -35,7 +35,7 @@
                                 </thead>
 
                                 <tbody>
-                                    <tr class="rps-table-row" *ngFor="let value of categoryList?.data; let i = index"
+                                    <tr class="rps-table-row" role="button" *ngFor="let value of categoryList?.data; let i = index"
                                         (click)="showDetailTab(value)">
                                         <td class="rps-table-cell">
                                             <div class="rps-table-cell-content">

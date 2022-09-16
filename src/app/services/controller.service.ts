@@ -101,8 +101,8 @@ export class ControllerService {
     // set should be same array.
     return s.size == arr.length;
   }
-  isEmptyOrSpaces(str: any) {
-    return str === null || str.match(/^ *$/) !== null;
+  isEmptyOrSpaces(str: string|undefined|null) {
+    return str === null || str === undefined || str.match(/^ *$/) !== null;
   }
   safeNum( value: any):number {
     const num: number = Number(value);
