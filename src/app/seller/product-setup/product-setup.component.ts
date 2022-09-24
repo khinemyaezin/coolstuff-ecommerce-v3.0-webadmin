@@ -270,13 +270,13 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
 
     forkJoin([getCondition, getPackTypes, regions]).subscribe(
       (values: any[]) => {
-        if (values[0] && values[0].status == 200) {
+        if (values[0] && values[0].success) {
           this.conditionOptions = values[0].details.data;
         }
-        if (values[1] && values[1].status == 200) {
+        if (values[1] && values[1].success) {
           this.packTypeList = values[1].details.data;
         }
-        if (values[2] && values[2].status == 200) {
+        if (values[2] && values[2].success) {
           this.currencyByRegions = values[2].details.data;
 
           // Set default currency value by brand;
@@ -313,7 +313,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
           // Request categories.
           lastValueFrom(this.getCategory(changes)).then((resp: any) => {
             //$('#browse-category').removeClass('query');
-            if (resp.status == 200) {
+            if (resp.success) {
               //$('#browse-category').removeClass('query');
               this.categoryForm.get('categorySearchResult')?.setValue(
                 resp.details.map((category: any) => {
@@ -345,7 +345,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     ]);
 
     forkJoin([getDepAttri, getRegions]).subscribe((values: any[]) => {
-      if (values[0] && values[0].status == 200) {
+      if (values[0] && values[0].success) {
         this.moreDetails.attributes = values[0].details.data.map(
           (header: any) => {
             return {
@@ -363,7 +363,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         );
       }
-      if (values[1] && values[1].status == 200) {
+      if (values[1] && values[1].success) {
         this.currencyByRegions = values[1].details.data;
       }
       this.tabs.select(2);
@@ -482,7 +482,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
       )
     )
       .then((res: any) => {
-        return res.status == 200 ? res : { data: [] };
+        return res.success ? res : { data: [] };
       })
       .catch(() => {
         return { data: [] };
@@ -985,24 +985,24 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async removeVariationsFromProduct() {
-    const result = await this.popup.showConfirmModal({
-      header: 'Do you want to remove all variants?',
-      btns: {
-        cancel: '',
-        confirm: '',
-      },
-    });
-    if (result) {
-      this.variationForm.get('hasVariant')?.setValue(false);
-      (<FormArray>this.productVariationForm.get('products')).controls.forEach(
-        (e) => {
-          if (!this.pgService.isEmptyID(e.get('id')?.value)) {
-            this.deletedProducts.set(e.get('id')?.value, e);
-          }
-        }
-      );
-      (<FormArray>this.productVariationForm.get('products')).clear();
-    }
+    // const result = await this.popup.showConfirmModal({
+    //   header: 'Do you want to remove all variants?',
+    //   btns: {
+    //     cancel: '',
+    //     confirm: '',
+    //   },
+    // });
+    // if (result) {
+    //   this.variationForm.get('hasVariant')?.setValue(false);
+    //   (<FormArray>this.productVariationForm.get('products')).controls.forEach(
+    //     (e) => {
+    //       if (!this.pgService.isEmptyID(e.get('id')?.value)) {
+    //         this.deletedProducts.set(e.get('id')?.value, e);
+    //       }
+    //     }
+    //   );
+    //   (<FormArray>this.productVariationForm.get('products')).clear();
+    // }
   }
 
   applyVariantOption(
@@ -1448,7 +1448,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const result = (e: any) => {
-      if (e.status == 200) {
+      if (e.success) {
         this.popup.showTost('Success');
       } else {
         this.popup.showTost(e.message);
@@ -1606,7 +1606,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
       this.getProductById(productId, variantId)
     )
       .then((result: any) => {
-        return result.status == 200 ? result.details : null;
+        return result.success ? result.details : null;
       })
       .catch(() => {
         return null;
@@ -1663,7 +1663,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
           this.categoryForm.get('categorySelected')?.value.level_category_id
         ).pipe(
           map((values: any) => {
-            if (values.status == 200) {
+            if (values.success) {
               return values.details.data;
             } else {
               return [];

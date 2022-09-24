@@ -1,0 +1,105 @@
+<div class="container pb-2">
+    <ng-container *ngTemplateOutlet="heading; context:{ 
+        backBtn: false,
+        title: 'Product properties'
+    }">
+    </ng-container>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">
+
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap mb-3 gap-2 controls-bar">
+                <div class="flex-grow-1">
+                    <div class="input-group" id="searchbox">
+                        <input class="form-control rounded-end" type="text" placeholder="Search "
+                            [formControl]="headersFilter">
+                        <i
+                            class="bi bi-search position-absolute top-50 end-0 translate-middle-y text-muted fs-base me-3"></i>
+                    </div>
+                </div>
+                <div>
+                    <button class="btn" [routerLink]="['../product-properties/new']">New</button>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="table-header-container">
+                        <tr class="rps-table-row rps-table-row-head">
+                            <th scope="col" width="5%">No</th>
+                            <th scope="col">Name</th>
+                            <th scope="col" width="5%">Detail count</th>
+                            <th scope="col" width="5%">Created at</th>
+                            <th scope="col" width="5%">Updated at</th>
+                            <th scope="col" width="5%"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr class="rps-table-row" 
+                            *ngFor="let header of headers;let index = index">
+                            <td class="rps-table-cell">
+                                <div class="rps-table-cell-content">
+                                    {{paginationRef.offset+index}}
+                                </div>
+                            </td>
+                            <td class="rps-table-cell">
+                                <div class="rps-table-cell-content">
+                                    <a [routerLink]="['../product-properties/'+ header.id]">{{header.title}}</a>
+                                </div>
+                            </td>
+                            <td class="rps-table-cell">
+                                <div class="rps-table-cell-content">
+                                    {{header.dtl_count}}
+                                </div>
+                            </td>
+                            <td class="rps-table-cell">
+                                <div class="rps-table-cell-content">
+                                    {{header.created_at | date :
+                                    'mediumDate'}}
+                                </div>
+                            </td>
+                            <td class="rps-table-cell">
+                                <div class="rps-table-cell-content">
+                                    {{header.updated_at | date :
+                                    'mediumDate'}}
+                                </div>
+                            </td>
+                            <td class="rps-table-cell">
+                                <div class="rps-table-cell-content">
+                                    <button class="btn" (click)="deleteItem(header)">
+                                        <i class="bi bi-trash3-fill" ></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+
+
+
+                </table>
+            </div>
+
+        </div>
+        <div class="card-footer d-flex justify-content-end">
+            <app-pagination #paginationRef [source]="headersPagination" (pageChange)="headerPageChange($event)">
+            </app-pagination>
+
+        </div>
+    </div>
+</div>
+<ng-template #heading let-title="title" let-subtitle="subtitle" let-backBtn="backBtn">
+    <div class="d-flex justify-content-between py-3 align-items-center flex-wrap gap-3">
+
+        <div class=" flex-grow-1">
+            <h5 class="">{{title}}</h5>
+            <p class="text-muted small pe-2 mb-0" *ngIf="subtitle">
+                {{subtitle}}
+            </p>
+        </div>
+
+    </div>
+
+</ng-template>

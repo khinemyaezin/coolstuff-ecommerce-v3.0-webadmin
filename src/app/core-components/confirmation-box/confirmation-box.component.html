@@ -1,0 +1,11 @@
+<div class="modal-header border-0">
+    <h5 class="modal-title">{{title}}</h5>
+    <!-- <button type="button" class="btn-close" aria-label="Close"></button> -->
+</div>
+<div class="modal-body pb-0 pt-0" *ngIf="body">
+    {{body}}
+</div>
+<div class="modal-footer flex-row flex-nowrap border-0">
+    <button type="button" class="btn btn-primary w-100" (click)="confirm()" >{{ config.btns?.yes?.title }}</button>
+    <button type="button" class="btn btn-light w-100" (click)="cancel()">{{ config.btns?.no?.title }}</button>
+</div>

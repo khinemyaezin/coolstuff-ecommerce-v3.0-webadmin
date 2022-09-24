@@ -1,9 +1,10 @@
 <div class="container pb-3">
     <ng-container *ngTemplateOutlet="heading;">
     </ng-container>
+    <hr>
     <div class="row">
         <div class="col-lg-3 card-left-label">
-            <h5>Brand details</h5>
+            <h6>Brand details</h6>
             <p class="d-flex">
                 <i class="bi bi-pencil-square"></i>
                 <small class="ms-2">Edit your brand informations</small>
@@ -101,7 +102,7 @@
     <hr>
     <div class="row">
         <div class="col-lg-3 card-left-label">
-            <h5>Account details</h5>
+            <h6>Account details</h6>
             <p class="d-flex">
                 <i class="bi bi-pencil-square"></i>
                 <small class="ms-2">Edit your account informations</small>
@@ -192,7 +193,7 @@
     <hr>
     <div class="row">
         <div class="col-lg-3 card-left-label">
-            <h5>Authencation</h5>
+            <h6>Authencation</h6>
             <a class="d-flex">
                 <i class="bi bi-pencil-square"></i>
                 <small class="ms-2">Change your password</small>
@@ -254,15 +255,14 @@
 
     </div>
 </div>
-<ng-template #heading>
 
-    <div class="d-flex justify-content-between py-3 align-items-center flex-wrap gap-3 mb-3">
-        <div class=" flex-grow-1">
+<ng-template #heading>
+    <div class="forehead pb-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="flex-grow-1">
             <h5 class="">Seller Informations</h5>
             <p class="text-muted small pe-2 mb-0">
                 A place that you can manage all your brand and account informations.
             </p>
         </div>
     </div>
-
 </ng-template>

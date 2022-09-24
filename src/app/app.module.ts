@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { QuillConfigModule, QuillModule } from 'ngx-quill';
@@ -50,8 +50,17 @@ import { UserControlsMenuComponent } from './core-components/user-controls-menu/
 import { DepartmentsComponent } from './admin/departments/departments.component';
 import { PagenotfoundComponent } from './core-components/pagenotfound/pagenotfound.component';
 import { Router } from '@angular/router';
-import { AuthRouteHandlerService } from './services/auth-route-handler.service';
+import { HttpErrorHandlerService } from './services/http-error-handler.service';
 import { StoreComponent } from './seller/store/store.component';
+import { PopupService } from './services/popup.service';
+import { ProductPropertiesComponent } from './admin/product-properties/product-properties.component';
+import { ProductPropertiesDetailComponent } from './admin/product-properties-detail/product-properties-detail.component';
+import { GlobalErrorHandlerService } from './services/global-error-handler.service';
+import { ConfirmationBoxComponent } from './core-components/confirmation-box/confirmation-box.component';
+import { ProductStatusDirective } from './core-components/product-status.directive';
+import { StoreSettingComponent } from './seller/store-setting/store-setting.component';
+import { LocationsComponent } from './seller/locations/locations.component';
+import { LocationDetailComponent } from './seller/location-detail/location-detail.component';
 
 // const config: SocketIoConfig = {
 //   url: 'http://localhost:8084',
@@ -96,6 +105,13 @@ import { StoreComponent } from './seller/store/store.component';
     DepartmentsComponent,
     PagenotfoundComponent,
     StoreComponent,
+    ProductPropertiesComponent,
+    ProductPropertiesDetailComponent,
+    ConfirmationBoxComponent,
+    ProductStatusDirective,
+    StoreSettingComponent,
+    LocationsComponent,
+    LocationDetailComponent,
   ],
   imports: [
     BrowserModule,
@@ -116,7 +132,7 @@ import { StoreComponent } from './seller/store/store.component';
         ],
       },
       theme: 'snow',
-      placeholder: "Description"
+      placeholder: 'Description',
     }),
 
     NgxMaskModule.forRoot(),
@@ -127,11 +143,12 @@ import { StoreComponent } from './seller/store/store.component';
   providers: [
     DatePipe,
     ServerService,
+    { provide: ErrorHandler, useClass: GlobalErrorHandlerService },
     {
       // processes all errors
       provide: HTTP_INTERCEPTORS,
-      useFactory: function (router: Router) {
-        return new AuthRouteHandlerService(router);
+      useFactory: function (router: Router, popup: PopupService) {
+        return new HttpErrorHandlerService(router, popup);
       },
       multi: true,
       deps: [Router],

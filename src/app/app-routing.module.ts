@@ -4,15 +4,20 @@ import { AdminHomeComponent } from './admin/admin-home/admin-home.component';
 import { AdminGuard } from './admin/admin.guard';
 import { AttributesComponent } from './admin/attributes/attributes.component';
 import { DepartmentsComponent } from './admin/departments/departments.component';
+import { ProductPropertiesDetailComponent } from './admin/product-properties-detail/product-properties-detail.component';
+import { ProductPropertiesComponent } from './admin/product-properties/product-properties.component';
 import { SignInComponent } from './auth/sign-in/sign-in.component';
 import { PagenotfoundComponent } from './core-components/pagenotfound/pagenotfound.component';
 import { InventoryComponent } from './seller/inventory/inventory.component';
+import { LocationDetailComponent } from './seller/location-detail/location-detail.component';
+import { LocationsComponent } from './seller/locations/locations.component';
 import { ProductAdditionalSetupComponent } from './seller/product-additional-setup/product-additional-setup.component';
 import { ProductSetupComponent } from './seller/product-setup/product-setup.component';
 import { ProfileComponent } from './seller/profile/profile.component';
 import { RegisterComponent } from './seller/register/register.component';
 import { SellerHomeComponent } from './seller/seller-home/seller-home.component';
 import { SellerGuard } from './seller/seller.guard';
+import { StoreSettingComponent } from './seller/store-setting/store-setting.component';
 import { StoreComponent } from './seller/store/store.component';
 
 const routes: Routes = [
@@ -37,6 +42,14 @@ const routes: Routes = [
       {
         path: 'departments',
         component: DepartmentsComponent,
+      },
+      {
+        path: 'product-properties',
+        component: ProductPropertiesComponent,
+      },
+      {
+        path: 'product-properties/:id',
+        component: ProductPropertiesDetailComponent,
       },
     ],
   },
@@ -73,6 +86,18 @@ const routes: Routes = [
         path: 'add-a-product/:id/:vid',
         component: ProductAdditionalSetupComponent,
       },
+      {
+        path: 'settings/store',
+        component: StoreSettingComponent
+      },
+      {
+        path: 'settings/locations',
+        component: LocationsComponent
+      },
+      {
+        path: 'settings/locations/:id',
+        component: LocationDetailComponent
+      }
     ],
   },
   { path: '404', component: PagenotfoundComponent },

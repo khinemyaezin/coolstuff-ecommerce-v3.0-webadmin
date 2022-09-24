@@ -98,7 +98,7 @@ export class DepartmentsComponent implements OnInit,OnDestroy {
     return lastValueFrom(
       this.http.GET(`categories`, param).pipe(
         map((resp: any) => {
-          if (resp.status == 200) {
+          if (resp.success) {
            return resp.details
           } else {
             return null;
@@ -118,7 +118,7 @@ export class DepartmentsComponent implements OnInit,OnDestroy {
     lastValueFrom(this.http.POST('categories', param)).then(
       (resp: any) => {
         model.close();
-        if (resp.status == 200) {
+        if (resp.success) {
           this.pops.showTost('Success');
           this.getSubDepartments(this.catNewFormGroup.get('category')?.value);
           this.catNewFormGroup.reset();

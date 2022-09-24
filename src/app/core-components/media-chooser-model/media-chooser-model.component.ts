@@ -176,7 +176,7 @@ export class MediaChooserModelComponent
 
   pageChanges(url: string) {
     lastValueFrom(this.http.fetch(url)).then((value: any) => {
-      if (value.status == 200) {
+      if (value.success) {
         this.files = value.details;
       }
     });

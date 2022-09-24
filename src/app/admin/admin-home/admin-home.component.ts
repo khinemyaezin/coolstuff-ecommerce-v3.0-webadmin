@@ -13,13 +13,13 @@ export class AdminHomeComponent implements OnInit {
     {
       id: 'departments',
       title: 'Departments',
-      icon: 'bi bi-diagram-2-fill',
+      icon: 'bi bi-diagram-3-fill',
       routerLink: '',
       collapse: false,
       children: [
         {
           id: 'dep-manager',
-          title: 'Dep manager',
+          title: 'Manager',
           icon: '',
           routerLink: 'departments',
           collapse: false,
@@ -27,14 +27,33 @@ export class AdminHomeComponent implements OnInit {
         },
         {
           id: 'product-attributes',
-          title: 'Dep with options',
+          title: 'Attributes',
           icon: '',
           routerLink: 'product-attributes',
           collapse: false,
           children: []
-        }
+        },
+        
       ],
+      
     },
+    {
+      id: 'products',
+      title: 'Products',
+      icon: 'bi bi-box2-fill',
+      routerLink: '',
+      collapse: false,
+      children: [
+        {
+          id: 'product-properties',
+          title: 'Properties',
+          icon: '',
+          routerLink: 'product-properties',
+          collapse: false,
+          children: []
+        }
+      ]
+    }
   ];
   constructor(
     private auth: AuthService,

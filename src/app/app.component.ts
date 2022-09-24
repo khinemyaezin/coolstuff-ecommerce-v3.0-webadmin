@@ -18,16 +18,6 @@ export interface Menus {
 
 export class AppComponent implements AfterViewInit {
   ngAfterViewInit(): void {
-    // $('#main').html('hello');
-    // let bootstraps = new bootstrap.Modal(document.getElementById('exampleModal'));
-    // bootstraps.show();
-
-    // const picker = new easepick.create({
-    //   element: document.getElementById('datepicker') as HTMLElement,
-    //   css: [
-    //     'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.0/dist/index.css',
-    //   ],
-    // });
 
   }
 

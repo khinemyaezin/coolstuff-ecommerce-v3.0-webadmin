@@ -65,7 +65,7 @@ export class RegisterComponent implements OnInit {
         next:( res)=>{
           console.log(res);
           
-          if(res.status == 200) {
+          if(res.success) {
             this.alert.showTost('Success');
           }
         },

@@ -109,7 +109,7 @@ export class ProfileComponent implements OnInit {
     };
     this.http.PUT(`brands/${this.auth.user.brand.id}`, param).subscribe({
       next:(resp)=>{
-        if(resp.status == 200){
+        if(resp.success){
           this.popup.showTost('Success!');
         }else {
           this.popup.showTost( resp.message);
@@ -162,7 +162,7 @@ export class ProfileComponent implements OnInit {
     }
     this.http.PUT('sessions/user/password',param).subscribe({
       next:(resp)=>{
-        if(resp.status == 200){
+        if(resp.success){
           this.popup.showTost('Success');
         }else {
           this.popup.showTost(resp.message)

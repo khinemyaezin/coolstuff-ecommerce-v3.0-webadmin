@@ -50,7 +50,7 @@ export class AttributesComponent implements OnInit,OnDestroy {
   async showDetailTab(value: any) {
     this.category = value;
     await this.getDepartmentAttributes(value.id).then((resp: any) => {
-      if (resp.status == 200) {
+      if (resp.success) {
         this.variantOptionHeaders = resp.details.data;
       }
     });
@@ -62,7 +62,7 @@ export class AttributesComponent implements OnInit,OnDestroy {
     if (search) param = param.append('title', search);
     this.http.GET(`categories-withdepth/${depth}`, param).subscribe({
       next: (e: any) => {
-        if (e.status == 200) {
+        if (e.success) {
           this.categoryList = e.details;
           this.pagination = PaginationComponent.convertPaginationObject(
             e.details
@@ -76,7 +76,7 @@ export class AttributesComponent implements OnInit,OnDestroy {
   async pageChange(url: any) {
     if (url) {
       lastValueFrom(this.http.fetch(url)).then((value: any) => {
-        if (value.status == 200) {
+        if (value.success) {
           this.categoryList = value.details;
           this.pagination = PaginationComponent.convertPaginationObject(
             value.details
@@ -107,7 +107,7 @@ export class AttributesComponent implements OnInit,OnDestroy {
       .subscribe((e: any) => {
         console.log(param);
 
-        if (e.status == 200) {
+        if (e.success) {
           this.popup.showTost(e.message);
         } else {
           alert(e.message);

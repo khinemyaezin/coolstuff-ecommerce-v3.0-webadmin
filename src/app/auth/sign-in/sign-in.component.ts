@@ -35,7 +35,7 @@ export class SignInComponent implements OnInit {
     // Send request to server.
     this.http.POST('login', param).subscribe({
       next: (body) => {
-        if (body.status == 200) {
+        if (body.success) {
           this.authService.signin(body.details);          
         }
       },

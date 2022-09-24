@@ -1,0 +1,71 @@
+<div class="container">
+    <div class="forehead d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div class=" flex-grow-1">
+            <h5 class="">Locations</h5>
+            <p class="text-muted small pe-2 mb-0">
+                Manage the places you stock inventory, fulfill orders, and sell products.
+            </p>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            <button type="button" class="btn btn-light" [routerLink]="'/seller-central/settings/locations/new'">
+                Add location
+            </button>
+        </div>
+    </div>
+    <ul class="list-group list-group-flush mb-2">
+
+        <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
+            [routerLink]="'/seller-central/settings/locations/1'" role="button">
+            <div class="d-flex flex-grow-1 gap-2">
+                <i class="bi bi-geo-alt-fill align-self-center"></i>
+                <div>
+                    <div>First item</div>
+                    <small class="text-muted">Location 1 yangon, myanamr</small>
+                </div>
+            </div>
+            <span class="badge bg-primary rounded-pill">default</span>
+        </li>
+    </ul>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">
+                Default location
+            </div>
+            <small class="text-muted">
+                Manage which location is used by Shopify and apps when no other location is specified.
+            </small>
+        </div>
+        <div class="card-body">
+            <button class="btn btn-primary" (click)="openDefLocationChange()">Change default location</button>
+        </div>
+    </div>
+</div>
+<ng-template #defLocation let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="modal-basic-title">Change default location
+        </h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <form>
+            <p class="small text-muted">
+                Select the location that Shopify and apps will use when no other location is specified. Only locations that fulfill online orders can be used as your default location.
+            </p>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                <label class="form-check-label" for="flexRadioDefault1">
+                    Default radio
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                <label class="form-check-label" for="flexRadioDefault2">
+                    Default checked radio
+                </label>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="modal.close('Save click')">Save</button>
+    </div>
+</ng-template>

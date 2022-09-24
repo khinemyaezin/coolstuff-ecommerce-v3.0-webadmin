@@ -48,7 +48,6 @@ export class ServerService {
     private http: HttpClient,
     private auth: AuthService,
     private router: Router,
-    private activeRoute: ActivatedRoute
   ) {}
 
   get config() {
@@ -110,7 +109,39 @@ export class ServerService {
         // if (err.status == HttpStatusCode.Unauthorized && myurl !== this.sessionURL) {
         //   this.router.navigate(['/signin']);
         // }
-        throw `error in source. Details:${err.statusText} `;
+        throw err;
+      })
+    );
+  }
+
+  DELETE(
+    url: string,
+    params?:
+      | HttpParams
+      | {
+          observe: CsHttpObserveType;
+          httpParam?: HttpParams;
+        }
+  ) {
+    const myurl = this._CONFIG?.url + url;
+    const options = this.options(params);
+    //console.log(options);
+
+    return this.http.delete(myurl, options as any).pipe(
+      map((resp: any) => {
+        if (options.observe == CsHttpObserveType.event) {
+          return resp as HttpEvent<any>;
+        } else {
+          return resp.body;
+        }
+      }),
+      catchError((err: HttpErrorResponse) => {
+        // console.log(window.location.href);
+        
+        // if (err.status == HttpStatusCode.Unauthorized && myurl !== this.sessionURL) {
+        //   this.router.navigate(['/signin']);
+        // }
+        throw err;
       })
     );
   }
@@ -137,10 +168,10 @@ export class ServerService {
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        if (err.status == HttpStatusCode.Unauthorized) {
-          this.router.navigate(['/signin']);
-        }
-        throw `error in source. Details:${err.statusText} `;
+        // if (err.status == HttpStatusCode.Unauthorized) {
+        //   this.router.navigate(['/signin']);
+        // }
+        throw err;
       })
     );
   }
@@ -166,10 +197,10 @@ export class ServerService {
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        if (err.status == HttpStatusCode.Unauthorized) {
-          this.router.navigate(['/signin']);
-        }
-        throw `error in source. Details:${err.statusText} `;
+        // if (err.status == HttpStatusCode.Unauthorized) {
+        //   this.router.navigate(['/signin']);
+        // }
+        throw err;
       })
     );
   }
@@ -196,10 +227,10 @@ export class ServerService {
           return resp.body;
         }),
         catchError((err: HttpErrorResponse) => {
-          if (err.status == HttpStatusCode.Unauthorized) {
-            this.router.navigate(['/signin']);
-          }
-          throw `error in source. Details:${err.statusText} `;
+          // if (err.status == HttpStatusCode.Unauthorized) {
+          //   this.router.navigate(['/signin']);
+          // }
+          throw err;
         })
       );
   }

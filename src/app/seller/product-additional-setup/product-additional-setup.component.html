@@ -16,9 +16,9 @@
                     <div class="card-body">
                         <form [formGroup]="categoryForm" id="browse-category">
                             <label for="category-name" class="form-label">Browse </label>
-                                <input type="text" class="form-control " list="datalistOptions"
-                                    id="category-name" placeholder="Search category" formControlName="search">
-                       
+                            <input type="text" class="form-control " list="datalistOptions" id="category-name"
+                                placeholder="Search category" formControlName="search">
+
 
                             <div class="overflow-auto">
 
@@ -48,8 +48,9 @@
         </li>
         <li [ngbNavItem]="2">
             <ng-template ngbNavContent>
+
                 <form [formGroup]="productForm" (ngSubmit)="submit()">
-                    <ng-container *ngTemplateOutlet="heading; context:{ submitBtn: true }">
+                    <ng-container *ngTemplateOutlet="heading; context:{ submitBtn: true}">
                     </ng-container>
 
                     <div class="row g-2">
@@ -84,6 +85,10 @@
                                     <ng-container
                                         *ngTemplateOutlet="description; context: { formGroup: variant, index : i}">
                                     </ng-container>
+                                    <!-- Shipping -->
+                                    <!-- <ng-container
+                                        *ngTemplateOutlet="shipping; context: { formGroup: variant, index : i}">
+                                    </ng-container> -->
                                     <!-- Attributes  -->
                                     <ng-container
                                         *ngTemplateOutlet="attributeCard; context: { formGroup: variant, index : i}">
@@ -139,37 +144,32 @@
             </ng-template>
         </li>
     </ul>
-    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+    <div [ngbNavOutlet]="nav"></div>
 
 </div>
 
 <ng-template #heading let-submitBtn="submitBtn">
-
-    <div class="d-flex justify-content-between py-3 align-items-center">
-
-        <div class=" flex-grow-1">
-            <h5 class="">Product Setup</h5>
-            <!-- <p class="text-muted small pe-2">
-                When adding products here, do not ignore to fill all the required fields completely and follow the
-                product adding rules.
-            </p> -->
-            <nav aria-label="breadcrumb" class="small">
-                <ol class="breadcrumb mb-0">
-                    <ng-container *ngFor="let c of categoryBreadcrumb | categoryBreadcrumb;let isLast = last">
-                        <li class="breadcrumb-item {{isLast ? 'active':''}}">
-                            {{c}}
-                        </li>
-                    </ng-container>
-                </ol>
-            </nav>
+    <div class="forehead">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class=" flex-grow-1">
+                <h5 class="m-0">Product Setup</h5>
+            </div>
+            <div class="d-flex gap-2 no-wrap">
+                <button type="button" backButton name="Products" icon="bi bi-chevron-left"
+                    [routerLink]="'/seller-central/inventory'"></button>
+                <input type="submit" *ngIf="submitBtn" class="btn text-primary" value="Submit">
+            </div>
         </div>
-        <div class="d-flex gap-2 no-wrap">
-            <button type="button" backButton name="Products" icon="bi bi-chevron-left"
-                [routerLink]="'/seller-central/inventory'"></button>
-            <input type="submit" *ngIf="submitBtn" class="btn text-primary" value="Submit">
-        </div>
+        <nav aria-label="breadcrumb" class="breadcrumb-nav small">
+            <ol class="breadcrumb mb-0">
+                <ng-container *ngFor="let c of categoryBreadcrumb | categoryBreadcrumb;let isLast = last">
+                    <li class="breadcrumb-item {{isLast ? 'active':''}}">
+                        {{c}}
+                    </li>
+                </ng-container>
+            </ol>
+        </nav>
     </div>
-
 </ng-template>
 <ng-template #vitalInfo let-formGroup="formGroup">
     <div class="card mb-2" [formGroup]="formGroup">
@@ -217,69 +217,74 @@
     </div>
 </ng-template>
 <ng-template #productStatus let-formGroup="formGroup">
-    <div class="card" [formGroup]="formGroup">
-        <div class="card-header">
-            <div class="card-title">Product Status</div>
-        </div>
-        <div class="card-body">
-            <div class="form-check" *ngFor="let bizStatus of businessStatus;let i=index">
-                <input class="form-check-input" type="radio" name="status" [id]="'biz-status-'+i"
-                    formControlName="status" [value]=" bizStatus.value ">
-                <label class="form-check-label" [for]="'biz-status-'+i">
-                    {{ bizStatus.title }}
-                </label>
+    <ng-container [formGroup]="formGroup">
+        <div class="card mb-2">
+            <div class="card-header">
+                <div class="card-title">Product Status</div>
+            </div>
+            <div class="card-body">
+                <div class="form-check" *ngFor="let bizStatus of businessStatus;let i=index">
+                    <input class="form-check-input" type="radio" name="status" [id]="'biz-status-'+i"
+                        formControlName="status" [value]=" bizStatus.value ">
+                    <label class="form-check-label" [for]="'biz-status-'+i">
+                        {{ bizStatus.title }}
+                    </label>
+                </div>
             </div>
         </div>
-        <hr class="m-0">
-        <div class="card-header">
-            <div class="card-title">Payment</div>
-        </div>
-        <div class="card-body">
-            <div class="mb-2">
-                <label for="prodCurrency" class="form-label ">Purchased with</label>
-                <select class="form-select" id="prodCurrency" formControlName="currency" [compareWith]="compare">
-                    <option [value]="null" disabled selected>Select</option>
-                    <option [ngValue]="currency" *ngFor="let currency of currencyByRegions;">
-                        {{ currency.currency_code }}<br>
-                    </option>
-                </select>
+        <div class="card mb-2">
+            <div class="card-header">
+                <div class="card-title">Payment</div>
             </div>
-            <div class="mb-2">
-                <label for="prodCurrency" class="form-label ">Sell with</label>
-                <select class="form-select" id="prodCurrency">
-                    <option [value]="null" disabled selected>Select</option>
-                    <option [ngValue]="currency" *ngFor="let currency of currencyByRegions;">
-                        {{ currency.currency_code }}<br>
-                    </option>
-                </select>
+            <div class="card-body">
+                <div class="mb-2">
+                    <label class="form-label ">Sell with</label>
+                    <div class="form-control bg-transparent mb-1">
+                        {{formGroup.get('currency')?.value?.currency_code }}
+                        ({{formGroup.get('currency')?.value?.country_name}})
+                    </div>
+                    <span class="d-block text-end">
+                        <a routerLink="/seller-central/settings/store" class="small">Change store currency</a>
+                    </span>
+                </div>
+                <!-- <div class="mb-2">
+                    <label for="purchasedCurrency" class="form-label ">Purchased with</label>
+                    <select class="form-select" id="purchasedCurrency" formControlName="purchasedCurrency">
+                        <option [value]="null" disabled selected>Select</option>
+                        <option [ngValue]="currency" *ngFor="let currency of currencyByRegions;">
+                            {{ currency.currency_code }}<br>
+                        </option>
+                    </select>
+                </div> -->
             </div>
         </div>
-        <hr class="m-0">
-        <div class="card-header">
-            <div class="card-title">Organization</div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Tag</div>
+            </div>
+            <div class="card-body">
+                <input type="text" class="form-control" placeholder="shirt, red">
+            </div>
         </div>
-        <hr class="m-0">
-        <div class="card-body">
-            <h6>Tag</h6>
-            <input type="text" class="form-control" placeholder="shirt, red">
-        </div>
-    </div>
+    </ng-container>
+
 </ng-template>
 <ng-template #pricing let-formGroup="formGroup" let-index="index">
     <div class="card mb-2" [formGroup]="formGroup">
         <div class="card-header">
             <div class="card-title">Pricing</div>
         </div>
-        <div class="card-body">
+        <div class="card-body pb-0">
             <div class="row mb-2">
                 <div class="col-sm-4">
                     <label for="offerSellingPrice" class="w-100 col-form-label  text-lg-end text-sm-start">
-                        Selling price</label>
+                        Price</label>
                 </div>
                 <div class="col-sm-8">
 
                     <input type="text" class="form-control" id="offerSellingPrice" formControlName="sellingPrice"
-                        [prefix]="buyCurrency?.currency_code + ' '" [mask]="maskConfig.maxnumber_count">
+                        [prefix]="sellCurrency?.currency_code + ' '" [mask]="maskConfig.maxnumber_count">
                 </div>
             </div>
             <div class="row mb-2">
@@ -289,24 +294,27 @@
                 </div>
                 <div class="col-sm-8">
 
-                    <input type="text" class="form-control" id="offerCompareAtPrice"
-                        [prefix]="buyCurrency?.currency_code + ' '" [mask]="maskConfig.maxnumber_count">
+                    <input type="text" class="form-control" id="offerCompareAtPrice" formControlName="comparedPrice"
+                        [prefix]="sellCurrency?.currency_code + ' '" [mask]="maskConfig.maxnumber_count">
 
                 </div>
             </div>
-
-            <div class="row mb-2">
+            <div class="row">
                 <div class="col-sm-4">
-                    <label for="offerCostPerItem" class="w-100 col-form-label  text-lg-end text-sm-start">
-                        Cost per item</label>
-                </div>
-                <div class="col-sm-8">
-
-                    <input type="text" class="form-control" id="offerCostPerItem" formControlName="price"
-                        [prefix]="buyCurrency?.currency_code + ' '" [mask]="maskConfig.maxnumber_count">
 
                 </div>
+                <div class="col-sm-8 align-self-center">
+                    <div class="form-check m-0">
+                        <input class="form-check-input" type="checkbox" id="charge-tax">
+                        <label class="form-check-label" for="charge-tax">
+                            Charge tax
+                        </label>
+                    </div>
+                </div>
+
             </div>
+
+
             <!-- <div class="row mb-2">
                 <div class="col-sm-4">
                     <label for="offerMargin" class="w-100 col-form-label  text-lg-end text-sm-start">Margin</label>
@@ -326,6 +334,21 @@
                 </div>
             </div> -->
         </div>
+        <hr>
+        <div class="card-body pt-0">
+            <div class="row mb-2">
+                <div class="col-sm-4">
+                    <label for="offerCostPerItem" class="w-100 col-form-label  text-lg-end text-sm-start">
+                        Cost per item</label>
+                </div>
+                <div class="col-sm-8">
+
+                    <input type="text" class="form-control" id="offerCostPerItem" formControlName="price"
+                        [prefix]="sellCurrency?.currency_code + ' '" [mask]="maskConfig.maxnumber_count">
+                    <small class="text-muted">Customer won't see it.</small>
+                </div>
+            </div>
+        </div>
     </div>
 </ng-template>
 <ng-template #inventory let-formGroup="formGroup" let-index="index">
@@ -334,34 +357,29 @@
             <div class="card-title">Inventory
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body pb-0">
             <div class="row mb-2">
                 <div class="col-sm-4">
-                    <label for="offerSku" class="w-100 col-form-label text-lg-end text-sm-start">SKU</label>
+                    <label for="offerSku" class="w-100 col-form-label text-lg-end text-sm-start">SKU
+                    </label>
                 </div>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" id="offerSku" placeholder="Stock keeping unit.."
+                    <input type="text" class="form-control" id="offerSku" placeholder="Stock Keeping Unit"
                         [mask]="maskConfig.brand_sku_count" formControlName="sellerSku">
                 </div>
             </div>
             <div class="row mb-2">
                 <div class="col-sm-4">
-                    <label for="offerBarcode" class="w-100 col-form-label  text-lg-end text-sm-start">Barcode</label>
+                    <label for="offerBarcode" class="w-100 col-form-label  text-lg-end text-sm-start">Barcode
+                    </label>
                 </div>
 
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" id="offerBarcode" placeholder="Barcode number..">
+                    <input type="text" class="form-control" id="offerBarcode" formControlName="barcode"
+                        placeholder="ISBN, UPC, GTIN, etc.">
                 </div>
             </div>
-            <div class="row mb-2">
-                <div class="col-sm-4">
-                    <label for="offerQty" class="w-100 col-form-label  text-lg-end text-sm-start">Quantity</label>
-                </div>
 
-                <div class="col-sm-8">
-                    <input type="number" class="form-control text-start" id="offerQty" formControlName="quantity">
-                </div>
-            </div>
             <div class="row mb-2">
                 <div class="col-sm-4">
                     <label for="offerDateRange" class="w-100 col-form-label  text-lg-end text-sm-start">Date
@@ -370,11 +388,10 @@
 
                 <div class="col-sm-8">
                     <div class="input-group rounded border input-group-date-range">
+                        <input type="text" datePicker class="form-control border-0" formControlName="dateRange">
                         <div class="px-2 align-self-center">
                             <i class="bi bi-calendar"></i>
                         </div>
-                        <input type="text" datePicker class="form-control border-0" formControlName="dateRange">
-
                     </div>
                 </div>
             </div>
@@ -393,6 +410,74 @@
                     </select>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-sm-4">
+                </div>
+                <div class="col-sm-8">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="track-qty">
+                        <label class="form-check-label" for="track-qty">
+                            Track quantity
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="sell-outofstock" checked>
+                        <label class="form-check-label" for="sell-outofstock">
+                            Continue selling when out of stock
+                        </label>
+                    </div>
+                </div>
+            </div>
+          
+        </div>
+        <hr>
+        <div class="card-body pt-0">
+            <h6>Quantity</h6>
+            <div class="row mb-2">
+                <div class="col-sm-4">
+                    Locations
+                </div>
+
+                <div class="col-sm-8">
+                    Avaliable
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-4">
+                    <label for="offerQty" class="w-100 col-form-label  text-lg-end text-sm-start">
+                        Default Location
+                    </label>
+                </div>
+
+                <div class="col-sm-8">
+                    <input type="text" class="form-control text-start" id="offerQty" formControlName="quantity"
+                        [mask]="maskConfig.maxnumber_count">
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-4">
+                    <label for="offerQty" class="w-100 col-form-label  text-lg-end text-sm-start">
+                        Default Location
+                    </label>
+                </div>
+
+                <div class="col-sm-8">
+                    <input type="text" class="form-control text-start" id="offerQty" formControlName="quantity"
+                        [mask]="maskConfig.maxnumber_count">
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<ng-template #shipping let-formGroup="formGroup" let-index="index">
+    <div class="card mb-2" [formGroup]="formGroup">
+        <div class="card-header">
+            <div class="card-title">Shipping
+            </div>
+        </div>
+        <div class="card-body">
+
 
         </div>
     </div>
@@ -458,18 +543,14 @@
                     </label>
                 </div>
                 <div class="col-sm-8">
-                    <ul class="list-unstyled">
-                        <ng-container formArrayName="features">
-                            <li class="mb-2"
-                                *ngFor="let feature of formGroup.get('features').controls; let featureIndex = index">
-                                <input type="text" class="form-control key-features"
-                                    (keyup)="addFeatures(featureIndex,$event,formGroup)"
-                                    [formControlName]="featureIndex">
-                            </li>
-                        </ng-container>
+                    <ul class="list-unstyled" formArrayName="features">
+                        <li class="mb-2"
+                            *ngFor="let feature of formGroup.get('features').controls; let featureIndex = index">
+                            <input type="text" class="form-control key-features"
+                                (keyup)="addFeatures(featureIndex,$event,formGroup)" [formControlName]="featureIndex">
+                        </li>
                         <li>
-                            <button type="button" class="btn btn-link" (click)="removeLastFeatures(formGroup)">Remove
-                                last</button>
+                            <a class="small" role="button" (click)="removeLastFeatures(formGroup)">Remove last</a>
                         </li>
                     </ul>
                 </div>
@@ -484,7 +565,7 @@
                 </div>
 
                 <div class="col-sm-8">
-                    <div class="border rounded">
+                    <div class="">
                         <quill-editor formControlName="description"></quill-editor>
                     </div>
 
@@ -515,7 +596,7 @@
                     <div class="row mb-2" [formGroup]="option">
                         <div class="col-sm-4">
                             <div class="d-flex flex-nowrap gap-2 align-items-center mb-2">
-                                <button type="button" class="btn btn-close" [disabled]="!option.get('header')?.value"
+                                <button type="button" class="btn btn-trash" [disabled]="!option.get('header')?.value"
                                     (click)="removeVariantOptionHeader(optionIndex)">
 
                                 </button>
@@ -541,7 +622,7 @@
                                             <input type="text" class="form-control" formControlName="name"
                                                 (keyup)="onChangeOptionItem(optionIndex,i,feature,$event)" />
                                             <ng-container *ngIf="!(isFirst && option.get('list')?.controls.length==2) ">
-                                                <button type="button" class="btn btn-close" tabindex="-1"
+                                                <button type="button" class="btn btn-trash" tabindex="-1"
                                                     (click)="removeVariantOption(optionIndex,i)"
                                                     *ngIf="feature.get('name')?.value !=='' && !isLast ">
                                                 </button>
@@ -551,10 +632,6 @@
                                         <ngb-alert type="success" *ngIf="feature.get('error')?.value.isError">
                                             {{ feature.get('error')?.value.message }}
                                         </ngb-alert>
-                                        <!-- <small class="p-2 small">
-                                            index[{{feature.get('optionOrder')?.value}}]
-                                            id[{{feature.get('id')?.value}}]
-                                        </small> -->
                                     </li>
                                 </ng-container>
                                 <ng-template #optionInputGroupNone>
@@ -760,19 +837,14 @@
                                                     <input class="form-check-input" type="checkbox"
                                                         formControlName="selected" [id]="prod.get('formId')?.value">
                                                     <label class="form-check-label" [for]="prod.get('formId')?.value">
-
                                                         <span
                                                             *ngFor="let option of options; let isFirst=first; let i=index">
                                                             <ng-container *ngIf="option.get('header')?.value">
                                                                 {{ !isFirst ? '/' : ''}}
                                                                 {{prod.get('variantOptions')?.value[i].get('inputRef.name')?.value}}
-                                                                <!-- {{prod.get('variantOptions')?.value[i].get('inputRef.id')?.value}} -->
                                                             </ng-container>
 
                                                         </span>
-                                                        <br>
-                                                        {{prod.get('id')?.value}}
-
                                                     </label>
                                                 </div>
 
@@ -854,14 +926,8 @@
                                                 Date range
                                             </div>
                                             <div class="table-cell-content">
-                                                <div class="input-group rounded border ">
-                                                    <div class="p-2">
-                                                        <i class="bi bi-calendar"></i>
-
-                                                    </div>
-                                                    <input type="text" datePicker formControlName="dateRange"
-                                                        class="form-control border-0 date-picker">
-                                                </div>
+                                                <input type="text" datePicker formControlName="dateRange"
+                                                    class="form-control date-picker">
                                             </div>
                                         </td>
                                         <td class="table-cell sticky-cell-end">

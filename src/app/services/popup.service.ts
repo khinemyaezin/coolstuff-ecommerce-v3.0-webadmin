@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { lastValueFrom } from 'rxjs';
-import { DialogConfirmComponent } from '../core-components/dialog-confirm/dialog-confirm.component';
+import { ConfirmationBoxComponent, ConfirmBoxResult } from '../core-components/confirmation-box/confirmation-box.component';
 import { ImageCropperModelComponent } from '../core-components/image-cropper-model/image-cropper-model.component';
 import { LoadingComponent } from '../core-components/loading/loading.component';
 import { Media, MediaChooserModelComponent } from '../core-components/media-chooser-model/media-chooser-model.component';
@@ -52,34 +52,7 @@ export class PopupService {
       });
     });
   }
-  showConfirmModal(m: {
-    header: string;
-    btns?: { cancel: string; confirm: string };
-  }) {
-    return new Promise<boolean>((rs, rj) => {
-      const popup = document.createElement('modal-component');
-      const factory = this.componentFactoryResolver.resolveComponentFactory(
-        DialogConfirmComponent
-      );
-      const popupComponentRef = factory.create(this.injector, [], popup);
-      this.appRef.attachView(popupComponentRef.hostView);
-      popupComponentRef.instance.header = m.header;
-      if (m.btns) {
-        popupComponentRef.instance.cancelBtn = m.btns.cancel;
-        popupComponentRef.instance.confirmBtn = m.btns.confirm;
-      }
-      popupComponentRef.instance.closed.subscribe((e) => {
-        $(popup).remove();
-        this.appRef.detachView(popupComponentRef.hostView);
-        rs(e);
-      });
-      popupComponentRef.instance.ready.subscribe(() => {});
-      const notifierContainerRef = document.body.getElementsByClassName(
-        'confirm-identity-modal'
-      );
-      $(notifierContainerRef).append(popup);
-    });
-  }
+
   showImageCropperModal(config:ImageCropperConfig) {
     const model:NgbModalRef = this.ngModel.open(ImageCropperModelComponent, {
       backdrop: 'static',
@@ -94,6 +67,15 @@ export class PopupService {
 
   showTost(textOrTpl: string | TemplateRef<any>, options: any = {}) {
     this.toasts.push({ textOrTpl, ...options });
+  }
+
+  showSuccessToast(textOrTpl: string ) {
+    const options = {classname: 'toast toast-success'};
+    this.toasts.push(
+      { 
+        textOrTpl, 
+        ...options
+    });
   }
 
   removeTost(toast: any) {
@@ -128,7 +110,7 @@ export class PopupService {
  
     return lastValueFrom(this.http.GET('files', param)).then(
       (value: ViewResult<any> | any) => {
-        if (value.status == 200) {
+        if (value.success) {
           return value.details;
         } else {
           return null;
@@ -139,5 +121,18 @@ export class PopupService {
         return null;
       }
     );
+  }
+
+  confirmBox(title:string,message:string|null = null):Promise<ConfirmBoxResult>{
+    const model:NgbModalRef = this.ngModel.open(ConfirmationBoxComponent, {
+      backdrop: 'static',
+      centered: true,
+      scrollable: true,
+      size: 'sm',
+    });
+    model.componentInstance.modelRef = model;
+    model.componentInstance.title = title;
+    model.componentInstance.body = message;
+    return model.result as Promise<ConfirmBoxResult>;
   }
 }

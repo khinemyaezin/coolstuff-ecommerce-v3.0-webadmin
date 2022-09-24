@@ -30,8 +30,17 @@ import {
   Subject,
   takeUntil,
 } from 'rxjs';
-import { HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { Category, CategoryLeave, MaskConfig } from 'src/app/services/core';
+import {
+  HttpErrorResponse,
+  HttpParams,
+  HttpResponse,
+} from '@angular/common/http';
+import {
+  BizStatus,
+  Category,
+  CategoryLeave,
+  MaskConfig,
+} from 'src/app/services/core';
 import { MediaChooserConfig } from 'src/app/core-components/media-chooser/media-chooser.component';
 
 @Component({
@@ -52,11 +61,14 @@ export class ProductAdditionalSetupComponent
   productForm: FormGroup = new FormGroup({
     id: new FormControl(),
     status: new FormControl(2),
-    title: new FormControl('', { validators: Validators.required }),
-    brand: new FormControl('', { validators: Validators.required }),
-    manufacturer: new FormControl('', { validators: Validators.required }),
-    packType: new FormControl(null, { validators: Validators.required }),
-    currency: new FormControl(null, { validators: Validators.required }),
+    title: new FormControl('', { validators: [Validators.required] }),
+    brand: new FormControl('', { validators: [Validators.required] }),
+    manufacturer: new FormControl('', { validators: [Validators.required] }),
+    packType: new FormControl(null, { validators: [Validators.required] }),
+    currency: new FormControl(null, { validators: [Validators.required] }),
+    purchasedCurrency: new FormControl(null, {
+      validators: [Validators.required],
+    }),
     variants: new FormArray([]),
     hasVariant: new FormControl<boolean>(false),
   });
@@ -113,12 +125,20 @@ export class ProductAdditionalSetupComponent
     return this.productForm.controls['variants'] as FormArray;
   }
 
-  get buyCurrency() {
+  get sellCurrency() {
     return this.productForm.get('currency')?.value;
   }
 
+  get buyCurrency() {
+    return this.productForm.get('purchasedCurrency')?.value;
+  }
+
   get categoryBreadcrumb(): string {
-    return this.categoryForm.get('data')?.value?.path;
+    return this.categoryForm.get('data')?.value?.full_path;
+  }
+
+  get hasError() {
+    return this.productForm.hasError('required');
   }
 
   constructor(
@@ -177,7 +197,7 @@ export class ProductAdditionalSetupComponent
     }
   }
 
-  init() {
+  async init() {
     this.browseCategory();
     this.createOptionGroup();
     this.onChangeVariantCheckBox();
@@ -188,37 +208,39 @@ export class ProductAdditionalSetupComponent
       { key: 'pagination', value: '-1' },
     ]);
 
-    forkJoin([getCondition, getPackTypes, regions]).subscribe(
-      (values: any[]) => {
-        if (values[0] && values[0].status == 200) {
-          this.conditionOptions = values[0].details.data;
+    await new Promise<void>((res, rej) => {
+      forkJoin([getCondition, getPackTypes, regions]).subscribe({
+        next: (values: any[]) => {
+          if (values[0] && values[0].success) {
+            this.conditionOptions = values[0].details.data;
+          }
+          if (values[1] && values[1].success) {
+            this.packTypeList = values[1].details.data;
+          }
+          if (values[2] && values[2].success) {
+            this.currencyByRegions = values[2].details.data;
+          }
+          res();
+        },
+        error:()=>{
+          rej();
         }
-        if (values[1] && values[1].status == 200) {
-          this.packTypeList = values[1].details.data;
-        }
-        if (values[2] && values[2].status == 200) {
-          this.currencyByRegions = values[2].details.data;
+      });
+    });
 
-          // Set default currency value by brand;
-          this.productForm.controls['currency'].setValue(
-            this.currencyByRegions.find(
-              (r) => r.id == this.authService.user.brand.fk_region_id
-            )
-          );
-        }
-      }
+    /**
+     * Set default currency value by brand;
+     */
+    this.productForm.controls['currency'].setValue(
+      this.currencyByRegions.find(
+        (r) => r.id == this.authService.user.brand.fk_region_id
+      )
     );
-
-    // this.vitalInfoForm
-    //   .get('status')
-    //   ?.valueChanges.pipe(takeUntil(this.destroy$))
-    //   .subscribe((value: any) => {
-    //     if (value == BizStatus.ACTIVE) this._productAlerts.delete('def');
-    //     else {
-    //       this._productAlerts.set('def', ALERTS['def']);
-    //     }
-    //     this.productAlertsController.next(this._productAlerts);
-    //   });
+    this.productForm.controls['purchasedCurrency'].setValue(
+      this.currencyByRegions.find(
+        (r) => r.id == this.authService.user.brand.fk_region_id
+      )
+    );
     this.productForm.get('title')?.setValue('Untitled 1');
     this.productForm.get('brand')?.setValue(this.authService.user.brand.title);
     this.productForm
@@ -257,7 +279,7 @@ export class ProductAdditionalSetupComponent
         } else {
           // Request categories.
           lastValueFrom(this.getCategory(changes)).then((resp: any) => {
-            if (resp.status == 200) {
+            if (resp.success) {
               this.categoryForm.get('searchResultList')?.setValue(
                 resp.details.map((category: Category) => {
                   return category;
@@ -283,6 +305,7 @@ export class ProductAdditionalSetupComponent
     this.categoryForm.controls['search'].setValue('');
     this.categoryForm.controls['searchResultList'].setValue([]);
     this.categoryForm.controls['data'].setValue(category);
+    console.log(this.categoryForm);
   }
 
   /** Description */
@@ -349,7 +372,7 @@ export class ProductAdditionalSetupComponent
   importAttributesToDefaultVariant(lvlCategoryId: string, variants: FormArray) {
     lastValueFrom(this.http.GET(`categories/${lvlCategoryId}/attributes`)).then(
       (resp: any) => {
-        if (resp.status == 200) {
+        if (resp.success) {
           variants.controls.forEach((variant) => {
             (variant.get('attributes') as FormArray).clear();
             resp.details.data.forEach((attribute: any) => {
@@ -398,6 +421,7 @@ export class ProductAdditionalSetupComponent
       id: new FormControl('-1'),
       status: new FormControl(2),
       sellerSku: new FormControl(this.pgService.randomString(10)),
+      barcode : new FormControl(''),
       variantOptions: new FormControl([
         this.fb.group({
           header: new FormControl(optionHdr1),
@@ -417,6 +441,7 @@ export class ProductAdditionalSetupComponent
       ]),
       price: new FormControl(0),
       sellingPrice: new FormControl(0),
+      comparedPrice: new FormControl(0, [Validators.required]),
       quantity: new FormControl(0),
       dateRange: new FormControl({ start: new Date(), end: new Date() }),
       condition: new FormControl(''),
@@ -448,7 +473,7 @@ export class ProductAdditionalSetupComponent
             !this.pgService.isEmptyID(this.standAloneVariant.get('id').value)
           ) {
             this.standAloneVariant.get('status')?.setValue(2);
-            this.deletedProducts.delete(this.standAloneVariant.get('id').value)
+            this.deletedProducts.delete(this.standAloneVariant.get('id').value);
           }
           this.getVariants.push(this.standAloneVariant);
         } else {
@@ -456,7 +481,10 @@ export class ProductAdditionalSetupComponent
             !this.pgService.isEmptyID(this.standAloneVariant.get('id').value)
           ) {
             this.standAloneVariant.get('status')?.setValue(4);
-            this.deletedProducts.set(this.standAloneVariant.get('id').value,this.standAloneVariant)
+            this.deletedProducts.set(
+              this.standAloneVariant.get('id').value,
+              this.standAloneVariant
+            );
           }
         }
       });
@@ -1119,7 +1147,7 @@ export class ProductAdditionalSetupComponent
       this.getProductById(productId, variantId)
     )
       .then((result: any) => {
-        return result.status == 200 ? result.details : null;
+        return result.success ? result.details : null;
       })
       .catch(() => {
         return null;
@@ -1553,7 +1581,13 @@ export class ProductAdditionalSetupComponent
   }
 
   async submit() {
-    // Prepare Product;
+    /**
+     * First validation
+     */
+
+    /**
+     * Prepare product
+     */
     let param: any = {
       id: this.productForm.value.id,
       biz_status: this.productForm.value.status,
@@ -1567,6 +1601,9 @@ export class ProductAdditionalSetupComponent
       fk_packtype_id: this.productForm.value.packType?.id,
       fk_prod_group_id: null,
       fk_currency_id: this.productForm.value.currency?.id,
+      fk_varopt_1_hdr_id: null,
+      fk_varopt_2_hdr_id: null,
+      fk_varopt_3_hdr_id: null,
       hasVariant: this.productForm.value.hasVariant,
       variants: [],
     };
@@ -1593,7 +1630,20 @@ export class ProductAdditionalSetupComponent
       param.variants.push(delProd);
     }
 
+    /**
+     * Validation
+     */
+    const hasMinActiveCount =
+      param.variants.filter((value: any) => {
+        return value.biz_status == BizStatus.ACTIVE;
+      }).length > 0;
+    if (!hasMinActiveCount) {
+      this.popup.showTost('Please fill all data');
+      return;
+    }
+
     console.log(param);
+    //return;
     // console.log(
     //   param.variants
     //     .map((v: any) => {
@@ -1609,7 +1659,7 @@ export class ProductAdditionalSetupComponent
       this.saveProduct(param).subscribe({
         next: (response) => {
           loadingRef.dismiss();
-          if (response.status == 200) {
+          if (response.success) {
             this.popup.showTost('Success');
           } else {
             this.popup.showTost('Something went wrong');
@@ -1619,14 +1669,14 @@ export class ProductAdditionalSetupComponent
         error: (e) => {
           loadingRef.dismiss();
           this.popup.showTost('Something went wrong');
-          console.log(e);
+          console.log(e.error);
         },
       });
     } else {
       this.updateProduct(param, param.id).subscribe({
         next: (response) => {
           loadingRef.dismiss();
-          if (response.status == 200) {
+          if (response.success) {
             this.popup.showTost('Success');
           } else {
             this.popup.showTost('Something went wrong');
@@ -1634,6 +1684,7 @@ export class ProductAdditionalSetupComponent
           }
         },
         error: (e) => {
+          loadingRef.dismiss();
           this.popup.showTost('Something went wrong');
           console.log(e);
         },
@@ -1672,7 +1723,7 @@ export class ProductAdditionalSetupComponent
       this.getVariantById(productId, variantId)
     ).then(
       (resp) => {
-        if (resp.status == 200) {
+        if (resp.success) {
           return resp.details;
         } else return null;
       },
@@ -1730,35 +1781,11 @@ export class ProductAdditionalSetupComponent
     // only for product that has variants
     const vMap = this.variantsMap.get(this.paramVariantId as string);
 
-    const param: any = {
-      updated_columns: [
-        'biz_status',
-        'seller_sku',
-        'buy_price',
-        'selling_price',
-        'qty',
-        'fk_condition_id',
-        'features',
-        'prod_desc',
-        'start_at',
-        'expired_at',
-        'media_1_image',
-        'media_2_image',
-        'media_3_image',
-        'media_4_image',
-        'media_5_image',
-        'media_6_image',
-        'media_7_image',
-        'media_8_video',
-        'media_9_video',
-      ],
-      custom_columns: ['attributes'],
-      variant: this.getVariants.controls.map(
-        (variant: AbstractControl<FormGroup>) => {
-          return this.exportVariant(variant, vMap);
-        }
-      )[0],
-    };
+    const param: any = this.getVariants.controls.map(
+      (variant: AbstractControl<FormGroup>) => {
+        return this.exportVariant(variant, vMap);
+      }
+    )[0];
     console.log(param);
     this.updateVariant(
       param,
@@ -1768,7 +1795,7 @@ export class ProductAdditionalSetupComponent
       next: (resp) => {
         console.log(resp);
 
-        if (resp.status == 200) {
+        if (resp.success) {
           this.popup.showTost('Success');
         } else {
           this.popup.showTost('Unable to proceed your request');

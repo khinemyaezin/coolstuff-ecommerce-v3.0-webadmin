@@ -1,6 +1,7 @@
 export const enum BizStatus {
   ACTIVE = 2,
   DEF = 6,
+  DELETED = 4
 }
 export interface Auth {
   id: string;

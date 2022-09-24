@@ -1,77 +1,12 @@
 @import "../../../custom-scss/bootstrap-variable.scss";
-$rps-table-heading-color: #edf2f9;
-
-.table-responsive {
-  min-height: 100%;
-}
 .table-responsive table {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  a {
-    text-decoration: none;
-    color: unset;
+  p {
+    margin: 0;
   }
-  a:hover {
-    text-decoration: underline;
-    color: $primary;
-  }
-
-  thead {
-    background-color: $rps-table-heading-color;
-    color: #4d627a;
-  }
-
-  .rps-table-row.rps-table-row-head {
-    th {
-      padding: 1rem;
-      white-space: nowrap;
-      vertical-align: middle;
-    }
-    th.sticky-end {
-      right: 0px;
-      position: sticky;
-      z-index: 2;
-      box-shadow: -0.1rem -0.1rem 0 0 rgba(225, 227, 229, 1);
-      filter: drop-shadow(-0.1rem 0 0 rgba(225, 227, 229, 1));
-      margin-right: 0px;
-      background-color: $rps-table-heading-color;
-    }
+  .dropdown-toggle::after {
+    display: none;
   }
   .rps-table-row .rps-table-cell {
-    width: 100%;
-   
-    word-wrap: break-word;
-    box-sizing: border-box;
-    flex-grow: 1;
-    padding: 1em;
-    list-style: none;
-    border-top: 0.2px solid #ecf2f9 !important;
-    white-space: nowrap;
-    background-color: white;
-
-    &.max-width{
-      width: 100%;
-      min-width: 300px;
-      li {
-        width: 100%;
-      }
-    }
-
-    &.sticky-end {
-      right: 0px;
-      position: sticky;
-      z-index: 2;
-      box-shadow: -0.1rem -0.1rem 0 0 rgba(225, 227, 229, 1);
-      filter: drop-shadow(-0.1rem 0 0 rgba(225, 227, 229, 1));
-      padding-right: 0px;
-      margin-right: 0px;
-    }
-
-    .rps-table-cell-heading {
-      display: none;
-    }
-
     .rps-table-cell-content {
       .product-image-container {
         width: 4rem !important;
@@ -108,4 +43,3 @@ $rps-table-heading-color: #edf2f9;
     }
   }
 }
-

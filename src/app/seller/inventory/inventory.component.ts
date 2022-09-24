@@ -1,4 +1,4 @@
-import { HttpParams } from '@angular/common/http';
+import { HttpParams, HttpResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import {
   FormGroup,
@@ -17,8 +17,10 @@ import {
   forkJoin,
 } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
+import { ConfirmBoxResult } from 'src/app/core-components/confirmation-box/confirmation-box.component';
 import { Pagination, PaginationComponent } from 'src/app/core-components/pagination/pagination.component';
 import { ControllerService } from 'src/app/services/controller.service';
+import { MaskConfig } from 'src/app/services/core';
 import { PopupService } from 'src/app/services/popup.service';
 import { ServerService } from 'src/app/services/server.service';
 import { SellerService } from '../seller.service';
@@ -31,9 +33,10 @@ import { SellerService } from '../seller.service';
 export class InventoryComponent implements OnInit {
   destroy$: Subject<boolean> = new Subject<boolean>();
 
-  // Watch changes to save
+  /**
+   * Data variables
+   */
   private variantsChanges = new Map();
-
   productFormGroup: FormGroup = new FormGroup({
     products: new FormArray([]),
   });
@@ -42,47 +45,19 @@ export class InventoryComponent implements OnInit {
     pageStyleGrid: new FormControl(true),
   });
   conditions: any = [];
+  defaultVariants = new Map();
   pagination!: Pagination;
 
-  productMenuStatus = {
-    pending: 1,
-    active: 2,
-    holding: 6,
-    freeze: 4,
-  };
-  productItemStatus = {
-    delete: 4,
-  };
-  tableHeader = [
-    { className: 'name', title: 'Name', show: true },
-    { className: 'image-col', title: 'Image', show: true },
-    { className: 'sku-col', title: 'SKU', show: true },
-    { className: 'price-col', title: 'Price', show: true },
-    { className: 'price-col', title: 'Selling price', show: true },
-    { className: 'price-col', title: 'Avaliable Qty', show: true },
-    { className: 'prodgroup-col', title: 'Product Group', show: true },
-    { className: 'condition', title: 'Condition', show: true },
-    { className: 'date-range', title: 'Date range', show: true },
-  ];
+  /**
+   * Layout variables
+   */
+  maskConfig: MaskConfig = this.http.config.mask;
+  easyUpdate:boolean = false; 
+  /**
+   * Const variables
+   */
 
-  productGroupModal: any;
-  productGroupFormGroup: FormGroup = new FormGroup({
-    id: new FormControl('-1'),
-    name: new FormControl(''),
-    products: new FormArray([]),
-    pgList: new FormArray([]),
-    isNew: new FormControl(true),
-  });
-  productSummaryData: any = {
-    brandId: '',
-    totalSellingPrice: 0.0,
-    totalPrice: 0.0,
-    profit: 0.0,
-    totalProduct: 0,
-  };
-  defaultVariants = new Map();
 
-  protected maskConfig = this.http.config.mask;
 
   constructor(
     public pgService: ControllerService,
@@ -91,18 +66,10 @@ export class InventoryComponent implements OnInit {
     private sellerService: SellerService,
     private popup: PopupService,
     private auth: AuthService,
-    private router: Router
   ) {}
 
   get productVariationControls(): AbstractControl[] {
     return (<FormArray>this.productFormGroup.get('products')).controls;
-  }
-  get pgItems() {
-    return (<FormArray>this.productGroupFormGroup.controls['products'])
-      .controls;
-  }
-  get pgStatus(): boolean {
-    return this.productGroupFormGroup.controls['isNew'].value;
   }
   get saveBtnOn() {
     return this.variantsChanges.size > 0;
@@ -129,7 +96,7 @@ export class InventoryComponent implements OnInit {
         params = params.set('search', changes);
         lastValueFrom(this.getProducts(params))
           .then((result: any) => {
-            if(result.status == 200 ) {
+            if(result.success ) {
               this.importProducts(result.details)
             }
           })
@@ -147,17 +114,17 @@ export class InventoryComponent implements OnInit {
 
     await lastValueFrom(forkJoin([getProducts, getConditions]))
       .then((values: any[]) => {
-        if (values[0] && values[0].status == 200) {
+        if (values[0] && values[0].success) {
          this.importProducts(values[0].details);
         }
-        if (values[1] && values[1].status == 200) {
+        if (values[1] && values[1].success) {
           this.conditions = values[1].details.data;
         }
       })
       .catch((e) => {});
   }
 
-  createInventoryProduct(variants: any) {
+  createProduct(variants: any) {
     const vari = this.fb.group(variants) as FormGroup;
     vari
       .get('buy_price')
@@ -182,8 +149,6 @@ export class InventoryComponent implements OnInit {
       'formId',
       this.fb.control(this.pgService.randomInt(1, 1000))
     );
-    vari.addControl('selected', this.fb.control(false));
-    vari.addControl('edit', this.fb.control(true));
     //modify
     vari
       .get('start_at')
@@ -249,7 +214,7 @@ export class InventoryComponent implements OnInit {
 
     resp.data.map((variants: any) => {
       (<FormArray>this.productFormGroup.get('products')).push(
-        this.createInventoryProduct(variants)
+        this.createProduct(variants)
       );
     });
 
@@ -261,11 +226,11 @@ export class InventoryComponent implements OnInit {
     let variants = <FormArray>product.get('variants');
     if (variants.controls.length !== 0) return;
     let params = new HttpParams();
-    params = params.set('productId', product.get('product')?.value?.id);
-    params = params.set('filterVariants', product.get('id')?.value);
+    params = params.set('product_id', product.get('product')?.value?.id);
+    params = params.set('filter_variants', product.get('id')?.value);
     const products = await lastValueFrom(this.getProducts(params))
       .then((result: any) => {
-        return result.status == 200 ? result.details : null;
+        return result.success ? result.details : null;
       })
       .catch(() => {
         return null;
@@ -274,7 +239,7 @@ export class InventoryComponent implements OnInit {
       return;
     }
     products.forEach((e: any) => {
-      variants.push(this.createInventoryProduct(e));
+      variants.push(this.createProduct(e));
     });
   }
 
@@ -285,11 +250,15 @@ export class InventoryComponent implements OnInit {
     );
   }
 
+  deleteProduct(id:string) {
+    return this.http.DELETE(`products/${id}`);
+  }
+
   async pageChange(url: string | null) {
     if (url) {
       const productsResponse = await lastValueFrom(this.http.fetch(url))
         .then((result) => {
-          return result.status == 200 ? result.details : null;
+          return result.success ? result.details : null;
         })
         .catch(() => {
           return null;
@@ -328,7 +297,7 @@ export class InventoryComponent implements OnInit {
       .PUT(`brands/${this.auth.user.brand.id}/inventory/variants`, values)
       .subscribe({
         next: (result: any) => {
-          if (result.status == 200) {
+          if (result.success) {
             this.productFormGroup.markAsPristine();
             values.variants.forEach((v) => {
               this.defaultVariants.set(v.id, {
@@ -350,8 +319,20 @@ export class InventoryComponent implements OnInit {
     console.log(values);
   }
 
-  removeProduct(vari:FormGroup) {
-    console.log(vari.value);
+  async removeProduct(id:string) {    
+    const result:ConfirmBoxResult =  await this.popup.confirmBox("Do you want to delete?");
+    if(result == ConfirmBoxResult.CONFIRM) {
+      lastValueFrom(this.deleteProduct(id)).then(
+        (response:any)=> {
+          if(response.success) {
+            this.popup.showSuccessToast('Success');
+          }else {
+            this.popup.showTost(response.message);
+          }
+        }
+      )
+    }
     
   }
+
 }
