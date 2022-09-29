@@ -192,8 +192,7 @@ export class ProductAdditionalSetupComponent
     } else if (id) {
       this.importProduct(id, null);
     } else {
-      this.getVariants.push(this.standAloneVariant);
-      this.ref.detectChanges();
+      this.initNewProduct();
     }
   }
 
@@ -222,15 +221,13 @@ export class ProductAdditionalSetupComponent
           }
           res();
         },
-        error:()=>{
+        error: () => {
           rej();
-        }
+        },
       });
     });
 
-    /**
-     * Set default currency value by brand;
-     */
+    //Set default;
     this.productForm.controls['currency'].setValue(
       this.currencyByRegions.find(
         (r) => r.id == this.authService.user.brand.fk_region_id
@@ -246,6 +243,54 @@ export class ProductAdditionalSetupComponent
     this.productForm
       .get('manufacturer')
       ?.setValue(this.authService.user.brand.title);
+  }
+
+  async initNewProduct() {
+    this.getVariants.push(this.standAloneVariant);
+    this.ref.detectChanges();
+
+    this.selectCategory({
+      id: '56',
+      lft: 63,
+      rgt: 64,
+      title: 'Accessories',
+      full_path: 'Clohing, Shoes & Watches, Fashion, Boy, Accessories',
+      lvl_id: '39',
+      biz_status: 0,
+    });
+    this.importLocations(this.standAloneVariant);
+    
+    
+  }
+
+  /** Import Locations */
+
+  async importLocations(variantFormGroup:AbstractControl) {
+    const locationResp = await lastValueFrom(this.getLocations(
+      variantFormGroup.get('id')?.value
+    ));
+    if (locationResp && locationResp.success) {
+      const locationFormGroup = locationResp.details.map((loc:any) => {
+        const location = this.createLocation();
+        location.controls['id'].setValue(loc.id);
+        location.controls['locationId'].setValue(loc.location.id);
+        location.controls['locationTitle'].setValue(loc.location.title);
+        location.controls['isDefault'].setValue(loc.location.default);
+        location.controls['variantId'].setValue(loc.variant.id);
+        location.controls['quantity'].setValue(loc.quantity ?? 0);
+
+        location.controls['originQuantity'].setValue(loc.quantity ?? 0);
+        location.controls['adjustBy'].setValue(0);
+        return location;
+      });
+      // O of 1
+      
+        let locations = (<FormArray>variantFormGroup.get('locations'));
+        locationFormGroup.forEach( (loc:any) => {
+          locations.push(loc);
+        });
+      
+    }
   }
 
   /** Vital Info */
@@ -292,6 +337,7 @@ export class ProductAdditionalSetupComponent
   }
 
   selectCategory(category: CategoryLeave) {
+    console.log(category);
     this.importCategory(category);
 
     this.importAttributesToDefaultVariant(
@@ -406,6 +452,20 @@ export class ProductAdditionalSetupComponent
     return formGroup;
   }
 
+  private createLocation() {
+    return this.fb.group({
+      id: new FormControl(),
+      locationId: new FormControl(),
+      locationTitle: new FormControl(),
+      isDefault: new FormControl(false),
+      variantId: new FormControl(),
+      quantity: new FormControl(0),
+
+      originQuantity : new FormControl(),
+      adjustBy: new FormControl()
+    });
+  }
+
   private createVariant(
     optionHdr1: any = null,
     title1: any = null,
@@ -421,7 +481,7 @@ export class ProductAdditionalSetupComponent
       id: new FormControl('-1'),
       status: new FormControl(2),
       sellerSku: new FormControl(this.pgService.randomString(10)),
-      barcode : new FormControl(''),
+      barcode: new FormControl(''),
       variantOptions: new FormControl([
         this.fb.group({
           header: new FormControl(optionHdr1),
@@ -443,6 +503,8 @@ export class ProductAdditionalSetupComponent
       sellingPrice: new FormControl(0),
       comparedPrice: new FormControl(0, [Validators.required]),
       quantity: new FormControl(0),
+      trackQuantity: new FormControl<boolean>(true),
+      keepSellingOutofstock: new FormControl<boolean>(false),
       dateRange: new FormControl({ start: new Date(), end: new Date() }),
       condition: new FormControl(''),
       images: new FormArray([]),
@@ -458,6 +520,7 @@ export class ProductAdditionalSetupComponent
       media_8_video: new FormControl(null),
       media_9_video: new FormControl(null),
       attributes: new FormArray([]),
+      locations: new FormArray([]),
     });
   }
 
@@ -1136,6 +1199,14 @@ export class ProductAdditionalSetupComponent
     return this.http.GET(`products/${productId}/${variantId}`, param);
   }
 
+  getLocations(variantId: string | null = null) {
+    let httpParam = new HttpParams();
+    if (variantId) {
+      httpParam = httpParam.append('prod_variant_id', variantId);
+    }
+    return this.http.GET('locations/by-product', httpParam);
+  }
+
   /** Import Export----------------------------------------------------------- */
 
   async importProduct(productId: any, variantId: any) {
@@ -1172,12 +1243,12 @@ export class ProductAdditionalSetupComponent
     categoryLeave.lvl_id = product.fk_lvlcategory_id;
     this.importCategory(categoryLeave);
 
-    await this.importVariants(product);
+    this.importVariants(product);
 
     loading.dismiss();
   }
 
-  async importVariants(data: any) {
+  importVariants(data: any) {
     this.productForm.controls['hasVariant'].patchValue(data.has_variant, {
       emitEvent: false,
     });
@@ -1313,12 +1384,9 @@ export class ProductAdditionalSetupComponent
      * Set def variant
      */
     this.standAloneVariant = this.getVariants.controls[0];
-    console.log(
-      'standALonevariant',
-      `${this.standAloneVariant.get('id').value} , ${
-        this.standAloneVariant.get('sellerSku').value
-      }`
-    );
+    this.importLocations(this.standAloneVariant);
+    
+    
   }
 
   importVariant(variant: any) {

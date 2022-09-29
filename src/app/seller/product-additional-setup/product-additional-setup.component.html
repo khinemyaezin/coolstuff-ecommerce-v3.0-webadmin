@@ -275,7 +275,7 @@
         <div class="card-header">
             <div class="card-title">Pricing</div>
         </div>
-        <div class="card-body pb-0">
+        <div class="card-body">
             <div class="row mb-2">
                 <div class="col-sm-4">
                     <label for="offerSellingPrice" class="w-100 col-form-label  text-lg-end text-sm-start">
@@ -299,7 +299,7 @@
 
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-2">
                 <div class="col-sm-4">
 
                 </div>
@@ -333,9 +333,6 @@
                     </span>
                 </div>
             </div> -->
-        </div>
-        <hr>
-        <div class="card-body pt-0">
             <div class="row mb-2">
                 <div class="col-sm-4">
                     <label for="offerCostPerItem" class="w-100 col-form-label  text-lg-end text-sm-start">
@@ -349,6 +346,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 </ng-template>
 <ng-template #inventory let-formGroup="formGroup" let-index="index">
@@ -357,7 +355,7 @@
             <div class="card-title">Inventory
             </div>
         </div>
-        <div class="card-body pb-0">
+        <div class="card-body ">
             <div class="row mb-2">
                 <div class="col-sm-4">
                     <label for="offerSku" class="w-100 col-form-label text-lg-end text-sm-start">SKU
@@ -411,63 +409,104 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row mb-2">
                 <div class="col-sm-4">
                 </div>
                 <div class="col-sm-8">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="track-qty">
+                        <input class="form-check-input" type="checkbox" value="" id="track-qty"
+                            formControlName="trackQuantity">
                         <label class="form-check-label" for="track-qty">
                             Track quantity
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="sell-outofstock" checked>
+                        <input class="form-check-input" type="checkbox" value="" id="sell-outofstock"
+                            formControlName="keepSellingOutofstock">
                         <label class="form-check-label" for="sell-outofstock">
                             Continue selling when out of stock
                         </label>
                     </div>
                 </div>
             </div>
-          
+            <div *ngIf="formGroup.get('trackQuantity')?.value">
+                <div class="row mb-2">
+                    <div class="col-sm-4">
+                        <label for="offerQty" class="w-100 col-form-label  text-lg-end text-sm-start">
+                            Locations
+                        </label>
+                    </div>
+                    <div class="col-sm-8">
+                        <table class="table table-sm align-middle table-borderless" formArrayName="locations">
+                            <thead>
+                                <tr>
+                                    <td class="text-muted " style="width: 60%;">Name</td>
+                                    <td class="text-muted ">Quantity</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let location of $any(formGroup.get('locations')).controls;let i=index"
+                                    [formGroupName]="i">
+                                    <td [ngClass]="{ 'text-primary': location.get('isDefault')?.value }">
+                                        {{location.get('locationTitle')?.value}}</td>
+                                    <td>
+                                        <div *ngIf="paramProductId then locQtyForExisting else locQtyForNew"></div>
+                                        <ng-template #locQtyForNew>
+                                            <input type="text" class="form-control" formControlName="quantity"
+                                                [mask]="maskConfig.maxnumber_count">
+                                        </ng-template>
+                                        <ng-template #locQtyForExisting>
+                                            <div ngbDropdown>
+                                                <button type="button" class="btn btn-light w-100 text-end"
+                                                    [id]="'qty-change-dropdown-'+i" ngbDropdownToggle>
+                                                    {{location.get('quantity')?.value}}
+                                                </button>
+                                                <div ngbDropdownMenu [attr.aria-labelledby]="'qty-change-dropdown-'+i"
+                                                    class="p-3 qtychange-dropdownmenu">
+                                                    <div class="row mb-2">
+                                                        <div class="col">
+                                                            <label for="adjustby" class="form-label">Adjust by</label>
+                                                            <input type="text" id="adjustby" class="form-control"
+                                                                formControlName="adjustBy">
+                                                        </div>
+                                                        <div class="col">
+                                                            <label for="quantity" class="form-label">New</label>
+                                                            <input type="text" id="quantity" class="form-control"
+                                                                formControlName="quantity">
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-2" *ngIf="location.get('quantity')?.value !== location.get('originQuantity')?.value">
+                                                        <span class="small">(Orignial quantity: {{location.get('originQuantity')?.value}})</span>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <label for="reason" class="form-label">Reason</label>
+                                                        <select name="reason" id="reason" class="form-select">
+                                                            <option value="correction">Correction (default)</option>
+                                                            <option value="cycle_count_available">Count</option>
+                                                            <option value="received">Received</option>
+                                                            <option value="restock">Return restock</option>
+                                                            <option value="damaged">Damaged</option>
+                                                            <option value="shrinkage">Theft or loss</option>
+                                                            <option value="promotion">Promotion or donation</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="d-flex justify-content-end">
+                                                        <button type="button" class="btn btn-primary">Save</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
         </div>
-        <hr>
-        <div class="card-body pt-0">
-            <h6>Quantity</h6>
-            <div class="row mb-2">
-                <div class="col-sm-4">
-                    Locations
-                </div>
 
-                <div class="col-sm-8">
-                    Avaliable
-                </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col-sm-4">
-                    <label for="offerQty" class="w-100 col-form-label  text-lg-end text-sm-start">
-                        Default Location
-                    </label>
-                </div>
-
-                <div class="col-sm-8">
-                    <input type="text" class="form-control text-start" id="offerQty" formControlName="quantity"
-                        [mask]="maskConfig.maxnumber_count">
-                </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col-sm-4">
-                    <label for="offerQty" class="w-100 col-form-label  text-lg-end text-sm-start">
-                        Default Location
-                    </label>
-                </div>
-
-                <div class="col-sm-8">
-                    <input type="text" class="form-control text-start" id="offerQty" formControlName="quantity"
-                        [mask]="maskConfig.maxnumber_count">
-                </div>
-            </div>
-        </div>
     </div>
 </ng-template>
 <ng-template #shipping let-formGroup="formGroup" let-index="index">

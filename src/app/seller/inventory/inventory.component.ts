@@ -18,7 +18,10 @@ import {
 } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { ConfirmBoxResult } from 'src/app/core-components/confirmation-box/confirmation-box.component';
-import { Pagination, PaginationComponent } from 'src/app/core-components/pagination/pagination.component';
+import {
+  Pagination,
+  PaginationComponent,
+} from 'src/app/core-components/pagination/pagination.component';
 import { ControllerService } from 'src/app/services/controller.service';
 import { MaskConfig } from 'src/app/services/core';
 import { PopupService } from 'src/app/services/popup.service';
@@ -52,12 +55,10 @@ export class InventoryComponent implements OnInit {
    * Layout variables
    */
   maskConfig: MaskConfig = this.http.config.mask;
-  easyUpdate:boolean = false; 
+  easyUpdate: boolean = false;
   /**
    * Const variables
    */
-
-
 
   constructor(
     public pgService: ControllerService,
@@ -65,7 +66,7 @@ export class InventoryComponent implements OnInit {
     private fb: FormBuilder,
     private sellerService: SellerService,
     private popup: PopupService,
-    private auth: AuthService,
+    private auth: AuthService
   ) {}
 
   get productVariationControls(): AbstractControl[] {
@@ -88,24 +89,22 @@ export class InventoryComponent implements OnInit {
   ngOnInit(): void {
     this.init();
 
-    this.productCriFormGroup.get('name')?.valueChanges
-    .pipe(takeUntil(this.destroy$),debounceTime(300)).subscribe(
-      (changes:string)=>{
-
+    this.productCriFormGroup
+      .get('name')
+      ?.valueChanges.pipe(takeUntil(this.destroy$), debounceTime(300))
+      .subscribe((changes: string) => {
         let params = new HttpParams();
         params = params.set('search', changes);
         lastValueFrom(this.getProducts(params))
           .then((result: any) => {
-            if(result.success ) {
-              this.importProducts(result.details)
+            if (result.success) {
+              this.importProducts(result.details);
             }
           })
           .catch(() => {
             return null;
           });
-       
-      }
-    )
+      });
   }
 
   async init() {
@@ -115,7 +114,7 @@ export class InventoryComponent implements OnInit {
     await lastValueFrom(forkJoin([getProducts, getConditions]))
       .then((values: any[]) => {
         if (values[0] && values[0].success) {
-         this.importProducts(values[0].details);
+          this.importProducts(values[0].details);
         }
         if (values[1] && values[1].success) {
           this.conditions = values[1].details.data;
@@ -218,7 +217,7 @@ export class InventoryComponent implements OnInit {
       );
     });
 
-    this.pagination  = PaginationComponent.convertPaginationObject(resp);
+    this.pagination = PaginationComponent.convertPaginationObject(resp);
   }
 
   /** Http */
@@ -250,7 +249,7 @@ export class InventoryComponent implements OnInit {
     );
   }
 
-  deleteProduct(id:string) {
+  deleteProduct(id: string) {
     return this.http.DELETE(`products/${id}`);
   }
 
@@ -266,7 +265,7 @@ export class InventoryComponent implements OnInit {
       if (!productsResponse) {
         return;
       }
-      this.importProducts(productsResponse)
+      this.importProducts(productsResponse);
     }
   }
 
@@ -319,20 +318,18 @@ export class InventoryComponent implements OnInit {
     console.log(values);
   }
 
-  async removeProduct(id:string) {    
-    const result:ConfirmBoxResult =  await this.popup.confirmBox("Do you want to delete?");
-    if(result == ConfirmBoxResult.CONFIRM) {
-      lastValueFrom(this.deleteProduct(id)).then(
-        (response:any)=> {
-          if(response.success) {
-            this.popup.showSuccessToast('Success');
-          }else {
-            this.popup.showTost(response.message);
-          }
+  async removeProduct(id: string) {
+    const result: ConfirmBoxResult = await this.popup.confirmBox(
+      'Do you want to delete?'
+    );
+    if (result == ConfirmBoxResult.CONFIRM) {
+      lastValueFrom(this.deleteProduct(id)).then((response: any) => {
+        if (response.success) {
+          this.popup.showSuccessToast('Success');
+        } else {
+          this.popup.showTost(response.message);
         }
-      )
+      });
     }
-    
   }
-
 }

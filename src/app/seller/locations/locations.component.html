@@ -7,23 +7,24 @@
             </p>
         </div>
         <div class="d-flex gap-2 align-items-center">
-            <button type="button" class="btn btn-light" [routerLink]="'/seller-central/settings/locations/new'">
+            <button type="button" class="btn " [routerLink]="'/seller-central/settings/locations/new'">
                 Add location
             </button>
         </div>
     </div>
+    
     <ul class="list-group list-group-flush mb-2">
 
         <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
-            [routerLink]="'/seller-central/settings/locations/1'" role="button">
+            [routerLink]="'/seller-central/settings/locations/' + loc.id " role="button" *ngFor="let loc of locations">
             <div class="d-flex flex-grow-1 gap-2">
                 <i class="bi bi-geo-alt-fill align-self-center"></i>
                 <div>
-                    <div>First item</div>
-                    <small class="text-muted">Location 1 yangon, myanamr</small>
+                    <div>{{loc.title}}</div>
+                    <small class="text-muted">{{loc.address}}</small>
                 </div>
             </div>
-            <span class="badge bg-primary rounded-pill">default</span>
+            <span class="badge bg-primary rounded-pill" *ngIf="loc.default">default</span>
         </li>
     </ul>
     <div class="card">
@@ -46,26 +47,23 @@
         </h5>
         <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
-    <div class="modal-body">
-        <form>
+    <form [formGroup]="defaultLocation" (ngSubmit)="submitDefLocation(modal)">
+        <div class="modal-body">
             <p class="small text-muted">
-                Select the location that Shopify and apps will use when no other location is specified. Only locations that fulfill online orders can be used as your default location.
+                Select the location that we will use when no other location is specified. Only locations
+                that fulfill online orders can be used as your default location.
             </p>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                <label class="form-check-label" for="flexRadioDefault1">
-                    Default radio
+            <div class="form-check" *ngFor="let loc of locations;let i = index">
+                <input class="form-check-input" type="radio" name="default" [id]="'location-'+i" [value]="loc.id"
+                    formControlName="default">
+                <label class="form-check-label" [for]="'location-'+i">
+                    {{loc.title}}
                 </label>
             </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-                <label class="form-check-label" for="flexRadioDefault2">
-                    Default checked radio
-                </label>
-            </div>
-        </form>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="modal.close('Save click')">Save</button>
-    </div>
+
+        </div>
+        <div class="modal-footer">
+            <input type="submit" class="btn btn-primary" value="Save">
+        </div>
+    </form>
 </ng-template>

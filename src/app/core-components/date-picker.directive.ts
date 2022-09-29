@@ -110,7 +110,7 @@ export class DatePickerDirective
   format(start: Date, end: Date) {
     const startDateString = this.datepie.transform(start, 'dd-MM-YYYY');
     const endDateString = this.datepie.transform(end, 'dd-MM-YYYY');
-    const value = startDateString + ' -> ' + endDateString;
+    const value = startDateString + ' / ' + endDateString;
     return value;
   }
 

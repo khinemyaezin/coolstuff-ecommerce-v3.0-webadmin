@@ -109,7 +109,7 @@ export class ControllerService {
     return Number.isNaN( num ) ? 0 : num  ;
   }
   isEmptyID(str: any) {
-    return str == null || str.match(/^$|^-1$/) !== null;
+    return str == null || str === undefined || str.match(/^$|^-1$/) !== null;
   }
   round(value: any) {
     return Number(Math.round((value + 'e2') as any));
