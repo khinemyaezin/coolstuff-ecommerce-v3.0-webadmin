@@ -4,9 +4,7 @@ import {
   HttpErrorResponse,
   HttpEvent,
   HttpHeaders,
-  HttpParams,
-  HttpResponse,
-  HttpStatusCode,
+  HttpParams
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
