@@ -309,6 +309,7 @@ export class InventoryComponent implements OnInit {
 
             this.variantsChanges.clear();
           } else {
+            console.log(result);
           }
         },
         error: (err) => {

@@ -9,6 +9,9 @@ body {
   margin: 0;
   // font-family: "Inter", sans-serif;
 }
+app-root {
+  overflow-x: hidden;
+}
 ::-webkit-scrollbar {
   width: 8px !important;
   height: 8px !important;
@@ -35,23 +38,6 @@ $placeholder-color: $gray-500;
   color: $placeholder-color !important;
   font-style: italic;
 }
-// ::-webkit-input-placeholder {
-//   color: $placeholder-color;
-//   font-style: italic;
-// }
-// :-moz-placeholder {
-//   color: $placeholder-color;
-//   font-style: italic;
-// }
-// ::-moz-placeholder {
-//   color: $placeholder-color;
-//   font-style: italic;
-// }
-// :-ms-input-placeholder {
-//   color: $placeholder-color;
-//   font-style: italic;
-// }
-
 // Badge
 /* badge success*/
 .badge-soft-success {
@@ -261,12 +247,6 @@ $placeholder-color: $gray-500;
     background-color: $primary;
     color: $white;
   }
-  // &.btn-toggle-hover[aria-expanded="true"] {
-  //   //color: $primary;
-  // }
-  // &.btn-toggle-hover[aria-expanded="true"]:hover {
-  //   //color: $white;
-  // }
   &[aria-expanded="true"][menu-arrow="true"]::after {
     transform: rotate(90deg);
   }
@@ -646,10 +626,6 @@ $placeholder-color: $gray-500;
     text-decoration: underline;
     color: $primary;
   }
-  thead {
-    background-color: #edf2f9;
-    color: #4d627a;
-  }
   .rps-table-row {
     width: 100%;
   }
@@ -669,13 +645,19 @@ $placeholder-color: $gray-500;
       margin-right: 0px;
       background-color: $white;
     }
+    th.sticky-start {
+      left: 0px;
+      position: sticky;
+      z-index: $zindex-dropdown;
+      box-shadow: 0.1rem -0.1rem 0 0 rgba(225, 227, 229, 1);
+      filter: drop-shadow(0.1rem 0 0 rgba(225, 227, 229, 1));
+    }
   }
   .rps-table-row .rps-table-cell {
     box-sizing: border-box;
     flex-grow: 1;
     list-style: none;
     border-top: 0.2px solid #ecf2f9 !important;
-    background-color: white;
     vertical-align: middle;
 
     &.sticky-end {
@@ -687,7 +669,13 @@ $placeholder-color: $gray-500;
       padding-right: 0px;
       margin-right: 0px;
     }
-
+    &.sticky-start {
+      left: 0px;
+      position: sticky;
+      z-index: $zindex-dropdown;
+      box-shadow: 0.1rem -0.1rem 0 0 rgba(225, 227, 229, 1);
+      filter: drop-shadow(0.1rem 0 0 rgba(225, 227, 229, 1));
+    }
     .rps-table-cell-heading {
       display: none;
     }
@@ -696,4 +684,10 @@ $placeholder-color: $gray-500;
 
 .forehead {
   padding: 1.5rem 0 1.5rem 0;
+}
+
+.w-md-50 {
+  @include media-breakpoint-up(md) {
+    width: 50% !important;
+  }
 }

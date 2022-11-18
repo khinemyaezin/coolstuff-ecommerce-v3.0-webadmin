@@ -31,7 +31,7 @@ import { ServerService } from 'src/app/services/server.service';
   styleUrls: ['./product-properties-detail.component.scss'],
 })
 export class ProductPropertiesDetailComponent implements OnInit {
-  @ViewChild('nav') private navRef:any;
+  @ViewChild('nav') private navRef: any;
   headerFormGroup: FormGroup = new FormGroup({
     id: new FormControl(null),
     bizStatus: new FormControl(BizStatus.ACTIVE),
@@ -40,10 +40,15 @@ export class ProductPropertiesDetailComponent implements OnInit {
     needDtlsMapping: new FormControl<boolean>(false, Validators.required),
 
     details: new FormArray([]),
+    units: new FormArray([]),
   });
   details: any[] = [];
   detailsFilter: FormControl = new FormControl('');
   detailsPagination!: Pagination;
+
+  units: any[] = [];
+  unitsFilter: FormControl = new FormControl('');
+  unitsPagination!: Pagination;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   deletedStatus = BizStatus.DELETED;
@@ -54,6 +59,14 @@ export class ProductPropertiesDetailComponent implements OnInit {
   }
 
   get reachMaxNewDetails() {
+    return this.getNewDetails.controls.length == 10;
+  }
+
+  get getNewUnits() {
+    return <FormArray>this.headerFormGroup.get('units');
+  }
+
+  get reachMaxNewUnits() {
     return this.getNewDetails.controls.length == 10;
   }
 
@@ -79,8 +92,14 @@ export class ProductPropertiesDetailComponent implements OnInit {
             if (this.importHeader(resp).success) {
               lastValueFrom(this.getOptionDetails(id)).then((resp: any) => {
                 this.importDetailList(resp);
-                if(resp.details.total == 0) {
-                  this.navRef.select(2)
+                if (resp.details.total == 0) {
+                  //this.navRef.select(2);
+                }
+              });
+              lastValueFrom(this.getOptionUnits(id)).then((resp: any) => {
+                this.importUnitsList(resp);
+                if (resp.details.total == 0) {
+                  //this.navRef.select(2);
                 }
               });
             } else {
@@ -127,7 +146,8 @@ export class ProductPropertiesDetailComponent implements OnInit {
 
   initDetailTab() {}
 
-  createDetail() {
+  // Details
+  createChild() {
     return new FormGroup({
       id: new FormControl(null),
       status: new FormControl(BizStatus.ACTIVE),
@@ -175,27 +195,61 @@ export class ProductPropertiesDetailComponent implements OnInit {
 
   addNewDetail() {
     if (this.getNewDetails.controls.length == 10) return;
-    this.getNewDetails.push(this.createDetail());
+    this.getNewDetails.push(this.createChild());
   }
 
   removeNewItem(index: number) {
     this.getNewDetails.removeAt(index);
   }
 
-  addToEdit(item: any, status: number = BizStatus.ACTIVE) {
+  addToDetailEdit(item: any, status: number = BizStatus.ACTIVE) {
     if (
       this.getNewDetails.controls.findIndex(
         (option: AbstractControl) => option.get('id')?.value == item.id
       ) == -1
     ) {
       item.biz_status = status;
-      this.getNewDetails.insert(
-        0,
-        this.importDetail(item, this.createDetail())
-      );
+      this.getNewDetails.insert(0, this.importDetail(item, this.createChild()));
     }
   }
 
+  // Units
+  importUnitsList(resp: any) {
+    if (resp.success) {
+      this.units = resp.details.data.map((value: any) => {
+        value.created_at = this.pgService.dateFormat(value.created_at);
+        value.updated_at = this.pgService.dateFormat(value.updated_at);
+        return value;
+      });
+      this.unitsPagination = PaginationComponent.convertPaginationObject(
+        resp.details
+      );
+    }
+  }
+  unitPageChange(url: any) {
+    if (url) {
+      lastValueFrom(this.http.fetch(url)).then((resp) =>
+        this.importDetailList(resp)
+      );
+    }
+  }
+  addNewUnit() {
+    if (this.getNewUnits.controls.length == 10) return;
+    this.getNewUnits.push(this.createChild());
+  }
+  removeNewUnit(index: number) {
+    this.getNewUnits.removeAt(index);
+  }
+  addToUnitEdit(item: any, status: number = BizStatus.ACTIVE) {
+    if (
+      this.getNewUnits.controls.findIndex(
+        (option: AbstractControl) => option.get('id')?.value == item.id
+      ) == -1
+    ) {
+      item.biz_status = status;
+      this.getNewUnits.insert(0, this.importDetail(item, this.createChild()));
+    }
+  }
   /**
    * HTTP
    */
@@ -213,6 +267,14 @@ export class ProductPropertiesDetailComponent implements OnInit {
       httpParam = httpParam.append(filter.key, filter.value);
     });
     return this.http.GET(`options/headers/${headerId}/details`, httpParam);
+  }
+
+  getOptionUnits(headerId: string, param?: { key: string; value: any }[]) {
+    let httpParam = new HttpParams();
+    param?.forEach((filter) => {
+      httpParam = httpParam.append(filter.key, filter.value);
+    });
+    return this.http.GET(`options/headers/${headerId}/units`, httpParam);
   }
   updateOption(id: string, param: any) {
     return this.http.PUT(`options/headers/${id}`, param);
@@ -232,6 +294,20 @@ export class ProductPropertiesDetailComponent implements OnInit {
     if (param.id) {
       Object.assign(param, {
         details: this.getNewDetails.controls
+          .filter((optionObj: AbstractControl) => {
+            return optionObj.valid;
+          })
+          .map((option: AbstractControl) => {
+            return {
+              id: option.get('id')?.value,
+              biz_status: option.get('bizStatus')?.value,
+              title: option.get('title')?.value.trim(),
+              code: option.get('code')?.value.trim(),
+            };
+          }),
+      });
+      Object.assign(param, {
+        units: this.getNewUnits.controls
           .filter((optionObj: AbstractControl) => {
             return optionObj.valid;
           })

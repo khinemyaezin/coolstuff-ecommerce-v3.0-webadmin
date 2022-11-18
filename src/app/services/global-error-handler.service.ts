@@ -1,7 +1,7 @@
 import { ErrorHandler, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { InvalidRouteError } from './invalid-route-error';
-import { ModelNotFoundError } from './model-notfound-error';
+import { ModelNotFoundError } from '../http-errors/model-notfound-error';
 
 @Injectable({
   providedIn: 'root'

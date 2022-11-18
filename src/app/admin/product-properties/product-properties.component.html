@@ -1,13 +1,14 @@
 <div class="container pb-2">
     <ng-container *ngTemplateOutlet="heading; context:{ 
         backBtn: false,
-        title: 'Product properties'
+        subtitle: 'A property of a product could be its size, color, component, and so on. You can add properties to a family, bundle, or product when they are in Draft or Under Revision states',
+        title: 'Product Properties'
     }">
     </ng-container>
     <div class="card">
         <div class="card-header">
             <div class="card-title">
-
+                Properties
             </div>
         </div>
         <div class="card-body">
@@ -38,8 +39,7 @@
                     </thead>
 
                     <tbody>
-                        <tr class="rps-table-row" 
-                            *ngFor="let header of headers;let index = index">
+                        <tr class="rps-table-row" *ngFor="let header of headers;let index = index">
                             <td class="rps-table-cell">
                                 <div class="rps-table-cell-content">
                                     {{paginationRef.offset+index}}
@@ -70,7 +70,7 @@
                             <td class="rps-table-cell">
                                 <div class="rps-table-cell-content">
                                     <button class="btn" (click)="deleteItem(header)">
-                                        <i class="bi bi-trash3-fill" ></i>
+                                        <i class="bi bi-trash3-fill"></i>
                                     </button>
                                 </div>
                             </td>
@@ -91,15 +91,11 @@
     </div>
 </div>
 <ng-template #heading let-title="title" let-subtitle="subtitle" let-backBtn="backBtn">
-    <div class="d-flex justify-content-between py-3 align-items-center flex-wrap gap-3">
-
-        <div class=" flex-grow-1">
-            <h5 class="">{{title}}</h5>
-            <p class="text-muted small pe-2 mb-0" *ngIf="subtitle">
-                {{subtitle}}
-            </p>
+    <div class="forehead d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="flex-grow-1">
+            <h3 class="">{{title}}</h3>
+            <p class="text-muted small pe-2 mb-0">{{subtitle}}</p>
         </div>
-
     </div>
 
 </ng-template>

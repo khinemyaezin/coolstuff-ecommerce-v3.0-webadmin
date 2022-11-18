@@ -1,3 +1,8 @@
+@import "../../../custom-scss/bootstrap-variable.scss";
+
 .dropdown-toggle::after {
-    display: none;
+  display: none;
+}
+.accordion-header {
+  background-color: $gray-200 !important;
 }

@@ -24,7 +24,7 @@ export class HttpErrorHandlerService implements HttpInterceptor {
   }
   private handleAuthError(err: HttpErrorResponse): Observable<any> {
     if (err.status === 401) {
-      this.router.navigate(['/signin']);
+      //this.router.navigate(['/signin']);
     } 
     return throwError(() => err);
   }

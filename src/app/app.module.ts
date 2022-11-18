@@ -17,7 +17,6 @@ import { NavBarAdminComponent } from './core-components/nav-bar-admin/nav-bar-ad
 import { MenusPannelComponent } from './core-components/menus-pannel/menus-pannel.component';
 import { TextEditorComponent } from './core-components/text-editor/text-editor.component';
 import { ProductSetupComponent } from './seller/product-setup/product-setup.component';
-import { ProductAdditionalSetupComponent } from './seller/product-additional-setup/product-additional-setup.component';
 import { BootstrapModelComponent } from './core-components/bootstrap-model/bootstrap-model.component';
 import { ImageCropperModelComponent } from './core-components/image-cropper-model/image-cropper-model.component';
 import { InventoryComponent } from './seller/inventory/inventory.component';
@@ -28,7 +27,7 @@ import { MediaChooserComponent } from './core-components/media-chooser/media-cho
 import { BackButtonDirective } from './core-components/back-button.directive';
 import { DialogConfirmComponent } from './core-components/dialog-confirm/dialog-confirm.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ProfileComponent } from './seller/profile/profile.component';
+import { ProfileComponent } from './seller-setting/profile/profile.component';
 import { DatePickerDirective } from './core-components/date-picker.directive';
 import { ToastComponent } from './core-components/toast/toast.component';
 import { NgxMaskModule } from 'ngx-mask';
@@ -40,7 +39,7 @@ import { MediaChooserModelComponent } from './core-components/media-chooser-mode
 import { RadioInputDirective } from './core-components/radio-input.directive';
 import { ValidationDirective } from './core-components/validation.directive';
 import { ImageDirective } from './core-components/image.directive';
-import { OptionGroupFilterPipe } from './seller/product-additional-setup/option-group-filter.pipe';
+import { OptionGroupFilterPipe } from './seller/product-setup/option-group-filter.pipe';
 import { TypeaheadDirective } from './core-components/typeahead/typeahead.directive';
 import { TypeaheadCustomComponent } from './core-components/typeahead-custom/typeahead-custom.component';
 import { CategoryBreadcrumbPipe } from './core-components/category-breadcrumb.pipe';
@@ -58,9 +57,12 @@ import { ProductPropertiesDetailComponent } from './admin/product-properties-det
 import { GlobalErrorHandlerService } from './services/global-error-handler.service';
 import { ConfirmationBoxComponent } from './core-components/confirmation-box/confirmation-box.component';
 import { ProductStatusDirective } from './core-components/product-status.directive';
-import { StoreSettingComponent } from './seller/store-setting/store-setting.component';
-import { LocationsComponent } from './seller/locations/locations.component';
-import { LocationDetailComponent } from './seller/location-detail/location-detail.component';
+import { StoreSettingComponent } from './seller-setting/store-setting/store-setting.component';
+import { LocationsComponent } from './seller-setting/locations/locations.component';
+import { LocationDetailComponent } from './seller-setting/location-detail/location-detail.component';
+import { BrandSettingComponent } from './seller-setting/brand-setting/brand-setting.component';
+import { UsersAndPermissionComponent } from './seller-setting/users-and-permission/users-and-permission.component';
+import { PasswordChangeComponent } from './core-components/password-change/password-change.component';
 
 // const config: SocketIoConfig = {
 //   url: 'http://localhost:8084',
@@ -76,7 +78,6 @@ import { LocationDetailComponent } from './seller/location-detail/location-detai
     MenusPannelComponent,
     TextEditorComponent,
     ProductSetupComponent,
-    ProductAdditionalSetupComponent,
     InventoryComponent,
     BootstrapModelComponent,
     ImageCropperModelComponent,
@@ -112,6 +113,9 @@ import { LocationDetailComponent } from './seller/location-detail/location-detai
     StoreSettingComponent,
     LocationsComponent,
     LocationDetailComponent,
+    BrandSettingComponent,
+    UsersAndPermissionComponent,
+    PasswordChangeComponent,
   ],
   imports: [
     BrowserModule,

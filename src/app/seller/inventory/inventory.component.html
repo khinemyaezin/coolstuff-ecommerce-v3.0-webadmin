@@ -35,18 +35,19 @@
             </div>
 
             <div class="table-responsive" [formGroup]="productFormGroup" id="productForm">
-                <table class="table">
+                <table class="table table-bordered border-light">
                     <thead class="table-header-container">
                         <tr class="rps-table-row rps-table-row-head">
-                            <th scope="col">No</th>
-                            <th scope="col">Status</th>
-                            <th scope="col" style="min-width: 300px;" colspan="2">Product</th>
-                            <th scope="col">SKU</th>
-                            <th scope="col">Price</th>
-                            <th scope="col">SellingPrice</th>
-                            <th scope="col">AvaliableQty</th>
-                            <th scope="col">Condition</th>
-                            <th scope="col" style="min-width: 200px;">DateRange</th>
+                            <th scope="col" class="bg-light">No</th>
+                            <th scope="col" class="bg-light">Status</th>
+                            <th scope="col" class="bg-light">Image</th>
+                            <th scope="col" class="bg-light sticky-start" style="min-width: 300px;">Name</th>
+                            <th scope="col" class="bg-light">SKU</th>
+                            <th scope="col" class="bg-light">Price</th>
+                            <th scope="col" class="bg-light">Selling price</th>
+                            <th scope="col" class="bg-light">Qty</th>
+                            <th scope="col" class="bg-light">Condition</th>
+                            <th scope="col" class="bg-light" style="min-width: 200px;">DateRange</th>
 
                             <th scope="col" class="sticky-end">Operation</th>
                         </tr>
@@ -182,7 +183,7 @@
 <ng-template #heading>
     <div class="forehead d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div class=" flex-grow-1">
-            <h5 class="">Inventory</h5>
+            <h3 class="">Inventory</h3>
             <p class="text-muted small pe-2 mb-0">
                 A place that you can manage all your products.
             </p>
@@ -196,15 +197,15 @@
 <ng-template #variantTemplate let-vari="vari" let-index="index" let-childIndex="childIndex" let-trigger="trigger"
     let-isStandAlone="isStandAlone" let-isParent="isParent" let-offset="offset">
     <tr class="rps-table-row" [formGroup]="vari" [attr.data-id]="vari.get('id')?.value">
-        <th class="rps-table-cell">
+        <th class="rps-table-cell bg-white">
             <span *ngIf="isParent">{{offset+index}}</span>
         </th>
-        <td class="rps-table-cell">
+        <td class="rps-table-cell bg-white">
             <div class="rps-table-cell-content  ">
                 <span class="badge rounded-pill d-block" prodStatus [value]="vari.get('health')?.value.message"></span>
             </div>
         </td>
-        <td class="rps-table-cell">
+        <td class="rps-table-cell bg-white ">
             <div class="rps-table-cell-heading">
                 Image
             </div>
@@ -216,7 +217,7 @@
 
             </div>
         </td>
-        <td class="rps-table-cell">
+        <td class="rps-table-cell bg-white sticky-start">
             <div class="rps-table-cell-heading">
                 Name
             </div>
@@ -250,7 +251,7 @@
 
         </td>
 
-        <td class="rps-table-cell">
+        <td class="rps-table-cell bg-white">
             <div class="rps-table-cell-heading">
                 SKU
             </div>
@@ -259,7 +260,7 @@
             </div>
         </td>
 
-        <td class="rps-table-cell">
+        <td class="rps-table-cell bg-white">
             <div class="rps-table-cell-heading">
                 Price
             </div>
@@ -282,7 +283,7 @@
             </div>
 
         </td>
-        <td class="rps-table-cell">
+        <td class="rps-table-cell bg-white">
             <div class="rps-table-cell-heading">
                 Selling price
             </div>
@@ -304,7 +305,7 @@
             </div>
 
         </td>
-        <td class="rps-table-cell">
+        <td class="rps-table-cell bg-white">
             <div class="rps-table-cell-heading">
                 Qty
             </div>
@@ -324,7 +325,7 @@
                 </p>
             </div>
         </td>
-        <td class="rps-table-cell">
+        <td class="rps-table-cell bg-white">
             <div class="rps-table-cell-heading">
                 Condition
             </div>
@@ -342,7 +343,7 @@
                 </p>
             </div>
         </td>
-        <td class="rps-table-cell">
+        <td class="rps-table-cell bg-white">
             <div class="rps-table-cell-heading">
                 Date range
             </div>
@@ -354,7 +355,7 @@
             </div>
         </td>
 
-        <td class="rps-table-cell sticky-end">
+        <td class="rps-table-cell  bg-white sticky-end">
             <div class="rps-table-cell-heading">
 
             </div>

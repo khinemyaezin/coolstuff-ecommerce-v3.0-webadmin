@@ -7,7 +7,7 @@ import { ControllerService } from 'src/app/services/controller.service';
 import { InvalidRouteError } from 'src/app/services/invalid-route-error';
 import { PopupService } from 'src/app/services/popup.service';
 import { ServerService } from 'src/app/services/server.service';
-import { SellerService } from '../seller.service';
+import { SellerService } from '../../seller/seller.service';
 
 @Component({
   selector: 'app-location-detail',

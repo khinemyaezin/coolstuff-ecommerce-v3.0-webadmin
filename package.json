@@ -28,7 +28,7 @@
     "@zxcvbn-ts/language-en": "^2.0.1",
     "angular-password-strength-meter": "^5.0.1",
     "bootstrap": "^5.2.0",
-    "bootstrap-icons": "^1.9.1",
+    "bootstrap-icons": "^1.10.2",
     "moment": "^2.29.1",
     "ngx-image-cropper": "^3.3.5",
     "ngx-mask": "^14.0.3",

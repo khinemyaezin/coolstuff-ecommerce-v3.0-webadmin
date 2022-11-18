@@ -2,7 +2,7 @@
     <form [formGroup]="headerFormGroup" (ngSubmit)="submit()">
         <ng-container *ngTemplateOutlet="heading; context:{ 
         backBtn: true,
-        title: 'Product properties'
+        title: 'Product Properties Details'
     }"> </ng-container>
 
         <div class="card mb-2">
@@ -48,233 +48,427 @@
             <div class="card-footer d-flex justify-content-end">
             </div>
         </div>
-
-
-        <ul ngbNav #nav="ngbNav" >
-            <li [ngbNavItem]="1">
-                <ng-template ngbNavContent>
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">{{headerFormGroup.get('title')?.value}} values</div>
-
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex flex-wrap gap-2 controls-bar mb-2">
-                                <div class="flex-grow-1 ">
-                                    <div class="input-group" id="searchbox">
-                                        <input class="form-control rounded-end" type="text" placeholder="Search "
-                                            [formControl]="detailsFilter">
-                                        <i
-                                            class="bi bi-search position-absolute top-50 end-0 translate-middle-y text-muted fs-base me-3"></i>
-                                    </div>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button type="button" class="btn p-0" (click)="nav.select(2)">
-                                        <i class="bi bi-arrow-right"></i>
-                                        <ng-container
-                                            *ngTemplateOutlet="commonToolbar; context:{ uploadedItemsLength: getNewDetails.controls.length }">
-                                        </ng-container>
-                                    </button>
-
-
-                                </div>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead class="table-header-container">
-                                        <tr class="rps-table-row rps-table-row-head">
-                                            <th scope="col" width="5%" class="text-center">No</th>
-                                            <th scope="col">Title</th>
-                                            <th scope="col" width="20%">Code</th>
-                                            <th scope="col" width="5%">Created at</th>
-                                            <th scope="col" width="5%">Updated at</th>
-                                            <th scope="col" width="5%"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="rps-table-row" role="button"
-                                            *ngFor="let dtl of details;let index=index">
-                                            <td class="rps-table-cell">
-                                                <div class="rps-table-cell-content text-center">
-                                                    {{dtlPaginationRef.offset+index}}
+        <div class="card" *ngIf="headerFormGroup.get('id')?.value" >
+            <div class="card-body">
+                <ul ngbNav #optionChildNav="ngbNav" class="nav-pills" [activeId]="100">
+                    <li [ngbNavItem]="100" >
+                        <a ngbNavLink>Values</a>
+                        <ng-template ngbNavContent>
+        
+                            <ul ngbNav #nav="ngbNav" >
+                                <li [ngbNavItem]="1">
+                                    <ng-template ngbNavContent>
+                                        <div class="d-flex flex-wrap gap-2 controls-bar mb-2">
+                                            <div class="flex-grow-1 ">
+                                                <div class="input-group" id="searchbox">
+                                                    <input class="form-control rounded-end" type="text" placeholder="Search "
+                                                        [formControl]="detailsFilter">
+                                                    <i
+                                                        class="bi bi-search position-absolute top-50 end-0 translate-middle-y text-muted fs-base me-3"></i>
                                                 </div>
-                                            </td>
-                                            <td class="rps-table-cell">
-                                                <div class="rps-table-cell-content">
-                                                    {{dtl.title}}
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn p-0" (click)="nav.select(2)">
+                                                    <i class="bi bi-arrow-right"></i>
+                                                    <ng-container
+                                                        *ngTemplateOutlet="commonToolbar; context:{ uploadedItemsLength: getNewDetails.controls.length }">
+                                                    </ng-container>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-light">
+                                                <thead class="table-header-container">
+                                                    <tr class="rps-table-row rps-table-row-head">
+                                                        <th scope="col" width="5%" class="text-center">No</th>
+                                                        <th scope="col">Title</th>
+                                                        <th scope="col" width="20%">Code</th>
+                                                        <th scope="col" width="5%">Created at</th>
+                                                        <th scope="col" width="5%">Updated at</th>
+                                                        <th scope="col" width="5%"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr class="rps-table-row" role="button"
+                                                        *ngFor="let dtl of details;let index=index">
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content text-center">
+                                                                {{dtlPaginationRef.offset+index}}
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content">
+                                                                {{dtl.title}}
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content">
+                                                                {{dtl.code}}
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content">
+                                                                {{dtl.created_at| date :
+                                                                'mediumDate'}}
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content">
+                                                                {{dtl.updated_at| date :
+                                                                'mediumDate'}}
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content">
+                                                                <div ngbDropdown container="body">
+                                                                    <button type="button" class="btn btn-sm" ngbDropdownToggle>
+                                                                        <i class="bi bi-three-dots-vertical"></i>
+                                                                    </button>
+                                                                    <div ngbDropdownMenu>
+                                                                        <button ngbDropdownItem
+                                                                            (click)="addToDetailEdit(dtl)">Move to
+                                                                            edit</button>
+                                                                        <button ngbDropdownItem
+                                                                            (click)="addToDetailEdit(dtl,deletedStatus)">Move
+                                                                            to
+                                                                            trash</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="d-flex py-2">
+                                            <app-pagination class="ms-auto" #dtlPaginationRef [source]="detailsPagination"
+                                                (pageChange)="detailPageChange($event)">
+                                            </app-pagination>
+                                        </div>
+                                    </ng-template>
+                                </li>
+                                <li [ngbNavItem]="2">
+                                    <ng-template ngbNavContent>
+                                        <div class="d-flex flex-wrap gap-2 controls-bar mb-2">
+                                            <div class="flex-grow-1 ">
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn p-0" (click)="nav.select(1)">
+                                                    <i class="bi bi-arrow-left"></i>
+                                                    <ng-container
+                                                        *ngTemplateOutlet="commonToolbar; context:{ uploadedItemsLength: getNewDetails.controls.length }">
+                                                    </ng-container>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-light">
+                                                <thead class="table-header-container">
+                                                    <tr class="rps-table-row rps-table-row-head">
+                                                        <th scope="col" width="5%" class="text-center">No</th>
+                                                        <th scope="col" class="text-center">Status</th>
+                                                        <th scope="col">Title</th>
+                                                        <th scope="col" width="20%">Code</th>
+                                                        <th scope="col" width="5%">Created at</th>
+                                                        <th scope="col" width="5%">Updated at</th>
+                                                        <th scope="col" width="5%"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody formArrayName="details">
+                                                    <tr class="rps-table-row" role="button" [formGroupName]="index"
+                                                        *ngFor="let dtl of getNewDetails.controls;let index=index;let isLast=last">
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content text-center">
+                                                                {{index+1}}
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content text-center">
+                                                                <small class="text-muted small"
+                                                                    *ngIf="dtl.get('bizStatus')?.value == activeStatus && dtl.get('id')?.value == null">New</small>
+                                                                <small class="text-muted small"
+                                                                    *ngIf="dtl.get('bizStatus')?.value == activeStatus && dtl.get('id')?.value !== null">Updated</small>
+                                                                <small class="text-muted small"
+                                                                    *ngIf="dtl.get('bizStatus')?.value == deletedStatus && dtl.get('id')?.value !== null">Deleted</small>
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content"
+                                                                [ngSwitch]="dtl.get('bizStatus')?.value">
+                                                                <input type="text" class="form-control form-validation"
+                                                                    *ngSwitchCase="2" placeholder="Title"
+                                                                    formControlName="title">
+                                                                <span *ngSwitchCase="4">
+                                                                    {{dtl.get('title')?.value}}
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content"
+                                                                [ngSwitch]="dtl.get('bizStatus')?.value">
+                                                                <input type="text" class="form-control form-validation"
+                                                                    *ngSwitchCase="2" placeholder="Code" formControlName="code">
+                                                                <span *ngSwitchCase="4">
+                                                                    {{dtl.get('code')?.value}}
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content">
+                                                                {{dtl.get('createdAt')?.value| date :
+                                                                'mediumDate'}}
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content">
+                                                                {{dtl.get('updatedAt')?.value| date :
+                                                                'mediumDate'}}
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content">
+                                                                <button type="button" class="btn-close" aria-label="Close"
+                                                                    (click)="removeNewItem(index)"></button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="rps-table-row" role="button">
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content text-center">
+                                                                <button type="button" class="btn btn-plus"
+                                                                    (click)="addNewDetail()">
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell" colspan="6">
+                                                            <div class="rps-table-cell-content text-start">
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </ng-template>
+                                </li>
+                            </ul>
+                            <div [ngbNavOutlet]="nav" class="mt-2"></div>
+        
+                        </ng-template>
+                    </li>
+                    <li [ngbNavItem]="200">
+                        <a ngbNavLink>Units</a>
+                        <ng-template ngbNavContent>
+        
+                            <ul ngbNav #navUnits="ngbNav" [activeId]="1">
+                                <li [ngbNavItem]="1">
+                                    <ng-template ngbNavContent>
+                                        <div class="d-flex flex-wrap gap-2 controls-bar mb-2">
+                                            <div class="flex-grow-1 ">
+                                                <div class="input-group" id="searchbox">
+                                                    <input class="form-control rounded-end" type="text" placeholder="Search ">
+                                                    <i
+                                                        class="bi bi-search position-absolute top-50 end-0 translate-middle-y text-muted fs-base me-3"></i>
                                                 </div>
-                                            </td>
-                                            <td class="rps-table-cell">
-                                                <div class="rps-table-cell-content">
-                                                    {{dtl.code}}
-                                                </div>
-                                            </td>
-                                            <td class="rps-table-cell">
-                                                <div class="rps-table-cell-content">
-                                                    {{dtl.created_at| date :
-                                                    'mediumDate'}}
-                                                </div>
-                                            </td>
-                                            <td class="rps-table-cell">
-                                                <div class="rps-table-cell-content">
-                                                    {{dtl.updated_at| date :
-                                                    'mediumDate'}}
-                                                </div>
-                                            </td>
-                                            <td class="rps-table-cell">
-                                                <div class="rps-table-cell-content">
-                                                    <div ngbDropdown container="body">
-                                                        <button type="button" class="btn btn-sm" ngbDropdownToggle>
-                                                            <i class="bi bi-three-dots-vertical"></i>
-                                                        </button>
-                                                        <div ngbDropdownMenu>
-                                                            <button ngbDropdownItem (click)="addToEdit(dtl)">Move to
-                                                                edit</button>
-                                                            <button ngbDropdownItem
-                                                                (click)="addToEdit(dtl,deletedStatus)">Move to
-                                                                trash</button>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                        </div>
-                        <div class="card-footer d-flex">
-                            <app-pagination class="ms-auto" #dtlPaginationRef [source]="detailsPagination"
-                                (pageChange)="detailPageChange($event)">
-                            </app-pagination>
-                        </div>
-                    </div>
-                </ng-template>
-            </li>
-            <li [ngbNavItem]="2">
-                <ng-template ngbNavContent>
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Edit {{headerFormGroup.get('title')?.value}} values</div>
-
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex flex-wrap gap-2 controls-bar mb-2">
-                                <div class="flex-grow-1 ">
-
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button type="button" class="btn p-0" (click)="nav.select(1)">
-                                        <i class="bi bi-arrow-left"></i>
-                                        <ng-container
-                                            *ngTemplateOutlet="commonToolbar; context:{ uploadedItemsLength: getNewDetails.controls.length }">
-                                        </ng-container>
-                                    </button>
-
-                                </div>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead class="table-header-container">
-                                        <tr class="rps-table-row rps-table-row-head">
-                                            <th scope="col" width="5%" class="text-center">No</th>
-                                            <th scope="col" class="text-center">Status</th>
-                                            <th scope="col">Title</th>
-                                            <th scope="col" width="20%">Code</th>
-                                            <th scope="col" width="5%">Created at</th>
-                                            <th scope="col" width="5%">Updated at</th>
-                                            <th scope="col" width="5%"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody formArrayName="details">
-                                        <tr class="rps-table-row" role="button" [formGroupName]="index"
-                                            *ngFor="let dtl of getNewDetails.controls;let index=index;let isLast=last">
-                                            <td class="rps-table-cell">
-                                                <div class="rps-table-cell-content text-center">
-                                                    {{index+1}}
-                                                </div>
-                                            </td>
-                                            <td class="rps-table-cell">
-                                                <div class="rps-table-cell-content text-center">
-                                                    <small class="text-muted small" *ngIf="dtl.get('bizStatus')?.value == activeStatus && dtl.get('id')?.value == null">New</small>
-                                                    <small class="text-muted small" *ngIf="dtl.get('bizStatus')?.value == activeStatus && dtl.get('id')?.value !== null">Updated</small>
-                                                    <small class="text-muted small" *ngIf="dtl.get('bizStatus')?.value == deletedStatus && dtl.get('id')?.value !== null">Deleted</small>
-                                                </div>
-                                            </td>
-                                            <td class="rps-table-cell">
-                                                <div class="rps-table-cell-content"
-                                                    [ngSwitch]="dtl.get('bizStatus')?.value">
-                                                    <input type="text" class="form-control form-validation"
-                                                        *ngSwitchCase="2" placeholder="Title" formControlName="title">
-                                                    <span *ngSwitchCase="4">
-                                                        {{dtl.get('title')?.value}}
-                                                    </span>
-                                                </div>
-                                            </td>
-                                            <td class="rps-table-cell">
-                                                <div class="rps-table-cell-content"
-                                                    [ngSwitch]="dtl.get('bizStatus')?.value">
-                                                    <input type="text" class="form-control form-validation"
-                                                        *ngSwitchCase="2" placeholder="Code" formControlName="code">
-                                                    <span *ngSwitchCase="4">
-                                                        {{dtl.get('code')?.value}}
-                                                    </span>
-                                                </div>
-                                            </td>
-                                            <td class="rps-table-cell">
-                                                <div class="rps-table-cell-content">
-                                                    {{dtl.get('createdAt')?.value| date :
-                                                    'mediumDate'}}
-                                                </div>
-                                            </td>
-                                            <td class="rps-table-cell">
-                                                <div class="rps-table-cell-content">
-                                                    {{dtl.get('updatedAt')?.value| date :
-                                                    'mediumDate'}}
-                                                </div>
-                                            </td>
-                                            <td class="rps-table-cell">
-                                                <div class="rps-table-cell-content">
-                                                    <button type="button" class="btn-close" aria-label="Close"
-                                                        (click)="removeNewItem(index)"></button>
-                                                </div>
-                                            </td>
-
-
-                                        </tr>
-                                        <tr class="rps-table-row" role="button">
-                                            <td class="rps-table-cell">
-                                                <div class="rps-table-cell-content text-center">
-                                                    <button type="button" class="btn btn-plus" (click)="addNewDetail()">
-                                                    </button>
-                                                </div>
-                                            </td>
-                                            <td class="rps-table-cell" colspan="6">
-                                                <div class="rps-table-cell-content text-start">
-                                                </div>
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </ng-template>
-            </li>
-
-        </ul>
-        <div [ngbNavOutlet]="nav" *ngIf="headerFormGroup.get('id')?.value"></div>
-
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn p-0" (click)="navUnits.select(2)">
+                                                    <i class="bi bi-arrow-right"></i>
+                                                    <ng-container
+                                                        *ngTemplateOutlet="commonToolbar; context:{ uploadedItemsLength: getNewUnits.controls.length }">
+                                                    </ng-container>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-light">
+                                                <thead class="table-header-container">
+                                                    <tr class="rps-table-row rps-table-row-head">
+                                                        <th scope="col" width="5%" class="text-center">No</th>
+                                                        <th scope="col">Title</th>
+                                                        <th scope="col" width="20%">Code</th>
+                                                        <th scope="col" width="5%">Created at</th>
+                                                        <th scope="col" width="5%">Updated at</th>
+                                                        <th scope="col" width="5%"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr class="rps-table-row" role="button"
+                                                        *ngFor="let dtl of units;let index=index">
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content text-center">
+                                                                {{unitsPaginationRef.offset+index}}
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content">
+                                                                {{dtl.title}}
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content">
+                                                                {{dtl.code}}
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content">
+                                                                {{dtl.created_at| date :
+                                                                'mediumDate'}}
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content">
+                                                                {{dtl.updated_at| date :
+                                                                'mediumDate'}}
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content">
+                                                                <div ngbDropdown container="body">
+                                                                    <button type="button" class="btn btn-sm" ngbDropdownToggle>
+                                                                        <i class="bi bi-three-dots-vertical"></i>
+                                                                    </button>
+                                                                    <div ngbDropdownMenu>
+                                                                        <button ngbDropdownItem
+                                                                            (click)="addToUnitEdit(dtl)">Move to
+                                                                            edit</button>
+                                                                        <button ngbDropdownItem
+                                                                            (click)="addToUnitEdit(dtl,deletedStatus)">Move
+                                                                            to
+                                                                            trash</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="d-flex py-2">
+                                            <app-pagination class="ms-auto" #unitsPaginationRef [source]="unitsPagination"
+                                                (pageChange)="unitPageChange($event)">
+                                            </app-pagination>
+                                        </div>
+                                    </ng-template>
+                                </li>
+                                <li [ngbNavItem]="2">
+                                    <ng-template ngbNavContent>
+                                        <div class="d-flex flex-wrap gap-2 controls-bar mb-2">
+                                            <div class="flex-grow-1 ">
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn p-0" (click)="navUnits.select(1)">
+                                                    <i class="bi bi-arrow-left"></i>
+                                                    <ng-container
+                                                        *ngTemplateOutlet="commonToolbar; context:{ uploadedItemsLength: getNewUnits.controls.length }">
+                                                    </ng-container>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-light">
+                                                <thead class="table-header-container">
+                                                    <tr class="rps-table-row rps-table-row-head">
+                                                        <th scope="col" width="5%" class="text-center">No</th>
+                                                        <th scope="col" class="text-center">Status</th>
+                                                        <th scope="col">Title</th>
+                                                        <th scope="col" width="20%">Code</th>
+                                                        <th scope="col" width="5%">Created at</th>
+                                                        <th scope="col" width="5%">Updated at</th>
+                                                        <th scope="col" width="5%"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody formArrayName="units">
+                                                    <tr class="rps-table-row" role="button" [formGroupName]="index"
+                                                        *ngFor="let dtl of getNewUnits.controls;let index=index;let isLast=last">
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content text-center">
+                                                                {{index+1}}
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content text-center">
+                                                                <small class="text-muted small"
+                                                                    *ngIf="dtl.get('bizStatus')?.value == activeStatus && dtl.get('id')?.value == null">New</small>
+                                                                <small class="text-muted small"
+                                                                    *ngIf="dtl.get('bizStatus')?.value == activeStatus && dtl.get('id')?.value !== null">Updated</small>
+                                                                <small class="text-muted small"
+                                                                    *ngIf="dtl.get('bizStatus')?.value == deletedStatus && dtl.get('id')?.value !== null">Deleted</small>
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content"
+                                                                [ngSwitch]="dtl.get('bizStatus')?.value">
+                                                                <input type="text" class="form-control form-validation"
+                                                                    *ngSwitchCase="2" placeholder="Title"
+                                                                    formControlName="title">
+                                                                <span *ngSwitchCase="4">
+                                                                    {{dtl.get('title')?.value}}
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content"
+                                                                [ngSwitch]="dtl.get('bizStatus')?.value">
+                                                                <input type="text" class="form-control form-validation"
+                                                                    *ngSwitchCase="2" placeholder="Code" formControlName="code">
+                                                                <span *ngSwitchCase="4">
+                                                                    {{dtl.get('code')?.value}}
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content">
+                                                                {{dtl.get('createdAt')?.value| date :
+                                                                'mediumDate'}}
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content">
+                                                                {{dtl.get('updatedAt')?.value| date :
+                                                                'mediumDate'}}
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content">
+                                                                <button type="button" class="btn-close" aria-label="Close"
+                                                                    (click)="removeNewUnit(index)"></button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="rps-table-row" role="button">
+                                                        <td class="rps-table-cell">
+                                                            <div class="rps-table-cell-content text-center">
+                                                                <button type="button" class="btn btn-plus"
+                                                                    (click)="addNewUnit()">
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                        <td class="rps-table-cell" colspan="6">
+                                                            <div class="rps-table-cell-content text-start">
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </ng-template>
+                                </li>
+                            </ul>
+                            <div [ngbNavOutlet]="navUnits" class="mt-2"></div>
+        
+                        </ng-template>
+                    </li>
+                </ul>
+                <div [ngbNavOutlet]="optionChildNav"></div>
+            </div>
+        </div>
     </form>
 </div>
 <ng-template #heading let-title="title" let-subtitle="subtitle" let-backBtn="backBtn">
-    <div class="d-flex justify-content-between py-3 align-items-center flex-wrap gap-3">
+    <div class="forehead d-flex justify-content-between align-items-center flex-wrap gap-3">
 
         <div class=" flex-grow-1">
-            <h5 class="">{{title}}</h5>
+            <h3 class="">{{title}}</h3>
             <p class="text-muted small pe-2 mb-0" *ngIf="subtitle">
                 {{subtitle}}
             </p>

@@ -11,8 +11,8 @@ import { PopupService } from 'src/app/services/popup.service';
 })
 export class SellerHomeComponent implements OnInit {
   accountName: string = '';
-  accountImagePath: string = "";
-  navBrand: string = ''
+  accountImagePath: string = '';
+  navBrand: string = '';
   menus: Menus[] = [
     // {
     //   id: "dashboard",
@@ -22,14 +22,6 @@ export class SellerHomeComponent implements OnInit {
 
     //   children: [],
     // },
-    {
-      id: 'profile',
-      title: 'Profile',
-      icon: 'bi bi-person-fill',
-      routerLink: 'profile',
-      collapse: false,
-      children: [],
-    },
     {
       id: 'page',
       title: 'My Store',
@@ -60,8 +52,8 @@ export class SellerHomeComponent implements OnInit {
           routerLink: '/seller-central/add-a-product',
           collapse: false,
           children: [],
-        }
-      ]
+        },
+      ],
     },
     // {
     //   id: "my-order",
@@ -101,15 +93,30 @@ export class SellerHomeComponent implements OnInit {
           routerLink: '/seller-central/settings/locations',
           collapse: false,
           children: [],
-        }
+        },
+        {
+          id: 'users&permission',
+          title: 'Users and Permissions',
+          icon: '',
+          routerLink: '/seller-central/settings/users&permissions',
+          collapse: false,
+          children: [],
+        },
+        {
+          id: 'brand-setting',
+          title: 'Brand',
+          icon: '',
+          routerLink: '/seller-central/settings/brand',
+          collapse: false,
+          children: [],
+        },
       ],
     },
-    
   ];
 
   constructor(
     private auth: AuthService,
-    
+
     private offcanvasService: NgbOffcanvas
   ) {}
 
@@ -118,7 +125,9 @@ export class SellerHomeComponent implements OnInit {
     this.accountImagePath = this.auth.user?.profile_image;
     this.navBrand = this.auth.user?.brand.profile_image;
   }
-  open(content:any) {
-    this.offcanvasService.open(content, {ariaLabelledBy: 'offcanvas-basic-title'});
+  open(content: any) {
+    this.offcanvasService.open(content, {
+      ariaLabelledBy: 'offcanvas-basic-title',
+    });
   }
 }

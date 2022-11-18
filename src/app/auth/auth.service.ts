@@ -30,7 +30,7 @@ export class AuthService {
 
   public signin(request: any, fromLogin: boolean = true): boolean {
     const userType: UserTypes | null = this.identifyUser(
-      request.user.user_type.id
+      request.user.user_type.title
     );
     if (!userType) {
       throw new Error('Invalid User');

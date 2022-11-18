@@ -1,8 +1,17 @@
+// Enums
 export const enum BizStatus {
   ACTIVE = 2,
   DEF = 6,
   DELETED = 4
 }
+export const enum UserTypes {
+  ADMIN = 'server_admin',
+  SELLER = 'brand_owner',
+  USER = 'user',
+  STAFF = 'staff'
+}
+
+// Interface
 export interface Auth {
   id: string;
   currentPassword: string;
@@ -41,11 +50,7 @@ export interface User {
   user_type: UserTypes;
   user_roles: [];
 }
-export const enum UserTypes {
-  ADMIN = '1',
-  SELLER = '2',
-  USER = '3',
-}
+
 
 export interface Product {
   id: string;

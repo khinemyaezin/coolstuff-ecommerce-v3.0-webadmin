@@ -60,7 +60,7 @@ export interface TypeaheadSource {
     `,
   ],
 })
-export class TypeaheadCustomComponent implements OnInit, OnChanges {
+export class TypeaheadCustomComponent implements OnInit {
   @ViewChild('input') inputRef!: ElementRef;
   @Input('optionFormGroup') formGroup!: FormGroup;
   @Input('optionFormControlName') formControlName!: string;
@@ -72,8 +72,6 @@ export class TypeaheadCustomComponent implements OnInit, OnChanges {
   @Output('selectItem') selectItem = new Subject();
 
   constructor(private http: ServerService, private render: Renderer2) {}
-
-  ngOnChanges(changes: SimpleChanges): void {}
 
   ngOnInit(): void {}
 

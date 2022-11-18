@@ -9,16 +9,17 @@ import { ProductPropertiesComponent } from './admin/product-properties/product-p
 import { SignInComponent } from './auth/sign-in/sign-in.component';
 import { PagenotfoundComponent } from './core-components/pagenotfound/pagenotfound.component';
 import { InventoryComponent } from './seller/inventory/inventory.component';
-import { LocationDetailComponent } from './seller/location-detail/location-detail.component';
-import { LocationsComponent } from './seller/locations/locations.component';
-import { ProductAdditionalSetupComponent } from './seller/product-additional-setup/product-additional-setup.component';
+import { LocationDetailComponent } from './seller-setting/location-detail/location-detail.component';
+import { LocationsComponent } from './seller-setting/locations/locations.component';
 import { ProductSetupComponent } from './seller/product-setup/product-setup.component';
-import { ProfileComponent } from './seller/profile/profile.component';
+import { ProfileComponent } from './seller-setting/profile/profile.component';
 import { RegisterComponent } from './seller/register/register.component';
 import { SellerHomeComponent } from './seller/seller-home/seller-home.component';
 import { SellerGuard } from './seller/seller.guard';
-import { StoreSettingComponent } from './seller/store-setting/store-setting.component';
+import { StoreSettingComponent } from './seller-setting/store-setting/store-setting.component';
 import { StoreComponent } from './seller/store/store.component';
+import { BrandSettingComponent } from './seller-setting/brand-setting/brand-setting.component';
+import { UsersAndPermissionComponent } from './seller-setting/users-and-permission/users-and-permission.component';
 
 const routes: Routes = [
   {
@@ -62,10 +63,7 @@ const routes: Routes = [
     component: SellerHomeComponent,
     canActivate: [SellerGuard],
     children: [
-      {
-        path: 'profile',
-        component: ProfileComponent,
-      },
+     
       {
         path: 'store',
         component: StoreComponent,
@@ -76,19 +74,27 @@ const routes: Routes = [
       },
       {
         path: 'add-a-product',
-        component: ProductAdditionalSetupComponent,
+        component: ProductSetupComponent,
       },
       {
         path: 'add-a-product/:id',
-        component: ProductAdditionalSetupComponent,
+        component: ProductSetupComponent,
       },
       {
         path: 'add-a-product/:id/:vid',
-        component: ProductAdditionalSetupComponent,
+        component: ProductSetupComponent,
       },
       {
         path: 'settings/store',
         component: StoreSettingComponent
+      },
+      {
+        path: 'settings/brand',
+        component: BrandSettingComponent
+      },
+      {
+        path: 'settings/users&permissions',
+        component: UsersAndPermissionComponent
       },
       {
         path: 'settings/locations',
@@ -97,7 +103,11 @@ const routes: Routes = [
       {
         path: 'settings/locations/:id',
         component: LocationDetailComponent
-      }
+      },
+      {
+        path: 'settings/users&permissions/profile/:id',
+        component: ProfileComponent,
+      },
     ],
   },
   { path: '404', component: PagenotfoundComponent },

@@ -1,6 +1,7 @@
 <div class="container">
     <ng-container *ngTemplateOutlet="heading; context:{ 
         backBtn: true,
+        subtitle : 'The primary classification of items in the merchandise hierarchy, followed by categories.',
         title: 'Departments'
     }">
     </ng-container>
@@ -9,14 +10,11 @@
             <div class="card-title">Department manager</div>
         </div>
         <div class="card-body">
-            <!-- <ul class="px-2" *ngIf="style == 1">
-                <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: catFormGroup.get('list')?.value }">
-                </ng-container>
-            </ul> -->
             <div class="d-flex flex-wrap mb-3 gap-2 controls-bar">
                 <div class="flex-grow-1">
                     <div class="input-group" id="searchbox">
-                        <input class="form-control rounded-end" type="text" placeholder="Search " [formControl]="filter">
+                        <input class="form-control rounded-end" type="text" placeholder="Search "
+                            [formControl]="filter">
                         <i
                             class="bi bi-search position-absolute top-50 end-0 translate-middle-y text-muted fs-base me-3"></i>
                     </div>
@@ -29,20 +27,18 @@
 
         </div>
         <div class="card-footer d-flex justify-content-end gap-2">
-            
+
         </div>
     </div>
 </div>
 <ng-template #heading let-title="title" let-subtitle="subtitle">
-    <div class="d-flex justify-content-between py-3 align-items-center flex-wrap gap-3">
-
+    <div class="forehead d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div class=" flex-grow-1">
-            <h5 class="">{{title}}</h5>
+            <h3 class="">{{title}}</h3>
             <p class="text-muted small pe-2 mb-0" *ngIf="subtitle">
                 {{subtitle}}
             </p>
         </div>
-
     </div>
 
 </ng-template>

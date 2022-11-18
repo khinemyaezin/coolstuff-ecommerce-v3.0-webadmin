@@ -1,11 +1,11 @@
-<div class="container  pb-3">
+<div class="container">
 
     <ul ngbNav #nav="ngbNav">
         <li [ngbNavItem]="1">
             <ng-template ngbNavContent>
                 <ng-container *ngTemplateOutlet="heading; context:{ 
                     backBtn: false,
-                    title: 'Attributes Setup'
+                    title: 'Product Properties Of A Department'
                 }">
                 </ng-container>
                 <div class="card">
@@ -73,7 +73,7 @@
             <ng-template ngbNavContent>
                 <ng-container *ngTemplateOutlet="heading; context:{ 
                     backBtn: true,
-                    title: 'Attributes by departments'
+                    title: 'Product Properties Of ' + category?.title
                 }"> </ng-container>
                 <div class="card">
                     <div class="card-header">
@@ -109,11 +109,9 @@
     <div [ngbNavOutlet]="nav" class="mt-2"></div>
 </div>
 <ng-template #heading let-backBtn="backBtn" let-title="title" let-subtitle="subtitle">
-
-    <div class="d-flex justify-content-between py-3 align-items-center flex-wrap gap-3">
-
-        <div class=" flex-grow-1">
-            <h5 class="">{{title}}</h5>
+    <header class="forehead d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="flex-grow-1">
+            <h3 class="">{{title}}</h3>
             <p class="text-muted small pe-2 mb-0" *ngIf="subtitle">
                 {{subtitle}}
             </p>
@@ -121,6 +119,5 @@
         <div class="d-flex gap-2 align-items-center" *ngIf="backBtn">
             <button type="button" backButton name="Back" icon="bi bi-chevron-left" (click)="nav.select(1)"></button>
         </div>
-    </div>
-
+    </header>
 </ng-template>

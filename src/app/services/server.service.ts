@@ -91,7 +91,6 @@ export class ServerService {
   ) {
     const myurl = this._CONFIG?.url + url;
     const options = this.options(params);
-    //console.log(options);
 
     return this.http.get(myurl, options as any).pipe(
       map((resp: any) => {
@@ -102,11 +101,6 @@ export class ServerService {
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        // console.log(window.location.href);
-        
-        // if (err.status == HttpStatusCode.Unauthorized && myurl !== this.sessionURL) {
-        //   this.router.navigate(['/signin']);
-        // }
         throw err;
       })
     );

@@ -1,0 +1,213 @@
+<div class="container">
+    <ng-container *ngTemplateOutlet="heading;">
+    </ng-container>
+    <hr>
+    <form [formGroup]="basic" (ngSubmit)="onSubmitBasic()">
+        <div class="card mb-2">
+            <div class="card-header d-flex justify-content-between">
+                <div class="card-title">Basic informations</div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="basicEdit"
+                        formControlName="isEdit">
+                    <label class="form-check-label" for="basicEdit">Edit</label>
+                </div>
+            </div>
+            <div class="card-body">
+
+                <div class="row row-cols-sm-1 row-cols-md-2 g-2">
+                    <div class="col">
+                        <div *ngIf="basic.get('isEdit')?.value; then storeNameEdit; else storeName"></div>
+
+                        <ng-template #storeName>
+                            <div class="d-flex gap-2" aria-current="true">
+                                <div class="rounded bg-light  flex-shrink-0 d-inline-flex"
+                                    style="width: 42px; height: 42px;">
+                                    <i class="bi bi-shop m-auto"></i>
+                                </div>
+                                <div class="w-100 align-self-center">
+                                    <div>
+                                        <h6 class="m-0">{{basic.get('name')?.value}}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template #storeNameEdit>
+                            <div>
+                                <label for="storeName" class="form-label">Store name</label>
+                                <div class="form-control bg-opacity-10 border-0" id="storeName">
+                                    {{basic.get('name')?.value}}
+                                </div>
+                            </div>
+                        </ng-template>
+                    </div>
+                    <div class="col">
+                        <div *ngIf="basic.get('isEdit')?.value; then industryEdit; else industry"></div>
+                        <ng-template #industry>
+                            <div class="d-flex gap-2" aria-current="true">
+                                <div class="rounded bg-light  flex-shrink-0 d-inline-flex"
+                                    style="width: 42px; height: 42px;">
+                                    <i class="bi bi-buildings m-auto"></i>
+                                </div>
+                                <div class="w-100">
+                                    <div>
+                                        <p class="mb-0 opacity-75">Industry</p>
+                                        <h6 class="mb-0 ">{{basic.get('industry')?.value?.title}}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template #industryEdit>
+                            <div>
+                                <label for="industry" class="form-label">Industry</label>
+                                <select class="form-select" id="industry" formControlName="industry"
+                                    [compareWith]="compare">
+                                    <option [ngValue]="industry" *ngFor="let industry of industries">{{industry.title}}
+                                    </option>
+                                </select>
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-end" *ngIf="basic.get('isEdit')?.value">
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        </div>
+    </form>
+    <form [formGroup]="storeCurrency" (ngSubmit)="onSubmitCurrency()">
+        <div class="card mb-2">
+            <div class="card-header">
+                <div class="card-title">Store currency</div>
+                <small>The currency your products are sold in.</small>
+            </div>
+            <div class="card-body">
+                <div class="">
+                    <label for="store-currency" class="form-label">Store currency</label>
+                    <select class="form-select w-100 w-md-50" id="store-currency" [compareWith]="compare"
+                        formControlName="defCurrency">
+                        <option [ngValue]="cur" *ngFor="let cur of currencies">{{ cur.country_name + ' (' +
+                            cur.currency_code + ')' }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-end gap-2" *ngIf="storeCurrency.get('isEdit')?.value">
+                <button class="btn btn-outline-secondary"
+                    (click)="storeCurrency.get('isEdit')?.setValue(!storeCurrency.get('isEdit')?.value)">Cancel</button>
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        </div>
+    </form>
+    <form [formGroup]="contactInfo" (ngSubmit)="onSubmitContact()">
+        <div class="card mb-2">
+            <div class="card-header d-flex justify-content-between">
+                <div class="card-title">Contact informations</div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="contactInfoEdit"
+                        formControlName="isEdit">
+                    <label class="form-check-label" for="contactInfoEdit">Edit</label>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row row-cols-sm-1 row-cols-md-2 g-2">
+                    <div class="col">
+                        <div *ngIf="contactInfo.get('isEdit')?.value; then contactPhoneEdit; else contactPhone"></div>
+
+                        <ng-template #contactPhone>
+                            <div class="d-flex gap-2" aria-current="true">
+                                <div class="rounded bg-light  flex-shrink-0 d-inline-flex"
+                                    style="width: 42px; height: 42px;">
+                                    <i class="bi bi-telephone-fill m-auto"></i>
+                                </div>
+                                <div class="w-100 align-self-center">
+                                    <div>
+                                        <a class="mb-0 h6">{{contactInfo.get('phone')?.value}}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template #contactPhoneEdit>
+                            <div class="">
+                                <label for="contactPhone" class="form-label">Phone number</label>
+                                <input type="tel" class="form-control" id="contactPhone" formControlName="phone">
+                            </div>
+                        </ng-template>
+                    </div>
+                    <div class="col">
+                        <div *ngIf="contactInfo.get('isEdit')?.value; then contactSysEmailEdit; else contactSysEmail">
+                        </div>
+                        <ng-template #contactSysEmail>
+                            <div class="d-flex gap-2" aria-current="true">
+                                <div class="rounded bg-light  flex-shrink-0 d-inline-flex"
+                                    style="width: 42px; height: 42px;">
+                                    <i class="bi bi-envelope-fill m-auto"></i>
+                                </div>
+                                <div class="w-100">
+                                    <div>
+                                        <a class="mb-0 h6">{{contactInfo.get('sysEmail')?.value}}</a>
+                                        <p class="mb-0 opacity-75 small">{{appName}} uses this to contact you.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template #contactSysEmailEdit>
+                            <div class="">
+                                <label for="contact-sysemail" class="form-label">Email address</label>
+                                <input type="email" class="form-control" id="contact-sysemail"
+                                    formControlName="sysEmail" placeholder="name@example.com">
+                                <small class="d-block mt-1 opacity-75">{{appName}} uses this to contact you.</small>
+
+                            </div>
+                        </ng-template>
+                    </div>
+                    <div class="col">
+                        <div *ngIf="contactInfo.get('isEdit')?.value; then contactCusEmailEdit; else contactCusEmail">
+                        </div>
+
+                        <ng-template #contactCusEmail>
+                            <div class="d-flex gap-2" aria-current="true">
+                                <div class="rounded bg-light  flex-shrink-0 d-inline-flex"
+                                    style="width: 42px; height: 42px;">
+                                    <i class="bi bi-envelope-fill m-auto"></i>
+                                </div>
+                                <div class="w-100">
+                                    <div>
+                                        <a class="mb-0 h6">{{contactInfo.get('cusEmail')?.value}}</a>
+                                        <p class="mb-0 opacity-75 small">Customer see if you email them.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template #contactCusEmailEdit>
+                            <div class="">
+                                <label for="contact-cusemail" class="form-label">Email address</label>
+                                <input type="email" class="form-control" id="contact-cusemail"
+                                    formControlName="cusEmail" placeholder="name@example.com">
+                                <small class="d-block mt-1 opacity-75">Customer see if you email them.</small>
+
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-end" *ngIf="contactInfo.get('isEdit')?.value">
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<ng-template #heading>
+    <div class="forehead pb-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="flex-grow-1">
+            <h3 class="">Store Details
+            </h3>
+            <p class="text-muted small pe-2 mb-0">
+                A place that you can manage all your brand and account informations.
+            </p>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+
+        </div>
+    </div>
+</ng-template>

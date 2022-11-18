@@ -1,0 +1,145 @@
+<div class="container">
+    <ng-container *ngTemplateOutlet="heading;">
+    </ng-container>
+    <hr>
+    <div class="row">
+        <div class="col-lg-3 card-left-label">
+            <h5>Brand details</h5>
+            <p class="d-flex">
+                <i class="bi bi-pencil-square"></i>
+                <small class="ms-2">Edit your brand informations</small>
+            </p>
+        </div>
+        <div class="col-lg-9 col-sm-12">
+            <div class="card mb-2" id="brand-info-card">
+                <div class="card-body ">
+                    <div class="brand-profile">
+                        <div class="brand-cover">
+                            <media-chooser class="wrapper" [src]="brandForm.get('coverImage')?.value"
+                                [editable]="brandForm.get('formStateEdit')?.value"
+                                [config]="mediaChooserConfigBrandCover" (output)="brandLogoChange($event,'coverImage')">
+                            </media-chooser>
+                        </div>
+                        <div class="brand-info">
+                            <div class="brand-logo">
+                                <media-chooser id="brand-logo-wrapper" [src]="brandForm.get('profileImage')?.value"
+                                    [editable]="brandForm.get('formStateEdit')?.value"
+                                    [config]="mediaChooserConfigBrandLogo"
+                                    (output)="brandLogoChange($event,'profileImage')"></media-chooser>
+                            </div>
+                            <div class="brand-logo-spacer">
+                                <p></p>
+                            </div>
+                            <div class="brand-details-info">
+                                <ul ngbNav #brandDetailInfo="ngbNav">
+                                    <li [ngbNavItem]="1">
+                                        <ng-template ngbNavContent>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1" id="showcase">
+                                                    <div class="position-relative">
+                                                        <div class="d-flex">
+                                                            <div class="position-relative ">
+                                                                <h5 class="mb-2">{{ brandForm.get('title')?.value}}</h5>
+                                                                <span class="position-absolute badge rounded-pill">
+                                                                    <i class="bi bi-check2"></i>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <p class="text-muted small">{{brandForm.get('createdAt')?.value |
+                                                        date
+                                                        :'d/M/yy, h:mm a'}}</p>
+                                                    <p class="text-muted small">{{brandForm.get('publicId')?.value}}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <button class="btn text-primary"
+                                                        (click)="brandForm.get('formStateEdit')?.setValue(true);brandDetailInfoTabs.select(2)">Edit</button>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </li>
+                                    <li [ngbNavItem]="2">
+                                        <ng-template ngbNavContent>
+                                            <form [formGroup]="brandForm" (ngSubmit)="submitBrand()">
+                                                <div>
+                                                    <p class="small text-muted">Seller ID:
+                                                        <strong
+                                                            class="text-primary">{{brandForm.get('publicId')?.value}}</strong>
+                                                        and
+                                                        registered at
+                                                        <strong class="text-primary">{{brandForm.get('createdAt')?.value
+                                                            |
+                                                            date :'d/M/yy, h:mm a'}}</strong>
+                                                    </p>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <input type="text" class="form-control" id="input-brand-title"
+                                                        formControlName="title">
+                                                </div>
+                                                <div class="d-flex justify-content-end gap-2">
+                                                    <button class="btn btn-secondary" type="button"
+                                                        (click)="cancelBrand()">Cancel</button>
+                                                    <input type="submit" value="Submit" class="btn btn-primary">
+                                                </div>
+                                            </form>
+                                        </ng-template>
+                                    </li>
+                                </ul>
+                                <div [ngbNavOutlet]="brandDetailInfo"></div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="card mb-2">
+                <div class="card-header">
+                    <div class="card-title">Short description
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form action="">
+                        <div class="">
+                            <label for="brand-description" class="form-label small">Description of your business often
+                                used in
+                                bios and listings
+                            </label>
+                            <textarea class="form-control" name="" id="brand-description" cols="30" rows="3"></textarea>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+            <div class="card mb-2">
+                <div class="card-header">
+                    <div class="card-title">Social links
+
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="small">Social links for your business,
+                        often used in the theme footer
+
+                    </p>
+                    <button class="btn-primary btn">Add social link</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<ng-template #heading>
+    <div class="forehead pb-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="flex-grow-1">
+            <h3 class="">Brand</h3>
+            <p class="text-muted small pe-2 mb-0">
+                A place that you can manage all your brand and account informations.
+            </p>
+        </div>
+    </div>
+</ng-template>
