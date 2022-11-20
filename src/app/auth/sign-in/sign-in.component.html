@@ -37,6 +37,12 @@
         <input type="password" id="password" class="form-control mb-2" placeholder="Password" formControlName="password">
         <input class=" btn btn-primary mb-2" type="submit" value="Sign in" [disabled]="!loginFormGroup.valid">
         <a [routerLink]="'/brand-register'">sign up</a>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="isAdmin" formControlName="isAdmin">
+          <label class="form-check-label" for="isAdmin">
+            admin
+          </label>
+        </div>
       </form>
     </div>
   </div>

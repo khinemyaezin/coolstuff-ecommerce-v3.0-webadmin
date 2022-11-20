@@ -1,0 +1,41 @@
+<form [formGroup]="attribute" *ngIf="attribute">
+    <div class="modal-header">
+        <h4 class="modal-title">{{header?.value.title}}</h4>
+        <button type="button" class="btn-close" aria-label="Close"
+            (click)="activeModal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <div class="mb-3">
+            <label for="optionDetailTitle" class="form-label">Title</label>
+            <input 
+                type="email" 
+                class="form-control" 
+                id="optionDetailTitle" 
+                formControlName="value" 
+                [placeholder]="header?.value.title">
+        </div>
+        <div class="mb-3" *ngIf="attribute.get('needDetailMapping')?.value">
+            <label for="optionDetailMap" class="form-label">Mapper</label>
+            <typeahead-options 
+                [optionFormGroup]="attribute" 
+                [optionFormControlName]="'optionDetail'"
+                [formatter]="formatter" 
+                [editable]='false' 
+                [source]="{
+                    url: 'options/headers/'+attribute.get('optionHeader')?.value.id+'/details'
+                }" 
+                [placeholder]="'Search in '+attribute.get('optionHeader')?.value.title">
+            </typeahead-options>
+        </div>
+        <div class="mb-3" *ngIf="attribute.get('optionUnitArray')?.value?.length > 0">
+            <label for="exampleFormControlInput1" class="form-label">Unit</label>
+            <select class="form-select" formControlName="optionUnit" [compareWith]="compare">
+                <option [value]="null" selected disabled>Choose</option>
+                <option [ngValue]="unit" *ngFor="let unit of attribute.get('optionUnitArray')?.value">
+                    {{unit.title}}
+                </option>
+            </select>
+        </div>
+    </div>
+
+</form>

@@ -16,6 +16,7 @@ export class SignInComponent implements OnInit {
       Validators.pattern(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/),
     ]),
     password: new FormControl('123'),
+    isAdmin: new FormControl<boolean>(false)
   });
 
   constructor(
@@ -27,12 +28,17 @@ export class SignInComponent implements OnInit {
   ngOnInit(): void {}
 
   login() {
-    // Prepare to login.
+    //<< Prepare to login.>>
     let param = {
       email: this.loginFormGroup.controls['email'].value,
       password: this.loginFormGroup.controls['password'].value,
     };
-    // Send request to server.
+
+    if(this.loginFormGroup.get('isAdmin')?.value) {
+      param.email = 'admin@gmail.com',
+      param.password = '123';
+    }
+    //<< Send request to server.>>
     this.http.POST('login', param).subscribe({
       next: (body) => {
         if (body.success) {

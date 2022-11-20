@@ -63,6 +63,8 @@ import { LocationDetailComponent } from './seller-setting/location-detail/locati
 import { BrandSettingComponent } from './seller-setting/brand-setting/brand-setting.component';
 import { UsersAndPermissionComponent } from './seller-setting/users-and-permission/users-and-permission.component';
 import { PasswordChangeComponent } from './core-components/password-change/password-change.component';
+import { AttributeSelectorComponent } from './seller/product-setup/attribute-selector/attribute-selector.component';
+import { DefaultEmptyStringPipe } from './core-components/default-empty-string.pipe';
 
 // const config: SocketIoConfig = {
 //   url: 'http://localhost:8084',
@@ -116,6 +118,8 @@ import { PasswordChangeComponent } from './core-components/password-change/passw
     BrandSettingComponent,
     UsersAndPermissionComponent,
     PasswordChangeComponent,
+    AttributeSelectorComponent,
+    DefaultEmptyStringPipe,
   ],
   imports: [
     BrowserModule,
