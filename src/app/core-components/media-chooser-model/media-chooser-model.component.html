@@ -5,9 +5,9 @@
     <form [formGroup]="mediaChooser" #mediaChooserForm>
         <div class="flexbin">
             <figure *ngFor=" let f of files.data" class="image-select">
-                <input type="radio" [id]=" f.id" name="selectedMedia" [value]="f.id" formControlName="selectedMedia" />
+                <input type="radio" [id]="'media-chooser-img-'+f.id" name="selectedMedia" [value]="f.id" formControlName="selectedMedia" />
 
-                <label class="wrapper" [for]="  f.id">
+                <label class="wrapper" [for]="'media-chooser-img-'+f.id">
                     <span class="overlay"></span>
                     <img [src]="f.path" />
                 </label>
@@ -22,7 +22,7 @@
         </div>
     </form>
 </div>
-<div class="modal-footer d-flex justify-content-end gap-2">
+<div class="modal-footer d-flex justify-content-end gap-1">
     <button type="button" class="btn btn-outline-dark" (click)="modelRef.close(null)">Close</button>
     <button type="button" class="btn btn-primary" (click)="submit()">Save</button>
 </div>

@@ -1,79 +1,105 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { lastValueFrom } from 'rxjs';
+import { ComponentFather } from 'src/app/services/component-father';
 import { PopupService } from 'src/app/services/popup.service';
 import { ServerService } from 'src/app/services/server.service';
+import { SellerService } from '../../seller/seller.service';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent extends ComponentFather implements OnInit {
   @ViewChild('nav') public nav!: any;
-  activeTabId= 1;
+
+  /** UI controls */
+  activeTabId = 1;
+
+  /** FormGroups */
   brandFormGroup: FormGroup = new FormGroup({
-    'brand-name': new FormControl('Apple', Validators.required),
-    'brand-cover': new FormControl(),
-    'brand-profile': new FormControl(),
+    brandName: new FormControl('Apple', Validators.required),
+    region: new FormControl(null, Validators.required),
+    brandCover: new FormControl(),
+    brandProfile: new FormControl(),
   });
   accountFormGroup: FormGroup = new FormGroup({
-    'user-firstname': new FormControl('Khine Myae', Validators.required),
-    'user-lastname': new FormControl('Zin', Validators.required),
-    'user-email': new FormControl('admin@nike.com'),
-    'user-phno': new FormControl('09795957915', Validators.required),
-    'user-address': new FormControl('yangon', Validators.required),
-    'password': new FormControl('123'),
+    userFirstName: new FormControl('', Validators.required),
+    userLastName: new FormControl('', Validators.required),
+    userEmail: new FormControl('', Validators.required),
+    userPhNo: new FormControl('', Validators.required),
+    userAddress: new FormControl('', Validators.required),
+    password: new FormControl('', Validators.required),
   });
 
+  /** Lists */
+  regions: any[] = [];
+
+  constructor(
+    private http: ServerService,
+    private alert: PopupService,
+    private sellerService: SellerService
+  ) {
+    super();
+  }
+
   get tabPercentager() {
-    const total = 100/2;
-    const result = total*(this.activeTabId-1);
+    const total = 100 / 2;
+    const result = total * (this.activeTabId - 1);
     console.log(result);
-    
+
     return result;
   }
-  constructor(private http:ServerService,private alert:PopupService) { }
 
   ngOnInit(): void {
+    this.getRegions();
   }
-  submit() {
 
+  submit() {
     /* Common error */
-   
+
     /* Send http request */
     const param = {
       brand: {
-        title: this.brandFormGroup.get('brand-name')?.value,
+        title: this.brandFormGroup.get('brandName')?.value,
         region_id: '146',
         profile_image: null,
         cover_image: null,
       },
       user: {
-        first_name: this.accountFormGroup.get('user-firstname')?.value,
-        last_name: this.accountFormGroup.get('user-lastname')?.value,
-        email: this.accountFormGroup.get('user-email')?.value,
-        phone: this.accountFormGroup.get('user-phno')?.value,
-        address: this.accountFormGroup.get('user-address')?.value,
+        first_name: this.accountFormGroup.get('userFirstName')?.value,
+        last_name: this.accountFormGroup.get('userLastName')?.value,
+        email: this.accountFormGroup.get('userEmail')?.value,
+        phone: this.accountFormGroup.get('userPhNo')?.value,
+        address: this.accountFormGroup.get('userAddress')?.value,
         password: this.accountFormGroup.get('password')?.value,
       },
     };
-    console.log(param);
 
     // return;
-    this.http.POST('brands/register', param).subscribe(
-      {
-        next:( res)=>{
-          console.log(res);
-          
-          if(res.success) {
-            this.alert.showTost('Success');
-          }
-        },
-        error :(e)=>{
-          console.log(e);
-          
+    this.http.POST('brands/register', param).subscribe({
+      next: (res) => {
+        console.log(res);
+
+        if (res.success) {
+          this.alert.showTost('Success');
         }
+      },
+      error: (e) => {
+        console.log(e);
+      },
+    });
+  }
+
+  getRegions() {
+    const regions = this.sellerService.regions([
+      { key: 'pagination', value: '-1' },
+    ]);
+    lastValueFrom(regions).then((resp) => {
+      if (resp.success) {
+        this.regions = resp.details.data;
       }
-    );
+    });
   }
 }

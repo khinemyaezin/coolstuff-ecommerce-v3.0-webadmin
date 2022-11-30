@@ -42,6 +42,8 @@ export interface TypeaheadSource {
         [resultTemplate]="rt"
         [editable]="false"
         (selectItem)="selectItem.next($event)"
+        container="body"
+     
       />
     </ng-container>
   `,

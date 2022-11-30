@@ -1,0 +1,28 @@
+<ul class="list-group card list-group-flush mb-2">
+
+    <li class="list-group-item d-flex align-items-center justify-content-between" *ngFor="let session of sessions">
+        <div class="d-flex flex-grow-1 gap-2">
+            <i class="bi bi-browser-chrome align-self-center" [ngClass]="{'text-success': session.current_device }"></i>
+            <div>
+                <div>{{session.user_agent | userAgent}}</div>
+                <small class="text-muted">{{session.ip}}</small>
+                <small class="text-muted d-block">{{session.created_at | date:'short'}}</small>
+            </div>
+        </div>
+        <div *ngIf="!session.current_device ">
+            <button class="btn text-danger" (click)="terminate(session.id)">
+                <i class="bi bi-box-arrow-right"></i>
+
+            </button>
+        </div>
+    </li>
+    <li class="list-group-item d-flex align-items-center justify-content-between" *ngIf="sessions.length == 0">
+        <div class="d-flex flex-grow-1 gap-2">
+            <div>
+                <div>No history</div>
+
+            </div>
+        </div>
+
+    </li>
+</ul>

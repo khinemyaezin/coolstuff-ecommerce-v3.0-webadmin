@@ -16,13 +16,13 @@
                     <div class="card-body">
                         <div [formGroup]="categoryForm" id="browse-category">
                             <label for="category-name" class="form-label">Browse </label>
-                            <input type="text" class="form-control " list="datalistOptions" id="category-name"
+                            <input type="text" class="form-control w-md-50" list="datalistOptions" id="category-name"
                                 placeholder="Search category" formControlName="search">
                         </div>
                     </div>
                 </div>
 
-                <ul class="list-group list-group-flush" id="category-query-data">
+                <ul class="list-group card list-group-flush" id="category-query-data">
                     <li class="list-group-item list-group-item-action" role="button" type="button"
                         *ngFor="let c of categoryForm.get('searchResultList')?.value" (click)="selectCategory(c)">
                         <p><strong class="text-primary">{{c.title}}</strong></p>
@@ -134,9 +134,12 @@
 
 <ng-template #heading let-submitBtn="submitBtn" let-submit="submit">
     <div class="forehead">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center g-3">
             <div class=" flex-grow-1">
-                <h3 class="m-0 ">Product Setup</h3>
+                <h3 class="">Product Setup</h3>
+                <p class="text-muted small pe-2 mb-0">
+                    A place that you can manage all your products.
+                </p>
             </div>
             <div class="d-flex gap-2 no-wrap">
                 <button type="button" backButton name="Products" icon="bi bi-chevron-left"
@@ -144,7 +147,7 @@
                 <button type="button" *ngIf="submitBtn" class="btn text-primary" (click)="submit()">Submit</button>
             </div>
         </div>
-        <nav aria-label="breadcrumb" class="breadcrumb-nav small">
+        <nav aria-label="breadcrumb" class="breadcrumb-nav small px-0">
             <ol class="breadcrumb mb-0">
                 <ng-container *ngFor="let c of categoryBreadcrumb | categoryBreadcrumb;let isLast = last">
                     <li class="breadcrumb-item {{isLast ? 'active':''}}">
@@ -282,8 +285,8 @@
                 </div>
                 <div class="col-sm-8">
 
-                    <input type="text" class="form-control" id="offerSellingPrice" formControlName="sellingPrice"
-                        [prefix]="sellCurrency?.currency_code + ' '" [mask]="maskConfig.maxnumber_count">
+                    <input type="text" class="form-control text-end" id="offerSellingPrice" formControlName="sellingPrice"
+                        [suffix]="' '+sellCurrency?.currency_code" [mask]="maskConfig.maxnumber_count">
                 </div>
             </div>
             <div class="row mb-2">
@@ -293,8 +296,8 @@
                 </div>
                 <div class="col-sm-8">
 
-                    <input type="text" class="form-control" id="offerCompareAtPrice" formControlName="comparedPrice"
-                        [prefix]="sellCurrency?.currency_code + ' '" [mask]="maskConfig.maxnumber_count">
+                    <input type="text" class="form-control text-end" id="offerCompareAtPrice" formControlName="comparedPrice"
+                        [suffix]="' '+sellCurrency?.currency_code" [mask]="maskConfig.maxnumber_count">
 
                 </div>
             </div>
@@ -339,8 +342,8 @@
                 </div>
                 <div class="col-sm-8">
 
-                    <input type="text" class="form-control" id="offerCostPerItem" formControlName="price"
-                        [prefix]="sellCurrency?.currency_code + ' '" [mask]="maskConfig.maxnumber_count">
+                    <input type="text" class="form-control text-end" id="offerCostPerItem" formControlName="price"
+                    [suffix]="' '+sellCurrency?.currency_code" [mask]="maskConfig.maxnumber_count">
                     <small class="text-muted">Customer won't see it.</small>
                 </div>
             </div>
@@ -408,7 +411,7 @@
                 </div>
             </div>
 
-            <div class="row mb-2">
+            <div class="row mb-3">
                 <div class="col-sm-4">
                 </div>
                 <div class="col-sm-8">
@@ -439,8 +442,8 @@
                         <table class="table table-sm align-middle table-borderless" formArrayName="locations">
                             <thead>
                                 <tr>
-                                    <td class="text-muted " style="width: 60%;">Name</td>
-                                    <td class="text-muted ">Quantity</td>
+                                    <td class="text-muted bg-light" style="width: 60%;">Name</td>
+                                    <td class="text-muted bg-light">Quantity</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -531,10 +534,10 @@
             <table class="table table-sm align-middle table-borderless table-hover ">
                 <thead>
                     <tr>
-                        <td></td>
-                        <td>Custom Title</td>
-                        <td>Mapping</td>
-                        <td>Unit</td>
+                        <td class="bg-light"></td>
+                        <td class="bg-light">Custom Title</td>
+                        <td class="bg-light">Mapping</td>
+                        <td class="bg-light">Unit</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -599,7 +602,8 @@
                                 (keyup)="addFeatures(featureIndex,$event,formGroup)" [formControlName]="featureIndex">
                         </li>
                         <li>
-                            <a class="small" role="button" (click)="removeLastFeatures(formGroup)">Remove last</a>
+                            <button type="button" class="btn btn-light" role="button"
+                                (click)="removeLastFeatures(formGroup)">Remove last</button>
                         </li>
                     </ul>
                 </div>
@@ -642,14 +646,14 @@
         <div class="card-body" *ngIf="productForm.controls['hasVariant'].value">
             <div class="variant-options">
                 <ng-container *ngFor="let option of options; let optionIndex=index">
-                    <div class="row mb-2" [formGroup]="option">
+                    <div class="row mb-2" [formGroup]="option" *ngIf="options|variantOptionVisibility:optionIndex:'header'">
                         <div class="col-sm-4">
                             <div class="d-flex flex-nowrap gap-2 align-items-center mb-2">
                                 <button type="button" class="btn btn-trash" [disabled]="!option.get('header')?.value"
                                     (click)="removeVariantOptionHeader(optionIndex)">
 
                                 </button>
-                                <div class="auto-complete">
+                                <div class="auto-complete" >
                                     <typeahead-options [optionFormGroup]="option" [optionFormControlName]="'header'"
                                         [formatter]="formatter" [editable]='false'
                                         [source]="optionHeaderTypeaheadConfig" [placeholder]="'Search...'"
@@ -709,9 +713,9 @@
                         <thead>
                             <tr class="table-row">
                                 <th class="table-cell column-heading sticky-cell-start">
-                                    <span class="btn-toggle " (click)="filterFormCollapsed.toggle()"
+                                    <!-- <span class="btn-toggle " (click)="filterFormCollapsed.toggle()"
                                         *ngIf="getVariants.length !== 0" [attr.aria-expanded]="!isFilterFormCollapsed">
-                                    </span>
+                                    </span> -->
                                     <span *ngFor="let option of options">
                                         <ng-container *ngIf="option.get('header')?.value">
                                             {{option.get('header.title')?.value}}
@@ -730,11 +734,15 @@
                                 <th class="table-cell column-heading">
                                     Seller SKU
                                 </th>
+
                                 <th class="table-cell column-heading">
-                                    Your price
+                                    Price
                                 </th>
                                 <th class="table-cell column-heading">
-                                    Selling price
+                                    Compare at price
+                                </th>
+                                <th class="table-cell column-heading">
+                                    Cost per item
                                 </th>
                                 <th class="table-cell column-heading">
                                     Qty
@@ -749,7 +757,7 @@
                             </tr>
                         </thead>
                         <!-- Filter -->
-                        <thead [formGroup]="filterControlForm" id="defaultHeaderCollapse"
+                        <!-- <thead [formGroup]="filterControlForm" id="defaultHeaderCollapse"
                             #filterFormCollapsed="ngbCollapse" [(ngbCollapse)]="isFilterFormCollapsed">
                             <tr class="table-row">
                                 <th class="table-cell sticky-cell-start">
@@ -871,7 +879,7 @@
                                     <div class="table-cell-content"></div>
                                 </td>
                             </tr>
-                        </thead>
+                        </thead> -->
                         <!-- Variants  -->
                         <ng-container formArrayName="variants">
                             <ng-container *ngFor="let prod of getVariants.controls;let i = index">
@@ -907,7 +915,7 @@
                                                 </div>
                                                 <div class="table-cell-content d-flex no-wrap" [formGroup]="varOpt">
                                                     <div class="input-group">
-                                                        <typeahead-options [class]="'form-control input-number'"
+                                                        <typeahead-options [class]="'form-control input-number'" container="body"
                                                             *ngIf="varOpt.get('header')?.value.need_dtls_mapping"
                                                             [optionFormGroup]="varOpt"
                                                             [optionFormControlName]="'detail'" [formatter]="formatter"
@@ -938,16 +946,7 @@
                                                 <input class="form-control prod-var-input" formControlName="sellerSku">
                                             </div>
                                         </td>
-                                        <td class="table-cell">
-                                            <div class="table-cell-heading">
-                                                Your price
-                                            </div>
-                                            <div class="table-cell-content">
-                                                <input type="text" class="form-control text-end input-number"
-                                                    formControlName="price" [suffix]="' ' + buyCurrency?.currency_code"
-                                                    [mask]="maskConfig.maxnumber_count">
-                                            </div>
-                                        </td>
+
                                         <td class="table-cell">
                                             <div class="table-cell-heading">
                                                 Selling price
@@ -960,13 +959,36 @@
                                                     [mask]="maskConfig.maxnumber_count">
                                             </div>
                                         </td>
-                                        <td [ngClass]="{'table-cell':true,'':prod.get('status')?.value == 4}">
+                                        <td class="table-cell">
+                                            <div class="table-cell-heading">
+                                                Selling price
+                                            </div>
+                                            <div class="table-cell-content">
+
+                                                <input type="text" class="form-control  text-end  input-number"
+                                                    formControlName="comparedPrice"
+                                                    [suffix]="' ' + buyCurrency?.currency_code"
+                                                    [mask]="maskConfig.maxnumber_count">
+                                            </div>
+                                        </td>
+                                        <td class="table-cell">
+                                            <div class="table-cell-heading">
+                                                Your price
+                                            </div>
+                                            <div class="table-cell-content">
+                                                <input type="text" class="form-control text-end input-number"
+                                                    formControlName="price" [suffix]="' ' + buyCurrency?.currency_code"
+                                                    [mask]="maskConfig.maxnumber_count">
+                                            </div>
+                                        </td>
+                                        <td class="table-cell">
                                             <div class="table-cell-heading">
                                                 Qty
                                             </div>
                                             <div class="table-cell-content">
                                                 <input type="text" class="form-control text-end input-number"
-                                                    formControlName="quantity" [mask]="maskConfig.maxnumber_count">
+                                                    style="width: 3rem;" formControlName="quantity"
+                                                    [mask]="maskConfig.maxnumber_count">
                                             </div>
                                         </td>
                                         <td class="table-cell">

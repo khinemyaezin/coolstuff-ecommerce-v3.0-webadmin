@@ -40,7 +40,6 @@ interface HttpOptions {
 export class ServerService {
   private _CONFIG!: CONFIG;
   private _SYSTEM: any;
-  private sessionURL = 'sessions/user';
 
   constructor(
     private http: HttpClient,
@@ -56,15 +55,13 @@ export class ServerService {
     return new Promise<void>((res, rej) => {
       const config = this.http.get('/assets/config/config.json');
       const system = this.http.get('/assets/config/system.json');
-      //console.log(config);
-
       lastValueFrom(forkJoin([config, system]))
         .catch((error) => {})
         .then((next: any) => {
           this._CONFIG = next[0] as CONFIG;
           this._SYSTEM = next[1];
 
-          this.GET(this.sessionURL).subscribe({
+          this.GET('current-user/session').subscribe({
             next: (body: any) => {
               this.auth.signin(body.details,false);
               res();

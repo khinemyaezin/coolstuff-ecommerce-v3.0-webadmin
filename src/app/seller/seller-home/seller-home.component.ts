@@ -14,14 +14,6 @@ export class SellerHomeComponent implements OnInit {
   accountImagePath: string = '';
   navBrand: string = '';
   menus: Menus[] = [
-    // {
-    //   id: "dashboard",
-    //   title: "Dashboard",
-    //   icon: "",
-    //   routerLink: "dashboard",
-
-    //   children: [],
-    // },
     {
       id: 'page',
       title: 'My Store',
@@ -55,22 +47,7 @@ export class SellerHomeComponent implements OnInit {
         },
       ],
     },
-    // {
-    //   id: "my-order",
-    //   title: "My Orders",
-    //   icon: "",
-    //   routerLink: "",
 
-    //   children: [],
-    // },
-    // {
-    //   id: "reports",
-    //   title: "Reports",
-    //   icon: "",
-    //   routerLink: "",
-
-    //   children: [],
-    // },
     {
       id: 'settings',
       title: 'Settings',

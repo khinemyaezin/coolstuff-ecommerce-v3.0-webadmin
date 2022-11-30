@@ -13,97 +13,48 @@
 
         </div>
         <div class="col-lg-9 col-sm-12">
-            <form [formGroup]="accountForm" id="account-info-form" (ngSubmit)="saveAccount()">
-                <div class="card user-profile">
-                    <div class="card-header">
-                        <div class="card-title">Account Detail</div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row mb-3">
-                            <label for="user-name"
-                                class="col-sm-4 col-form-label text-lg-end text-sm-start ">Avatar</label>
-                            <div class="col-sm-8 d-flex">
-                                <div class="profile">
-                                    <media-chooser id="user-profile-wrapper"
-                                        [src]="accountForm.get('profileImage')?.value" [editable]="true"
-                                        [config]="mediaChooserConfigUserProfile"
-                                        (output)="UserProfileChange($event,'profileImage')"></media-chooser>
-                                </div>
-
-
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="user-name" class="col-sm-4 col-form-label text-lg-end text-sm-start">What is
-                                your
-                                name?</label>
-                            <div class="col-sm-8">
-                                <div class="row">
-                                    <div class="col">
-                                        <input type="text" class="form-control" placeholder="First name"
-                                            aria-label="First name" formControlName="firstName">
-                                    </div>
-                                    <div class="col">
-                                        <input type="text" class="form-control" placeholder="Last name"
-                                            aria-label="Last name" formControlName="lastName">
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </div>
-                        <div class="row mb-3">
-                            <label for="user-email" class="col-sm-4 col-form-label text-lg-end text-sm-start">What is
-                                your
-                                email?</label>
-                            <div class="col-sm-8">
-                                <input type="email" class="form-control" id="user-email" formControlName="email"
-                                    placeholder="name@example.com">
-                            </div>
-
-                        </div>
-                        <div class="row mb-3">
-                            <label for="user-phone" class="col-sm-4 col-form-label text-lg-end text-sm-start">What is
-                                your phone
-                                number?</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" id="user-phone" placeholder="9** *******"
-                                    prefix="+95 " mask="000 0000000" formControlName="phoneNo">
-                            </div>
-
-                        </div>
-                        <div class="row mb-3">
-                            <label for="address" class="col-sm-4 col-form-label text-lg-end text-sm-start">What is your
-                                store
-                                located?</label>
-                            <div class="col-sm-8">
-                                <textarea id="address" formControlName="address" class="form-control"></textarea>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="card-footer" *ngIf="accountForm.dirty">
-                        <div class="d-flex justify-content-end gap-2">
-                            <input type="submit" value="Submit" class="btn btn-primary">
-                        </div>
-                    </div>
-
-                </div>
-
-            </form>
+            <user-profile-component [id]="userID" title="Account Detail"></user-profile-component>
         </div>
     </div>
     <hr>
     <div class="row">
         <div class="col-lg-3 card-left-label">
             <h5>Authencation</h5>
-            <a class="d-flex">
+            <p class="d-flex">
                 <i class="bi bi-pencil-square"></i>
                 <small class="ms-2">Change your password</small>
-            </a>
+            </p>
         </div>
         <div class="col-lg-9 col-sm-12">
-            <password-change (submit)="submitChangePassword($event)"></password-change>
+            <password-change [id]="userID"></password-change>
+        </div>
+
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-lg-3 card-left-label">
+            <h5>Authorization</h5>
+            <p class="d-flex">
+                <i class="bi bi-pencil-square"></i>
+                <small class="ms-2">Roles and permission</small>
+            </p>
+        </div>
+        <div class="col-lg-9 col-sm-12">
+            <roles-user [id]="userID"></roles-user>
+        </div>
+
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-lg-3 card-left-label">
+            <h5>Sessions</h5>
+            <p class="d-flex">
+                <i class="bi bi-pencil-square"></i>
+                <small class="ms-2">Active sessions</small>
+            </p>
+        </div>
+        <div class="col-lg-9 col-sm-12">
+            <session-devices [id]="userID"></session-devices>
         </div>
 
     </div>

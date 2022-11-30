@@ -101,21 +101,13 @@ export class LocationDetailComponent implements OnInit, OnDestroy {
     if (this.pgService.isEmptyID(id)) {
       lastValueFrom(this.saveLocation(param)).then(
         (resp)=>{
-          if(resp.success) {
-            this.popup.showSuccessToast("Success");
-          }else {
-            this.popup.showTost(resp.message)
-          }
+          this.popup.showTost(resp.message)
         }
       );
     }else {
       lastValueFrom(this.updateLocation(param,id as string)).then(
         (resp:any)=>{
-          if(resp.success) {
-            this.popup.showSuccessToast("Success");
-          }else {
-            this.popup.showTost(resp.message)
-          }
+          this.popup.showTost(resp.message)
         }
       );
     }

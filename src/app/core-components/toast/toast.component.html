@@ -1,4 +1,4 @@
-<ngb-toast *ngFor="let toast of toastService.toasts" [class]="toast.classname" [autohide]="true"
+<ngb-toast *ngFor="let toast of toastService.toasts" [class]="toast.classname" [autohide]="true" header="Hello"
     [delay]="toast.delay || 5000" (hidden)="toastService.removeTost(toast)">
     <!-- <ng-template ngbToastHeader>
         <div class="me-auto">

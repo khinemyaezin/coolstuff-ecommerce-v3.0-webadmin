@@ -1,17 +1,26 @@
 // Enums
-export const enum BizStatus {
+export enum BizStatus {
   ACTIVE = 2,
   DEF = 6,
-  DELETED = 4
+  DELETED = 4,
 }
-export const enum UserTypes {
-  ADMIN = 'server_admin',
+export enum UserTypes {
+  ADMIN = 'server_admin' ,
   SELLER = 'brand_owner',
   USER = 'user',
   STAFF = 'staff'
 }
 
 // Interface
+export interface Session {
+  id: string | number;
+  tokenable_id: string | number;
+  last_used_at: string;
+  created_at:string;
+  user_agent: string;
+  ip: string;
+  current_device: boolean;
+}
 export interface Auth {
   id: string;
   currentPassword: string;
@@ -51,7 +60,6 @@ export interface User {
   user_roles: [];
 }
 
-
 export interface Product {
   id: string;
   biz_status: number;
@@ -72,7 +80,7 @@ export interface Product {
   variants: any;
 }
 export interface Category {
-  id: string|null;
+  id: string | null;
   biz_status: number;
   title: string;
   full_path: string;
@@ -82,11 +90,11 @@ export interface Category {
   updated_at: string;
 }
 export interface CategoryLeave {
-  id: string|null;
+  id: string | null;
   biz_status: number;
   title: string;
   full_path: string;
   lft: number;
   rgt: number;
-  lvl_id:string|null
+  lvl_id: string | null;
 }

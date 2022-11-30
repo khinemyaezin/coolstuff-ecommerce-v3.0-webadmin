@@ -1,0 +1,16 @@
+@import "../../../custom-scss/bootstrap-variable.scss";
+
+.profile {
+  ::ng-deep .img__wrap {
+    position: relative !important;
+    display: block !important;
+    height: 10rem !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    img {
+      height: 10rem !important;
+      width: 10rem !important;
+      object-fit: contain;
+    }
+  }
+}

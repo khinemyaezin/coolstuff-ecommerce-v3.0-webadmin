@@ -22,9 +22,9 @@ export class HttpErrorHandlerService implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(catchError((x) => this.handleAuthError(x)));
   }
-  private handleAuthError(err: HttpErrorResponse): Observable<any> {
-    if (err.status === 401) {
-      //this.router.navigate(['/signin']);
+  private handleAuthError(err: HttpErrorResponse): Observable<any> {    
+    if (err.status == 403) {
+      //this.router.navigateByUrl('404')
     } 
     return throwError(() => err);
   }

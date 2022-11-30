@@ -40,6 +40,10 @@ import {
 import { MediaChooserConfig } from 'src/app/core-components/media-chooser/media-chooser.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AttributeSelectorComponent } from './attribute-selector/attribute-selector.component';
+import {
+  ProductSaveRequest,
+  ProductSaveRequestVariant,
+} from 'src/app/services/requests';
 
 @Component({
   selector: 'app-product-setup',
@@ -118,6 +122,19 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
   public maskConfig: MaskConfig = this.http.config.mask;
   destroy$: Subject<boolean> = new Subject<boolean>();
 
+  constructor(
+    public util: ControllerService,
+    private authService: AuthService,
+    private http: ServerService,
+    public fb: FormBuilder,
+    public sellerService: SellerService,
+    public popup: PopupService,
+    public activatedRoute: ActivatedRoute,
+    public router: Router,
+    private ref: ChangeDetectorRef,
+    private modalService: NgbModal
+  ) {}
+
   get getVariants(): FormArray {
     return this.productForm.controls['variants'] as FormArray;
   }
@@ -137,20 +154,6 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
   get hasError() {
     return this.productForm.hasError('required');
   }
-
-  constructor(
-    public util: ControllerService,
-    private authService: AuthService,
-    private http: ServerService,
-    public fb: FormBuilder,
-    public sellerService: SellerService,
-    public popup: PopupService,
-    public activatedRoute: ActivatedRoute,
-    public router: Router,
-    private ref: ChangeDetectorRef,
-    private modalService: NgbModal
-  ) {}
-
   ngAfterViewInit(): void {
     if (this.paramProductId && this.paramVariantId) {
       this.tabs.select(3);
@@ -245,15 +248,15 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getVariants.push(this.standAloneVariant);
     this.ref.detectChanges();
 
-    this.selectCategory({
-      id: '56',
-      lft: 63,
-      rgt: 64,
-      title: 'Accessories',
-      full_path: 'Clohing, Shoes & Watches, Fashion, Boy, Accessories',
-      lvl_id: '39',
-      biz_status: 0,
-    });
+    // this.selectCategory({
+    //   id: '56',
+    //   lft: 63,
+    //   rgt: 64,
+    //   title: 'Accessories',
+    //   full_path: 'Clohing, Shoes & Watches, Fashion, Boy, Accessories',
+    //   lvl_id: '39',
+    //   biz_status: 0,
+    // });
     this.importLocations(this.standAloneVariant);
   }
 
@@ -264,7 +267,8 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
       this.getLocations(variantFormGroup.get('id')?.value)
     );
     if (locationResp && locationResp.success) {
-      const locationFormGroup = locationResp.details.map((loc: any) => {
+      let locationsInVariant = <FormArray>variantFormGroup.get('locations');
+      locationResp.details.forEach((loc: any) => {
         const location = this.createLocation();
         location.controls['id'].setValue(loc.id);
         location.controls['locationId'].setValue(loc.location.id);
@@ -275,13 +279,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
 
         location.controls['originQuantity'].setValue(loc.quantity ?? 0);
         location.controls['adjustBy'].setValue(0);
-        return location;
-      });
-      // O of 1
-
-      let locations = <FormArray>variantFormGroup.get('locations');
-      locationFormGroup.forEach((loc: any) => {
-        locations.push(loc);
+        locationsInVariant.push(location);
       });
     }
   }
@@ -348,7 +346,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Description */
 
   addFeatures(i: number, e: any, variant: FormGroup) {
-    if (e.key === 'Enter' || e.keyCode === 13) {
+    if (this.util.isIgnoreKeys(e.keyCode)) {
       return;
     }
     let featuresLength = (<FormArray>variant.get('features')).length;
@@ -499,7 +497,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
       ]),
       price: new FormControl(0),
       sellingPrice: new FormControl(0),
-      comparedPrice: new FormControl(0, [Validators.required]),
+      comparedPrice: new FormControl(0),
       quantity: new FormControl(0),
       trackQuantity: new FormControl<boolean>(true),
       keepSellingOutofstock: new FormControl<boolean>(false),
@@ -601,8 +599,6 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
           this.getVariants.controls[i].get('variantOptions')?.value.length,
           removeLast
         );
-        // this.getVariants.controls[i].get('variantOptions')?.setValue(orderedArray);
-        // console.log(this.getVariants.controls[i].get('variantOptions')?.value);
       }
     }
 
@@ -666,6 +662,27 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     optionGroup: FormGroup,
     optionOrderIndex: number
   ) {
+    if (
+      optionOrderIndex !== 0 &&
+      !this.options[optionOrderIndex - 1].get('header')?.value
+    ) {
+      console.log('need to swap');
+      //this.removeVariantOptionHeader(optionOrderIndex - 1)
+      // const indexArray = [...Array(this.options.length).keys()];
+      // indexArray.splice(optionOrderIndex - 1, 1);
+      // const desiredIndex = [...indexArray, optionOrderIndex - 1];
+      // console.log(desiredIndex);
+      // this.reorder(this.options, desiredIndex, this.options.length);
+
+      // this.getVariants.controls.forEach((v) => {
+      //   this.reorder(
+      //     v.get('variantOptions')?.value,
+      //     desiredIndex,
+      //     v.get('variantOptions')?.value.length
+      //   );
+      // });
+    }
+
     //Reset
     const optionItems = optionGroup.controls['list'] as FormArray;
     optionItems.clear();
@@ -680,9 +697,11 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     optionIndex: number,
     optionInputIndex: number,
     option: any,
-    event: any
+    e: any
   ) {
-    if (event.keyCode == 13 || event.keyCode == 9) return;
+    if (this.util.isIgnoreKeys(e.keyCode)) {
+      return;
+    }
     let optionItems = <FormArray>this.options[optionIndex].get('list');
 
     /** Add extra input box for next */
@@ -1313,6 +1332,10 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
         id: variant.fk_condition_id,
       });
       variantFormGroup.controls['price'].setValue(variant.buy_price);
+      variantFormGroup.controls['comparedPrice'].setValue(
+        variant.compared_price
+      );
+
       variantFormGroup.controls['sellingPrice'].setValue(variant.selling_price);
       variantFormGroup.controls['trackQuantity'].setValue(variant.track_qty);
       variantFormGroup.controls['quantity'].setValue(variant.qty);
@@ -1419,6 +1442,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     variantFormGroup.controls['condition'].setValue(variant.condition);
     variantFormGroup.controls['price'].setValue(variant.buy_price);
     variantFormGroup.controls['sellingPrice'].setValue(variant.selling_price);
+    variantFormGroup.controls['comparedPrice'].setValue(variant.compared_price);
     variantFormGroup.controls['trackQuantity'].setValue(variant.track_qty);
     variantFormGroup.controls['quantity'].setValue(variant.qty);
     variantFormGroup.controls['sellerSku'].setValue(variant.seller_sku);
@@ -1459,14 +1483,20 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ref.detectChanges();
   }
 
-  exportVariants(variant: any, hasVariant: boolean) {
-    let result = {
+  exportVariants(
+    variant: any,
+    hasVariant: boolean
+  ): Partial<ProductSaveRequestVariant> {
+    let result: Partial<ProductSaveRequestVariant> = {
       condition_desc: '',
       biz_status: variant.get('status')?.value,
       seller_sku: variant.get('sellerSku')?.value,
       track_qty: variant.get('trackQuantity')?.value,
       qty: this.util.safeNum(variant.controls['quantity'].value),
       buy_price: this.util.safeNum(variant.controls['price'].value),
+      compared_price: this.util.safeNum(
+        variant.controls['comparedPrice'].value
+      ),
       selling_price: this.util.safeNum(variant.get('sellingPrice')?.value),
       start_at: this.util.dateTransform(variant.get('dateRange')?.value?.start),
       expired_at: this.util.dateTransform(variant.get('dateRange')?.value?.end),
@@ -1586,6 +1616,9 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
 
       selling_price: this.util.safeNum(variant.get('sellingPrice')?.value),
       buy_price: this.util.safeNum(variant.controls['price'].value),
+      compared_price: this.util.safeNum(
+        variant.controls['comparedPrice'].value
+      ),
       track_qty: variant.get('trackQuantity')?.value,
       qty: this.util.safeNum(variant.controls['quantity'].value),
       condition_desc: '',
@@ -1611,11 +1644,6 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
           ) {
             return false;
           }
-          // if (
-          //   attribute.get('optionUnit')?.value == null
-          // ) {
-          //   return false;
-          // }
           return true;
         })
         .map((filteredAttribute: AbstractControl<FormGroup>) => {
@@ -1698,7 +1726,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     // << First validation >>
 
     // << Prepare product >>
-    let param: any = {
+    let param: ProductSaveRequest = {
       id: this.productForm.value.id,
       biz_status: this.productForm.value.status,
       title: this.productForm.value.title,
@@ -1716,6 +1744,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
       fk_varopt_3_hdr_id: null,
       hasVariant: this.productForm.value.hasVariant,
       variants: [],
+      fk_group_id: '',
     };
 
     for (let v of this.getVariants.controls) {

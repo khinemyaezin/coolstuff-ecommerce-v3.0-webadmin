@@ -17,7 +17,7 @@ export class AuthService {
   }
 
   get isSeller(): boolean {
-    return this.isLogin() && this.userType == UserTypes.SELLER;
+    return this.isLogin() && (this.userType == UserTypes.SELLER || this.userType == UserTypes.STAFF);
   }
 
   get isAdmin(): boolean {
@@ -30,7 +30,7 @@ export class AuthService {
 
   public signin(request: any, fromLogin: boolean = true): boolean {
     const userType: UserTypes | null = this.identifyUser(
-      request.user.user_type.title
+      request.user.user_type.id
     );
     if (!userType) {
       throw new Error('Invalid User');
@@ -50,6 +50,7 @@ export class AuthService {
       user_type: userType,
       user_roles: request.roles,
     };
+
     if (fromLogin) this.redirectUserToHomePage();
     return true;
   }
@@ -58,22 +59,29 @@ export class AuthService {
     return this.curUser ? true : false;
   }
 
-  private identifyUser(userTypeId: string) {
-    switch (userTypeId) {
-      case UserTypes.SELLER:
-        return UserTypes.SELLER;
-      case UserTypes.ADMIN:
-        return UserTypes.ADMIN;
-      default:
-        return null;
+  private identifyUser(userTypeId: any) {
+    try {
+      const key =
+        Object.keys(UserTypes)[Object.values(UserTypes).indexOf(userTypeId)];
+      return UserTypes[key as keyof typeof UserTypes];
+    } catch (error) {
+      console.error('identifyUser', error);
+      return null;
     }
   }
 
   private redirectUserToHomePage() {
     switch (this.curUser.user_type) {
-      case UserTypes.SELLER:
+      case UserTypes.SELLER: {
         this.router.navigateByUrl('/seller-central');
+        console.log(this.curUser.user_type);
         break;
+      }
+      case UserTypes.STAFF: {
+        this.router.navigateByUrl('/seller-central');
+        console.log(this.curUser.user_type);
+        break;
+      }
       case UserTypes.ADMIN:
         this.router.navigateByUrl('/admin');
         break;

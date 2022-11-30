@@ -13,20 +13,33 @@
     .card-title {
       text-transform: uppercase;
       margin-bottom: 0px;
+      font-weight: $font-weight-semibold;
     }
   }
   .card-footer {
     text-transform: unset;
   }
   .card-header {
-    padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+    padding: $card-spacer-header;
   }
   .card-footer {
-    padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+    padding: $card-spacer-footer;
+  }
+
+  .accordion-button {
+    background-color: transparent !important;
+    text-transform: uppercase;
+    font-weight: $font-weight-semibold;
+    padding: $card-spacer-header;
+  }
+  .accordion-item {
+    background-color: transparent !important;
+    border: none;
+    border-radius: 8px;
   }
 }
 
-.list-group {
+.list-group.card {
   border: none;
   border-radius: 8px;
   box-shadow: $box-shadow;
@@ -52,9 +65,9 @@
   visibility: visible !important;
   z-index: 0;
   flex: 0 1 21.875rem;
-  // background-color: $white;
-  // padding-right: 2rem;
-  // box-shadow: $box-shadow;
+  //background-color: $white;
+  padding-right: 2rem;
+  box-shadow: $box-shadow;
   // box-sizing: border-box;
 
   .offcanvas-body {
@@ -117,13 +130,8 @@
     0 0.5rem 1.25rem -0.25rem #1718181f;
 }
 
-.accordion-button{
-  background-color: transparent !important;
-  text-transform: uppercase;
-}
-.accordion-item {
-  background-color: transparent !important;
+//Modal
+.modal-header {
+  padding: $card-spacer-header;
   border: none;
-  border-radius: 8px;
-
 }

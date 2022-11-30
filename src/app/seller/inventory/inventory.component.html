@@ -17,7 +17,7 @@
                             class="bi bi-search position-absolute top-50 end-0 translate-middle-y text-muted fs-base me-3"></i>
                     </div>
                 </div>
-                <div class="d-flex align-items-center small">
+                <div class="d-flex align-items-center ">
                     <div class="form-check px-2 border-end m-0">
                         <input class="form-check-input" type="checkbox" value="" id="ctrl-easy-update"
                             [(ngModel)]="easyUpdate">
@@ -26,8 +26,8 @@
                         </label>
                     </div>
                     <div class="px-2">
-                        <a [routerLink]="'/seller-central/add-a-product'" class="btn btn-plus" type="button"
-                            id="btn-add-product"></a>
+                        <button [routerLink]="'/seller-central/add-a-product'" class="btn btn-light" type="button"
+                            id="btn-add-product">Add a product</button>
                     </div>
                 </div>
 
@@ -104,7 +104,7 @@
 
                 </table>
             </div>
-            <div class="d-flex justify-content-end py-3">
+            <div class="d-flex justify-content-end pt-3">
                 <app-pagination #inventoryProductPagination [source]="pagination" (pageChange)="pageChange($event)">
                 </app-pagination>
             </div>
@@ -338,7 +338,7 @@
                     </select>
 
                 </div>
-                <p *ngSwitchCase="false">
+                <p *ngSwitchCase="false" class="text-nowrap">
                     {{vari.get('condition')?.value.title}}
                 </p>
             </div>
@@ -348,9 +348,9 @@
                 Date range
             </div>
             <div class="rps-table-cell-content">
-                From {{vari.get('start_at')?.value | date :
+                {{vari.get('start_at')?.value | date :
                 'mediumDate'}}<br>
-                To {{vari.get('expired_at')?.value | date :
+                {{vari.get('expired_at')?.value | date :
                 'mediumDate'}}
             </div>
         </td>

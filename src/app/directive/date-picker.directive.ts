@@ -144,7 +144,7 @@ export class DatePickerDirective
     `,
   ],
 })
-export class NgbdModalContent implements AfterViewInit {
+export class NgbdModalContent implements AfterViewInit,OnInit {
   @ViewChild('datepicker') public datePickerRef!: ElementRef;
 
   @Input() public subject: any;
@@ -156,9 +156,9 @@ export class NgbdModalContent implements AfterViewInit {
     public activeModal: NgbActiveModal,
     private service: ControllerService
   ) {}
-
-  ngAfterViewInit(): void {
-    this.easepick = this.service.easePick(this.datePickerRef);
+  
+  ngAfterViewInit(){
+   this.easepick = this.service.easePick(this.datePickerRef);
 
     this.easepick.on('select', (event: any) => {
       this.subject.next({ value: event, type: 'apply' });
@@ -174,5 +174,8 @@ export class NgbdModalContent implements AfterViewInit {
     });
     if( this.startDate ) this.easepick.setStartDate(this.startDate);
     if( this.endDate ) this.easepick.setEndDate(this.endDate);
+  }
+  ngOnInit(): void {
+ 
   }
 }

@@ -1,5 +1,5 @@
-<div >
-  <nav class="navbar navbar-expand-lg bg-light shadow-sm sticky-top">
+<div>
+  <nav class="navbar navbar-expand-lg blur shadow-sm sticky-top">
     <div class="container">
       <a class="navbar-toggler" role="button" type="button" (click)="open(content)" aria-controls="side-menu">
         <i class="bi bi-list"></i>
@@ -7,7 +7,7 @@
       <a class="navbar-brand" href="#">
   
       </a>
-      <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
             <a class="nav-link" [routerLink]="'/brand-register'">BrandRegister</a>
@@ -19,17 +19,17 @@
             <a class="nav-link" [routerLink]="'/seller-central'">seller</a>
           </li>
         </ul>
-      </div>
-      <div>
+      </div>-->
+      <div> 
         <user-controls-menu></user-controls-menu>
       </div>
   
     </div>
   </nav>
   <div class="app-wrapper flex-column flex-row-fluid">
-    <div class="offcanvas-expand side-bar" style="min-width: 21.875rem;">
+    <aside class="offcanvas-expand side-bar" style="min-width: 21.875rem;">
       <ng-template *ngTemplateOutlet="menuTemplate ; context:{ offcanvas: null }"></ng-template>
-    </div>
+    </aside>
     <main class="offcanvas-enabled flex-column flex-row-fluid">
       <router-outlet></router-outlet>
     </main>

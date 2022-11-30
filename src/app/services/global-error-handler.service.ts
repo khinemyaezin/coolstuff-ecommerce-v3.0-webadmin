@@ -14,5 +14,6 @@ export class GlobalErrorHandlerService implements ErrorHandler{
     if(error instanceof ModelNotFoundError || error instanceof InvalidRouteError) {
       this.router.navigateByUrl('/404')
     }
+    console.error(error)
   }
 }

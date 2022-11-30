@@ -1,5 +1,5 @@
 import { HttpParams, HttpResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import {
   FormGroup,
   FormArray,
@@ -66,7 +66,8 @@ export class InventoryComponent implements OnInit {
     private fb: FormBuilder,
     private sellerService: SellerService,
     private popup: PopupService,
-    private auth: AuthService
+    private auth: AuthService,
+    private changeDetector: ChangeDetectorRef
   ) {}
 
   get productVariationControls(): AbstractControl[] {
@@ -121,9 +122,10 @@ export class InventoryComponent implements OnInit {
         }
       })
       .catch((e) => {});
+    this.changeDetector.detectChanges();
   }
 
-  createProduct(variants: any) {
+  createProductFormGroup(variants: any) {
     const vari = this.fb.group(variants) as FormGroup;
     vari
       .get('buy_price')
@@ -213,7 +215,7 @@ export class InventoryComponent implements OnInit {
 
     resp.data.map((variants: any) => {
       (<FormArray>this.productFormGroup.get('products')).push(
-        this.createProduct(variants)
+        this.createProductFormGroup(variants)
       );
     });
 
@@ -238,8 +240,9 @@ export class InventoryComponent implements OnInit {
       return;
     }
     products.forEach((e: any) => {
-      variants.push(this.createProduct(e));
+      variants.push(this.createProductFormGroup(e));
     });
+    this.changeDetector.detectChanges();
   }
 
   getProducts(filter?: HttpParams) {

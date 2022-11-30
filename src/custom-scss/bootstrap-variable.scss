@@ -12,6 +12,10 @@ $alert-padding-x: $spacer;
 $alert-margin-bottom: $spacer * 0.5;
 $font-family-base: "Inter", sans-serif;
 
+//card
+$card-spacer-header: $spacer $spacer calc($spacer - 1rem) $spacer;
+$card-spacer-footer: calc($spacer - 1rem) $spacer $spacer $spacer;
+
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 

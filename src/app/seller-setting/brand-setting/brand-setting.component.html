@@ -96,24 +96,30 @@
                 </div>
 
             </div>
-            <div class="card mb-2">
-                <div class="card-header">
-                    <div class="card-title">Short description
+            <form [formGroup]="brandBio" (ngSubmit)="submitBrandBio($event)">
+                <div class="card mb-2">
+                    <div class="card-header">
+                        <div class="card-title">Short description
+                        </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <form action="">
+                    <div class="card-body">
+
                         <div class="">
                             <label for="brand-description" class="form-label small">Description of your business often
                                 used in
                                 bios and listings
                             </label>
-                            <textarea class="form-control" name="" id="brand-description" cols="30" rows="3"></textarea>
+                            <textarea class="form-control" name="" id="brand-description" cols="30" rows="3"
+                                formControlName="bio"></textarea>
                         </div>
-                    </form>
 
+                    </div>
+                    <div class="card-footer d-flex justify-content-end" *ngIf="brandBio.dirty">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
                 </div>
-            </div>
+            </form>
+
             <div class="card mb-2">
                 <div class="card-header">
                     <div class="card-title">Social links
