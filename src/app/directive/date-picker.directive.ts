@@ -17,7 +17,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { easepick } from '@easepick/bundle';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
-import { ControllerService } from '../services/controller.service';
+import { Utility } from '../services/utility.service';
 export interface DatePickerValue {
   start: Date,
   end:Date
@@ -154,7 +154,7 @@ export class NgbdModalContent implements AfterViewInit,OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private service: ControllerService
+    private service: Utility
   ) {}
   
   ngAfterViewInit(){

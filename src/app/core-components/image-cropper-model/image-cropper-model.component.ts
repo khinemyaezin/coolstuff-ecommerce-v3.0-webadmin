@@ -10,7 +10,7 @@ import {
 import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { Subject } from 'rxjs';
-import { ControllerService } from 'src/app/services/controller.service';
+import { Utility } from 'src/app/services/utility.service';
 import { ImageCropperConfig } from '../media-chooser/media-chooser.component';
 
 @Component({
@@ -26,7 +26,7 @@ export class ImageCropperModelComponent implements OnInit {
   @ViewChild('imgcrop') imageCropper!: ImageCropperComponent;
 
 
-  constructor(private pgService: ControllerService) {}
+  constructor(private pgService: Utility) {}
 
   ngAfterViewInit(): void {
 

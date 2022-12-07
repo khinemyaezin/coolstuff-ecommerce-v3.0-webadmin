@@ -18,7 +18,7 @@ import {
   ImageCropperConfig,
   MediaChooserConfig,
 } from '../media-chooser/media-chooser.component';
-import { ControllerService } from 'src/app/services/controller.service';
+import { Utility } from 'src/app/services/utility.service';
 import { base64ToFile } from 'ngx-image-cropper';
 
 export interface Media {
@@ -59,7 +59,7 @@ export class MediaChooserModelComponent
     public activeModal: NgbActiveModal,
     private popup: PopupService,
     private http: ServerService,
-    private service: ControllerService
+    private service: Utility
   ) {}
 
   ngOnDestroy(): void {

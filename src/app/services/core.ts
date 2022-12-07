@@ -1,3 +1,4 @@
+
 // Enums
 export enum BizStatus {
   ACTIVE = 2,
@@ -29,11 +30,7 @@ export interface Auth {
 
 export interface CONFIG {
   url: string;
-  mask: MaskConfig;
-}
-export interface MaskConfig {
-  maxnumber_count: string;
-  brand_sku_count: string;
+  mask: null;
 }
 export interface ViewResult<T> {
   success: boolean;

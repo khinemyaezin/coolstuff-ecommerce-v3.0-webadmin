@@ -7,7 +7,7 @@ import {
   FormBuilder,
 } from '@angular/forms';
 import { lastValueFrom } from 'rxjs';
-import { ControllerService } from 'src/app/services/controller.service';
+import { Utility } from 'src/app/services/utility.service';
 import { User, UserTypes } from 'src/app/services/core';
 import { PopupService } from 'src/app/services/popup.service';
 import { UserSaveRequest } from 'src/app/services/requests';
@@ -46,7 +46,7 @@ export class UserProfileComponent implements OnInit {
   constructor(
     public popup: PopupService,
     private http: ServerService,
-    private util: ControllerService,
+    private util: Utility,
     private formBuilder: FormBuilder
   ) {}
 

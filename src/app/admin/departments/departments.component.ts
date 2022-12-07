@@ -13,7 +13,7 @@ import {
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime, lastValueFrom, map, Subject, takeUntil } from 'rxjs';
-import { ControllerService } from 'src/app/services/controller.service';
+import { Utility } from 'src/app/services/utility.service';
 import { PopupService } from 'src/app/services/popup.service';
 import { ServerService } from 'src/app/services/server.service';
 
@@ -43,7 +43,7 @@ export class DepartmentsComponent implements OnInit,OnDestroy {
   filter:FormControl = new FormControl('');
   destroy$: Subject<boolean> = new Subject<boolean>();
   constructor(
-    public pgService: ControllerService,
+    public pgService: Utility,
     public pops: PopupService,
     public http: ServerService,
     private modalService: NgbModal

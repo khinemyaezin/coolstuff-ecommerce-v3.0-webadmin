@@ -7,7 +7,7 @@ import {
   PaginationComponent,
   PaginationLink,
 } from 'src/app/core-components/pagination/pagination.component';
-import { ControllerService } from 'src/app/services/controller.service';
+import { Utility } from 'src/app/services/utility.service';
 import { PopupService } from 'src/app/services/popup.service';
 import { ServerService } from 'src/app/services/server.service';
 
@@ -27,7 +27,7 @@ export class AttributesComponent implements OnInit,OnDestroy {
   pagination!: Pagination;
   destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private http: ServerService, private popup: PopupService,private pgService:ControllerService) {}
+  constructor(private http: ServerService, private popup: PopupService,private pgService:Utility) {}
 
   ngOnDestroy(): void {
     this.destroy$.next(true);

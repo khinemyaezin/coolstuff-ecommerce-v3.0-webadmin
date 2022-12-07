@@ -1,20 +1,17 @@
 import {
   AfterViewInit,
   ChangeDetectorRef,
-  ContentChild,
   Directive,
   ElementRef,
   Input,
-  OnChanges,
   Renderer2,
-  SimpleChanges,
-  ViewChild,
+
 } from '@angular/core';
 
 @Directive({
-  selector: '[appUserProfileIdentifier]',
+  selector: '[modelCardSwitcher]',
 })
-export class UserProfileIdentifierDirective
+export class ModelCardSwitcherDirective
   implements AfterViewInit
 {
   @Input('type') type = 'model';

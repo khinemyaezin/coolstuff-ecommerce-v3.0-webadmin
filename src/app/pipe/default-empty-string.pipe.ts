@@ -1,11 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ControllerService } from '../services/controller.service';
+import { Utility } from '../services/utility.service';
 
 @Pipe({
   name: 'defaultEmptyString',
 })
 export class DefaultEmptyStringPipe implements PipeTransform {
-  constructor(private util:ControllerService){
+  constructor(private util:Utility){
 
   }
   transform(value: string, ...args: string[]): string {

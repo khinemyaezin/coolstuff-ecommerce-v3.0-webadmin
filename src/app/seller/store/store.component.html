@@ -1,21 +1,6 @@
-<div class="container p-5">
-    <div style="width: 10%; padding-right: 30px;">
-       <svg class="CircularProgressbar " viewBox="0 0 100 100" data-test-id="CircularProgressbar">
-            <!--  <path class="CircularProgressbar-trail" d="
-        M 50,50
-        m 0,-46
-        a 46,46 0 1 1 0,92
-        a 46,46 0 1 1 0,-92
-      " stroke-width="8" fill-opacity="0" style="stroke-dasharray: 289.027px, 289.027px; stroke-dashoffset: 0px;">
-            </path> -->
-            <path class="CircularProgressbar-path" d="
-        M 50,50
-        m 0,-46
-        a 46,46 0 1 1 0,92
-        a 46,46 0 1 1 0,-92
-      " stroke-width="8" fill-opacity="0"
-                style="stroke-dasharray: 289.027px, 289.027px; stroke-dashoffset: 57.8053px;"></path><text
-                class="CircularProgressbar-text" x="50" y="50">80%</text>
-        </svg>
-    </div>
+<div class="container" style="display: grid;">
+    <form [formGroup]="formGroup" style="margin:auto">
+        <input type="text" class="form-control" formControlName="price"   currencyMask
+        [options]="{ prefix:'',suffix: 'MMK', thousands: ',', decimal: '.' }">
+    </form>
 </div>

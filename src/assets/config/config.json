@@ -1,7 +1,9 @@
 {
   "url": "http://127.0.0.1:8000/api/",
-  "mask" : {
-    "maxnumber_count":"00000000000000000000",
-    "brand_sku_count":"AAAAAAAAAAAAAAAAAAAA"
+  "mask": {
+    "pricing": {
+      "digits": 2
+    },
+    "brand_sku_count": ""
   }
 }

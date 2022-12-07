@@ -104,3 +104,9 @@ export interface BrandUpdateRequest {
   profile_image: string | null;
   cover_image: string | null;
 }
+
+export interface GetProfitMarginRequest {
+  cost_of_item: number;
+  markup: number;
+  sale_price: number;
+}

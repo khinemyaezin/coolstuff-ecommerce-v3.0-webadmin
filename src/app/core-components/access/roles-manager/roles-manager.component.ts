@@ -8,7 +8,7 @@ import {
 } from '@angular/forms';
 import { NgbNav, NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap';
 import { lastValueFrom } from 'rxjs';
-import { ControllerService } from 'src/app/services/controller.service';
+import { Utility } from 'src/app/services/utility.service';
 import { PopupService } from 'src/app/services/popup.service';
 import { RoleSaveRequest, RoleUpdateRequest } from 'src/app/services/requests';
 import { AccessControlService } from '../access-control.service';
@@ -52,7 +52,7 @@ export class RolesManagerComponent implements OnInit {
   constructor(
     private service: AccessControlService,
     private formBuilder: FormBuilder,
-    private util: ControllerService,
+    private util: Utility,
     private alert: PopupService
   ) {}
 

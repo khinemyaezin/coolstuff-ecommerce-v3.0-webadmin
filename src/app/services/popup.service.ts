@@ -16,8 +16,6 @@ import { ImageCropperConfig, MediaChooserConfig } from '../core-components/media
 import { ViewResult } from './core';
 import { ServerService } from './server.service';
 
-declare var $: any;
-
 @Injectable({
   providedIn: 'root',
 })

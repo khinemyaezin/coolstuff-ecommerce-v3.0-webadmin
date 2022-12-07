@@ -22,8 +22,7 @@ import {
   Pagination,
   PaginationComponent,
 } from 'src/app/core-components/pagination/pagination.component';
-import { ControllerService } from 'src/app/services/controller.service';
-import { MaskConfig } from 'src/app/services/core';
+import { Utility } from 'src/app/services/utility.service';
 import { PopupService } from 'src/app/services/popup.service';
 import { ServerService } from 'src/app/services/server.service';
 import { SellerService } from '../seller.service';
@@ -54,14 +53,13 @@ export class InventoryComponent implements OnInit {
   /**
    * Layout variables
    */
-  maskConfig: MaskConfig = this.http.config.mask;
-  easyUpdate: boolean = false;
+  easyUpdate: boolean = true;
   /**
    * Const variables
    */
 
   constructor(
-    public pgService: ControllerService,
+    public pgService: Utility,
     private http: ServerService,
     private fb: FormBuilder,
     private sellerService: SellerService,
@@ -283,6 +281,8 @@ export class InventoryComponent implements OnInit {
     const values = {
       variants: Array.from(this.variantsChanges.values()).map(
         (variant: AbstractControl) => {
+          console.log(variant.get('buy_price')?.value);
+          
           return {
             id: variant.get('id')?.value,
             buy_price: this.pgService.safeNum(variant.get('buy_price')?.value),

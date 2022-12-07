@@ -8,7 +8,7 @@ import {
   Pagination,
   PaginationComponent,
 } from 'src/app/core-components/pagination/pagination.component';
-import { ControllerService } from 'src/app/services/controller.service';
+import { Utility } from 'src/app/services/utility.service';
 import { BizStatus } from 'src/app/services/core';
 import { PopupService } from 'src/app/services/popup.service';
 import { ServerService } from 'src/app/services/server.service';
@@ -27,7 +27,7 @@ export class ProductPropertiesComponent implements OnInit,OnDestroy {
 
   constructor(
     private http: ServerService,
-    private pgService: ControllerService,
+    private pgService: Utility,
     public activatedRoute: ActivatedRoute,
     private popup:PopupService
   ) {}

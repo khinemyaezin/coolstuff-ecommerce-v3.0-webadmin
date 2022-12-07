@@ -16,7 +16,7 @@ export class BackButtonDirective implements OnInit,OnDestroy,AfterViewInit{
   ngOnInit(): void {
 
     this.render.addClass(this.elementRef.nativeElement,'btn');
-    this.render.addClass(this.elementRef.nativeElement,'text-primary');
+    this.render.addClass(this.elementRef.nativeElement,'btn-link');
 
     let icon = document.createElement('i');
     this.icon.split(' ').forEach( className=>{

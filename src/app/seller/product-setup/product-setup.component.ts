@@ -17,7 +17,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { PopupService } from 'src/app/services/popup.service';
 import { AuthService } from 'src/app/auth/auth.service';
-import { ControllerService } from 'src/app/services/controller.service';
+import { Utility } from 'src/app/services/utility.service';
 import { ServerService } from 'src/app/services/server.service';
 import { SellerService } from '../seller.service';
 import {
@@ -31,12 +31,7 @@ import {
   takeUntil,
 } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
-import {
-  BizStatus,
-  Category,
-  CategoryLeave,
-  MaskConfig,
-} from 'src/app/services/core';
+import { BizStatus, Category, CategoryLeave } from 'src/app/services/core';
 import { MediaChooserConfig } from 'src/app/core-components/media-chooser/media-chooser.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AttributeSelectorComponent } from './attribute-selector/attribute-selector.component';
@@ -44,6 +39,10 @@ import {
   ProductSaveRequest,
   ProductSaveRequestVariant,
 } from 'src/app/services/requests';
+import {
+  ProfitMarginCalculatorComponent,
+  ProfitMarginResp,
+} from 'src/app/core-components/profit-margin-calculator/profit-margin-calculator.component';
 
 @Component({
   selector: 'app-product-setup',
@@ -119,11 +118,10 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     { title: 'Draft', value: 6 },
   ];
 
-  public maskConfig: MaskConfig = this.http.config.mask;
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
-    public util: ControllerService,
+    public util: Utility,
     private authService: AuthService,
     private http: ServerService,
     public fb: FormBuilder,
@@ -1487,6 +1485,8 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     variant: any,
     hasVariant: boolean
   ): Partial<ProductSaveRequestVariant> {
+    console.log(variant.get('sellingPrice')?.value);
+
     let result: Partial<ProductSaveRequestVariant> = {
       condition_desc: '',
       biz_status: variant.get('status')?.value,
@@ -1819,6 +1819,22 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
   };
+
+  openProfitMarginCalculator(variant: AbstractControl) {
+    const modalRef = this.modalService.open(ProfitMarginCalculatorComponent, {
+      centered: true,
+      backdrop: 'static',
+    });
+    modalRef.componentInstance.type = 'model';
+    modalRef.componentInstance.costOfItem = variant.get('price')?.value;
+    modalRef.componentInstance.modalRef = modalRef;
+    modalRef.result.then((value: ProfitMarginResp | undefined) => {
+      if (value) {
+        variant.get('sellingPrice')?.setValue(value.salePrice)
+        variant.get('price')?.setValue(value.costOfItem)
+      }
+    });
+  }
 
   /** Variant by ID tab */
 

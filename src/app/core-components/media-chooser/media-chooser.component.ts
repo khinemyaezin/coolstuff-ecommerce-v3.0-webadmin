@@ -11,7 +11,7 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { ControllerService } from 'src/app/services/controller.service';
+import { Utility } from 'src/app/services/utility.service';
 import { PopupService } from 'src/app/services/popup.service';
 import { Media } from '../media-chooser-model/media-chooser-model.component';
 
@@ -39,7 +39,7 @@ export class MediaChooserComponent implements OnInit, OnChanges {
   @Output('output') output = new EventEmitter<Media>();
 
   constructor(
-    public pgService: ControllerService,
+    public pgService: Utility,
     private popup: PopupService,
     private render: Renderer2
   ) {}

@@ -1,0 +1,51 @@
+<form modelCardSwitcher [type]="type" [formGroup]="profitMarginFormGroup" (ngSubmit)="submit()">
+    <div element-type="wrapper">
+        <div element-type="header">
+            <div element-type="title">Profit margin calculator
+            </div>
+        </div>
+        <div class="p-body">
+            <div class="row g-3">
+                <div class="col-6">
+                    <label for="costOfItem" class="form-label">Cost of item*</label>
+                    <input type="text" class="form-control" id="costOfItem" formControlName="costOfItem" currencyMask
+                        [options]="currencyMaskOptions">
+                </div>
+                <div class="col-md-6">
+                    <label for="markup" class="form-label">Markup (%)</label>
+                    <input type="text" class="form-control" id="markup" formControlName="markup" currencyMask
+                        [options]="percentageMaskOptions">
+                </div>
+
+                <div class="col-md-4 d-grid bg-light">
+                    <div class="m-auto p-3">
+                        <p>Sale price</p>
+                        <div class="text-center">{{ ''+salePrice | imask : maskPipe }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 d-grid bg-light">
+                    <div class="m-auto">
+                        <p>Your profit</p>
+                        <div class="text-center">{{ ''+profit | imask : maskPipe }}</div>
+                    </div>
+                </div>
+                <div class="col-md-4 d-grid bg-light">
+                    <div class="m-auto">
+                        <p>Gross margin</p>
+                        <div class="text-center">{{ ''+grossMargin}}%</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="p-footer">
+            <div class="d-flex justify-content-end gap-2">
+                <button class="btn btn-secondary" (click)="modalRef.close()">Cancel</button>
+                <input type="submit" value="Import" class="btn btn-primary">
+            </div>
+        </div>
+
+    </div>
+
+</form>

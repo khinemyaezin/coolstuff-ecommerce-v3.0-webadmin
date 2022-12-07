@@ -7,7 +7,7 @@ import {
   FormGroup,
 } from '@angular/forms';
 import { lastValueFrom, Subject, takeUntil } from 'rxjs';
-import { ControllerService } from 'src/app/services/controller.service';
+import { Utility } from 'src/app/services/utility.service';
 import { PopupService } from 'src/app/services/popup.service';
 import { RoleUserSaveRequest } from 'src/app/services/requests';
 import { ServerService } from 'src/app/services/server.service';
@@ -31,7 +31,7 @@ export class RolesUserComponent implements OnInit, OnDestroy {
   constructor(
     private service: AccessControlService,
     private fbuilder: FormBuilder,
-    private util: ControllerService,
+    private util: Utility,
     private http: ServerService,
     private alert: PopupService
   ) {}

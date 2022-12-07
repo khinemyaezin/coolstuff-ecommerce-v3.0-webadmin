@@ -43,8 +43,8 @@
                             <th scope="col" class="bg-light">Image</th>
                             <th scope="col" class="bg-light sticky-start" style="min-width: 300px;">Name</th>
                             <th scope="col" class="bg-light">SKU</th>
-                            <th scope="col" class="bg-light">Price</th>
-                            <th scope="col" class="bg-light">Selling price</th>
+                            <th scope="col" class="bg-light">Cost of item</th>
+                            <th scope="col" class="bg-light">Sale price</th>
                             <th scope="col" class="bg-light">Qty</th>
                             <th scope="col" class="bg-light">Condition</th>
                             <th scope="col" class="bg-light" style="min-width: 200px;">DateRange</th>
@@ -267,9 +267,8 @@
 
             <div class="rps-table-cell-content" [ngSwitch]="easyUpdate">
                 <div class="form-group position-relative" *ngSwitchCase="true">
-                    <input type="text" class="form-control" formControlName="buy_price"
-                        [suffix]=" ' ' + vari.get('product')?.value?.currency.currency_code"
-                        [mask]="maskConfig.maxnumber_count">
+                    <input type="text" class="form-control" formControlName="buy_price" currencyMask
+                        [options]="{ prefix:'', suffix: ' '+vari.get('product')?.value?.currency.currency_code, thousands: ',', decimal: '.' }">
                     <p *ngIf="vari.get('buy_price')?.dirty"
                         class="def-val position-absolute top-0 start-0 badge rounded-pill ">
                         <i class="bi bi-x text-danger"></i>
@@ -290,9 +289,8 @@
 
             <div class="rps-table-cell-content" [ngSwitch]="easyUpdate">
                 <div class="form-group position-relative" *ngSwitchCase="true">
-                    <input type="text" class="form-control" formControlName="selling_price"
-                        [suffix]=" ' ' + vari.get('product')?.value?.currency.currency_code"
-                        [mask]="maskConfig.maxnumber_count">
+                    <input type="text" class="form-control" formControlName="selling_price" currencyMask
+                        [options]="{ prefix:'', suffix: ' '+vari.get('product')?.value?.currency.currency_code, thousands: ',', decimal: '.' }">
                     <p *ngIf="vari.get('selling_price')?.dirty"
                         class="def-val position-absolute top-0 start-0 badge rounded-pill">
                         <i class="bi bi-x text-danger"></i>
@@ -312,8 +310,8 @@
 
             <div class="rps-table-cell-content text-end" [ngSwitch]="easyUpdate">
                 <div class="form-group position-relative" *ngSwitchCase="true">
-                    <input type="text" class="form-control text-end" formControlName="qty"
-                        [mask]="maskConfig.maxnumber_count">
+                    <input type="text" class="form-control text-end" formControlName="qty" currencyMask
+                        [options]="{ prefix:'', thousands: ',',  precision:0 }">
                     <p *ngIf="vari.get('qty')?.dirty"
                         class="def-val position-absolute top-0 start-0 badge rounded-pill">
                         <i class="bi bi-x text-danger"></i>

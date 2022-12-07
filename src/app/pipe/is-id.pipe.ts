@@ -1,11 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ControllerService } from '../services/controller.service';
+import { Utility } from '../services/utility.service';
 
 @Pipe({
   name: 'isId'
 })
 export class IsIdPipe implements PipeTransform {
-  constructor(private util:ControllerService){
+  constructor(private util:Utility){
 
   }
   transform(value: any): boolean{

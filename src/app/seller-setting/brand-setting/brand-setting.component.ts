@@ -4,7 +4,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { lastValueFrom } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { MediaChooserConfig } from 'src/app/core-components/media-chooser/media-chooser.component';
-import { ControllerService } from 'src/app/services/controller.service';
+import { Utility } from 'src/app/services/utility.service';
 import { PopupService } from 'src/app/services/popup.service';
 import {
   BrandBioUpdateRequest,
@@ -45,7 +45,7 @@ export class BrandSettingComponent implements OnInit {
   });
   constructor(
     private auth: AuthService,
-    private pgservice: ControllerService,
+    private pgservice: Utility,
     public popup: PopupService,
     private http: ServerService
   ) {}

@@ -144,7 +144,7 @@
             <div class="d-flex gap-2 no-wrap">
                 <button type="button" backButton name="Products" icon="bi bi-chevron-left"
                     [routerLink]="'/seller-central/inventory'"></button>
-                <button type="button" *ngIf="submitBtn" class="btn text-primary" (click)="submit()">Submit</button>
+                <button type="button" *ngIf="submitBtn" class="btn btn-primary" (click)="submit()">Submit</button>
             </div>
         </div>
         <nav aria-label="breadcrumb" class="breadcrumb-nav small px-0">
@@ -249,7 +249,7 @@
                         <a routerLink="/seller-central/settings/store" class="small">Change store currency</a>
                     </span>
                 </div>
-                <!-- <div class="mb-2">
+                <div class="mb-2">
                     <label for="purchasedCurrency" class="form-label ">Purchased with</label>
                     <select class="form-select" id="purchasedCurrency" formControlName="purchasedCurrency">
                         <option [value]="null" disabled selected>Select</option>
@@ -257,7 +257,7 @@
                             {{ currency.currency_code }}<br>
                         </option>
                     </select>
-                </div> -->
+                </div>
             </div>
         </div>
 
@@ -281,12 +281,13 @@
             <div class="row mb-2">
                 <div class="col-sm-4">
                     <label for="offerSellingPrice" class="w-100 col-form-label  text-lg-end text-sm-start">
-                        Price</label>
+                        Sale price</label>
                 </div>
                 <div class="col-sm-8">
 
-                    <input type="text" class="form-control text-end" id="offerSellingPrice" formControlName="sellingPrice"
-                        [suffix]="' '+sellCurrency?.currency_code" [mask]="maskConfig.maxnumber_count">
+                    <input type="text" class="form-control text-end" id="offerSellingPrice"
+                        formControlName="sellingPrice" currencyMask
+                        [options]="{ prefix:'', suffix: ' '+sellCurrency?.currency_code, thousands: ',', decimal: '.' }">
                 </div>
             </div>
             <div class="row mb-2">
@@ -296,8 +297,9 @@
                 </div>
                 <div class="col-sm-8">
 
-                    <input type="text" class="form-control text-end" id="offerCompareAtPrice" formControlName="comparedPrice"
-                        [suffix]="' '+sellCurrency?.currency_code" [mask]="maskConfig.maxnumber_count">
+                    <input type="text" class="form-control text-end" id="offerCompareAtPrice"
+                        formControlName="comparedPrice" currencyMask
+                        [options]="{ prefix:'', suffix: ' '+sellCurrency?.currency_code, thousands: ',', decimal: '.' }">
 
                 </div>
             </div>
@@ -315,37 +317,22 @@
                 </div>
 
             </div>
-
-
-            <!-- <div class="row mb-2">
-                <div class="col-sm-4">
-                    <label for="offerMargin" class="w-100 col-form-label  text-lg-end text-sm-start">Margin</label>
-                </div>
-                <div class="col-sm-8 d-flex align-items-center">
-                    <span>{{marginPercentage | percent:'1.2-2'}}</span>
-                </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col-sm-4">
-                    <label for="offerProfit" class="w-100 col-form-label  text-lg-end text-sm-start">Profit</label>
-                </div>
-                <div class="col-sm-8  d-flex align-items-center">
-                    <span>
-                        {{profit|currency:'Ks':'symbol':'1.2-2':'en-US'}}
-                    </span>
-                </div>
-            </div> -->
             <div class="row mb-2">
                 <div class="col-sm-4">
                     <label for="offerCostPerItem" class="w-100 col-form-label  text-lg-end text-sm-start">
-                        Cost per item</label>
+                        Cost of item</label>
                 </div>
                 <div class="col-sm-8">
 
                     <input type="text" class="form-control text-end" id="offerCostPerItem" formControlName="price"
-                    [suffix]="' '+sellCurrency?.currency_code" [mask]="maskConfig.maxnumber_count">
+                        currencyMask
+                        [options]="{ prefix:'', suffix: ' '+buyCurrency?.currency_code, thousands: ',', decimal: '.' }">
                     <small class="text-muted">Customer won't see it.</small>
                 </div>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-link" (click)=" openProfitMarginCalculator(formGroup)">Margin
+                    calculator</button>
             </div>
         </div>
 
@@ -365,7 +352,7 @@
                 </div>
                 <div class="col-sm-8">
                     <input type="text" class="form-control" id="offerSku" placeholder="Stock Keeping Unit"
-                        [mask]="maskConfig.brand_sku_count" formControlName="sellerSku">
+                        formControlName="sellerSku">
                 </div>
             </div>
             <div class="row mb-2">
@@ -454,8 +441,7 @@
                                     <td>
                                         <div *ngIf="paramProductId then locQtyForExisting else locQtyForNew"></div>
                                         <ng-template #locQtyForNew>
-                                            <input type="text" class="form-control" formControlName="quantity"
-                                                [mask]="maskConfig.maxnumber_count">
+                                            <input type="text" class="form-control" formControlName="quantity">
                                         </ng-template>
                                         <ng-template #locQtyForExisting>
                                             <div ngbDropdown>
@@ -646,14 +632,15 @@
         <div class="card-body" *ngIf="productForm.controls['hasVariant'].value">
             <div class="variant-options">
                 <ng-container *ngFor="let option of options; let optionIndex=index">
-                    <div class="row mb-2" [formGroup]="option" *ngIf="options|variantOptionVisibility:optionIndex:'header'">
+                    <div class="row mb-2" [formGroup]="option"
+                        *ngIf="options|variantOptionVisibility:optionIndex:'header'">
                         <div class="col-sm-4">
                             <div class="d-flex flex-nowrap gap-2 align-items-center mb-2">
                                 <button type="button" class="btn btn-trash" [disabled]="!option.get('header')?.value"
                                     (click)="removeVariantOptionHeader(optionIndex)">
 
                                 </button>
-                                <div class="auto-complete" >
+                                <div class="auto-complete">
                                     <typeahead-options [optionFormGroup]="option" [optionFormControlName]="'header'"
                                         [formatter]="formatter" [editable]='false'
                                         [source]="optionHeaderTypeaheadConfig" [placeholder]="'Search...'"
@@ -736,13 +723,13 @@
                                 </th>
 
                                 <th class="table-cell column-heading">
-                                    Price
+                                    Sale price
                                 </th>
                                 <th class="table-cell column-heading">
                                     Compare at price
                                 </th>
                                 <th class="table-cell column-heading">
-                                    Cost per item
+                                    Cost of item
                                 </th>
                                 <th class="table-cell column-heading">
                                     Qty
@@ -915,7 +902,8 @@
                                                 </div>
                                                 <div class="table-cell-content d-flex no-wrap" [formGroup]="varOpt">
                                                     <div class="input-group">
-                                                        <typeahead-options [class]="'form-control input-number'" container="body"
+                                                        <typeahead-options [class]="'form-control input-number'"
+                                                            container="body"
                                                             *ngIf="varOpt.get('header')?.value.need_dtls_mapping"
                                                             [optionFormGroup]="varOpt"
                                                             [optionFormControlName]="'detail'" [formatter]="formatter"
@@ -953,10 +941,9 @@
                                             </div>
                                             <div class="table-cell-content">
 
-                                                <input type="text" class="form-control  text-end  input-number"
-                                                    formControlName="sellingPrice"
-                                                    [suffix]="' ' + buyCurrency?.currency_code"
-                                                    [mask]="maskConfig.maxnumber_count">
+                                                <input type="text" class="form-control text-end input-number"
+                                                    formControlName="sellingPrice" currencyMask
+                                                    [options]="{ prefix:'', suffix: ' '+sellCurrency?.currency_code, thousands: ',', decimal: '.' }">
                                             </div>
                                         </td>
                                         <td class="table-cell">
@@ -966,9 +953,8 @@
                                             <div class="table-cell-content">
 
                                                 <input type="text" class="form-control  text-end  input-number"
-                                                    formControlName="comparedPrice"
-                                                    [suffix]="' ' + buyCurrency?.currency_code"
-                                                    [mask]="maskConfig.maxnumber_count">
+                                                    formControlName="comparedPrice" currencyMask
+                                                    [options]="{ prefix:'', suffix: ' '+sellCurrency?.currency_code, thousands: ',', decimal: '.' }">
                                             </div>
                                         </td>
                                         <td class="table-cell">
@@ -977,8 +963,8 @@
                                             </div>
                                             <div class="table-cell-content">
                                                 <input type="text" class="form-control text-end input-number"
-                                                    formControlName="price" [suffix]="' ' + buyCurrency?.currency_code"
-                                                    [mask]="maskConfig.maxnumber_count">
+                                                    formControlName="price" currencyMask
+                                                    [options]="{ prefix:'', suffix: ' '+buyCurrency?.currency_code, thousands: ',', decimal: '.' }">
                                             </div>
                                         </td>
                                         <td class="table-cell">
@@ -987,8 +973,8 @@
                                             </div>
                                             <div class="table-cell-content">
                                                 <input type="text" class="form-control text-end input-number"
-                                                    style="width: 3rem;" formControlName="quantity"
-                                                    [mask]="maskConfig.maxnumber_count">
+                                                    style="width: 3rem;" formControlName="quantity" currencyMask
+                                                    [options]="{ prefix:'', thousands: ',',  precision:0 }">
                                             </div>
                                         </td>
                                         <td class="table-cell">

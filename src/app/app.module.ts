@@ -60,7 +60,7 @@ import { SessionDevicesComponent } from './core-components/session-devices/sessi
 import { RolesUserComponent } from './core-components/access/roles-user/roles-user.component';
 import { RolesManagerComponent } from './core-components/access/roles-manager/roles-manager.component';
 import { UserProfileComponent } from './core-components/user-profile/user-profile.component';
-import { UserProfileIdentifierDirective } from './core-components/user-profile/user-profile-identifier.directive';
+import { ModelCardSwitcherDirective } from './directive/model-card-switcher.directive';
 import { DatePickerDirective } from './directive/date-picker.directive';
 import { FileInputDirective } from './directive/file-input.directive';
 import { ImageDirective } from './directive/image.directive';
@@ -73,6 +73,11 @@ import { DefaultEmptyStringPipe } from './pipe/default-empty-string.pipe';
 import { IsIdPipe } from './pipe/is-id.pipe';
 import { UserAgentPipe } from './pipe/user-agent.pipe';
 import { VariantOptionVisibilityPipe } from './pipe/variant-option-visibility.pipe';
+import { ProfitMarginCalculatorComponent } from './core-components/profit-margin-calculator/profit-margin-calculator.component';
+import { ProfitMarginCalculatorBtnDirective } from './directive/profit-margin-calculator-btn.directive';
+import { IMaskModule } from 'angular-imask';
+import { NgxCurrencyModule } from 'ngx-currency';
+
 
 // const config: SocketIoConfig = {
 //   url: 'http://localhost:8084',
@@ -133,8 +138,10 @@ import { VariantOptionVisibilityPipe } from './pipe/variant-option-visibility.pi
     RolesManagerComponent,
     IsIdPipe,
     UserProfileComponent,
-    UserProfileIdentifierDirective,
+    ModelCardSwitcherDirective,
     VariantOptionVisibilityPipe,
+    ProfitMarginCalculatorComponent,
+    ProfitMarginCalculatorBtnDirective,
   ],
   imports: [
     BrowserModule,
@@ -157,11 +164,13 @@ import { VariantOptionVisibilityPipe } from './pipe/variant-option-visibility.pi
       theme: 'snow',
       placeholder: 'Description',
     }),
-
     NgxMaskModule.forRoot(),
     NgbModule,
     //SocketIoModule.forRoot(config),
     PasswordStrengthMeterModule.forRoot(),
+    IMaskModule,
+    NgxCurrencyModule
+
   ],
   providers: [
     DatePipe,
@@ -182,6 +191,7 @@ import { VariantOptionVisibilityPipe } from './pipe/variant-option-visibility.pi
       deps: [ServerService],
       multi: true,
     },
+
   ],
   bootstrap: [AppComponent],
 })

@@ -1,16 +1,27 @@
 import { DatePipe } from '@angular/common';
 import { ElementRef, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { easepick, LockPlugin, PresetPlugin, RangePlugin } from '@easepick/bundle';
+import {
+  easepick,
+  LockPlugin,
+  PresetPlugin,
+  RangePlugin,
+} from '@easepick/bundle';
 import * as moment from 'moment';
+import { ServerService } from './server.service';
 @Injectable({
   providedIn: 'root',
 })
-export class ControllerService {
+export class Utility {
   readonly DATEPIPE_FORMAT = 'dd-MM-YYYY h:mm:ss a'; //h:mm:ss a
   readonly MOMENT_FORMAT = 'DD-MM-YYYY h:mm:ss a';
 
-  constructor(private datepie: DatePipe,private router:Router) {}
+
+  constructor(
+    private datepie: DatePipe,
+    private router: Router,
+    private http: ServerService
+  ) {}
 
   /** Date Utility */
   dateTransform(date: Date) {
@@ -20,7 +31,7 @@ export class ControllerService {
     return moment(date, this.MOMENT_FORMAT).toDate();
   }
   /** Nested Tree */
-  traverse(data: any):any[] {
+  traverse(data: any): any[] {
     const tree: any = [];
     const treeObj = [tree];
     data.forEach(
@@ -101,20 +112,24 @@ export class ControllerService {
     // set should be same array.
     return s.size == arr.length;
   }
-  isEmptyOrSpaces(str: string|undefined|null) {
+  isEmptyOrSpaces(str: string | undefined | null) {
     return str === null || str === undefined || str.match(/^ *$/) !== null;
   }
-  safeNum( value: any):number {
+  safeNum(value: any): number {
     const num: number = Number(value);
-    return Number.isNaN( num ) ? 0 : num  ;
+    return Number.isNaN(num) ? 0 : num;
   }
   isEmptyID(str: any) {
-    return str === null || str === undefined || str.toString().match(/^$|^-1$/) !== null;
+    return (
+      str === null ||
+      str === undefined ||
+      str.toString().match(/^$|^-1$/) !== null
+    );
   }
   round(value: any) {
     return Number(Math.round((value + 'e2') as any));
   }
-  easePick(ref:ElementRef) {
+  easePick(ref: ElementRef) {
     return new easepick.create({
       element: ref.nativeElement,
       css: [
@@ -134,7 +149,7 @@ export class ControllerService {
     });
   }
   /** IO */
-  readImage(src: any):Promise<any> {
+  readImage(src: any): Promise<any> {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => resolve(img);
@@ -151,8 +166,8 @@ export class ControllerService {
     });
   }
 
-  isIgnoreKeys(keyCode:number):boolean{
-    const keys= [13,9];
-    return keys.includes(keyCode)
+  isIgnoreKeys(keyCode: number): boolean {
+    const keys = [13, 9];
+    return keys.includes(keyCode);
   }
 }

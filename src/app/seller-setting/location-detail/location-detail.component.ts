@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { last, lastValueFrom, Observable, Subject, takeUntil } from 'rxjs';
-import { ControllerService } from 'src/app/services/controller.service';
+import { Utility } from 'src/app/services/utility.service';
 import { InvalidRouteError } from 'src/app/services/invalid-route-error';
 import { PopupService } from 'src/app/services/popup.service';
 import { ServerService } from 'src/app/services/server.service';
@@ -29,7 +29,7 @@ export class LocationDetailComponent implements OnInit, OnDestroy {
   constructor(
     public activatedRoute: ActivatedRoute,
     private http: ServerService,
-    private pgService: ControllerService,
+    private pgService: Utility,
     private popup : PopupService,
     private sellerService:SellerService
   ) {}
