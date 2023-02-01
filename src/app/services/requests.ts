@@ -37,6 +37,7 @@ export interface ProductSaveRequest {
   fk_packtype_id: string;
   fk_group_id: string;
   fk_currency_id: string;
+  fk_purchased_currency_id: string;
   fk_varopt_1_hdr_id: string | null;
   fk_varopt_2_hdr_id: string | null;
   fk_varopt_3_hdr_id: string | null;
@@ -62,8 +63,8 @@ export interface ProductSaveRequestVariant {
   fk_varopt_3_unit_id: string;
   var_3_title: string;
   buy_price: number;
+  purchased_price: number;
   compared_price: number;
-  fk_buy_currency_id: string;
   selling_price: number;
   track_qty: boolean;
   qty: number;

@@ -43,13 +43,14 @@ import {
   ProfitMarginCalculatorComponent,
   ProfitMarginResp,
 } from 'src/app/core-components/profit-margin-calculator/profit-margin-calculator.component';
+import { ComponentFather } from 'src/app/services/component-father';
 
 @Component({
   selector: 'app-product-setup',
   templateUrl: './product-setup.component.html',
   styleUrls: ['./product-setup.component.scss'],
 })
-export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ProductSetupComponent extends ComponentFather implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('nav') public tabs!: any;
 
   categoryForm: FormGroup = new FormGroup({
@@ -68,6 +69,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     purchasedCurrency: new FormControl(null, {
       validators: [Validators.required],
     }),
+    currencyRate: new FormControl(0),
     variants: new FormArray([]),
     hasVariant: new FormControl<boolean>(false),
   });
@@ -131,13 +133,15 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     public router: Router,
     private ref: ChangeDetectorRef,
     private modalService: NgbModal
-  ) {}
+  ) {
+    super();
+  }
 
   get getVariants(): FormArray {
     return this.productForm.controls['variants'] as FormArray;
   }
 
-  get sellCurrency() {
+  get storeCurrency() {
     return this.productForm.get('currency')?.value;
   }
 
@@ -300,6 +304,11 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.productForm
       .get('currency')
       ?.setValue(data.currency, { emitEvent: false });
+    this.productForm
+      .get('purchasedCurrency')
+      ?.setValue(data.purchased_currency, { emitEvent: false });
+      console.log(this.productForm.value);
+      
   }
 
   /** Category */
@@ -494,6 +503,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
         option(optionHdr3, title3),
       ]),
       price: new FormControl(0),
+      purchasedPrice: new FormControl(0),
       sellingPrice: new FormControl(0),
       comparedPrice: new FormControl(0),
       quantity: new FormControl(0),
@@ -1198,7 +1208,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     let httpParam = new HttpParams();
     httpParam = httpParam.set(
       'relationships',
-      'variants,myBrand,category,lvlCategory,packType,currency,variantOption1Hdr,variantOption2Hdr,variantOption3Hdr'
+      'variants,myBrand,category,lvlCategory,packType,currency,purchasedCurrency,variantOption1Hdr,variantOption2Hdr,variantOption3Hdr'
     );
     httpParam = httpParam.set(
       'variants',
@@ -1228,7 +1238,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     param = param.append('brothers', true);
     param = param.append(
       'product',
-      'myBrand,category,packType,currency,variantOption1Hdr,variantOption2Hdr,variantOption3Hdr'
+      'myBrand,category,packType,currency,purchasedCurrency,variantOption1Hdr,variantOption2Hdr,variantOption3Hdr'
     );
     return this.http.GET(`products/${productId}/${variantId}`, param);
   }
@@ -1330,6 +1340,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
         id: variant.fk_condition_id,
       });
       variantFormGroup.controls['price'].setValue(variant.buy_price);
+      variantFormGroup.controls['purchasedPrice'].setValue(variant.purchased_price);
       variantFormGroup.controls['comparedPrice'].setValue(
         variant.compared_price
       );
@@ -1439,6 +1450,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     variantFormGroup.controls['id'].setValue(variant.id);
     variantFormGroup.controls['condition'].setValue(variant.condition);
     variantFormGroup.controls['price'].setValue(variant.buy_price);
+    variantFormGroup.controls['purchasedPrice'].setValue(variant.purchased_price);
     variantFormGroup.controls['sellingPrice'].setValue(variant.selling_price);
     variantFormGroup.controls['comparedPrice'].setValue(variant.compared_price);
     variantFormGroup.controls['trackQuantity'].setValue(variant.track_qty);
@@ -1485,8 +1497,6 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     variant: any,
     hasVariant: boolean
   ): Partial<ProductSaveRequestVariant> {
-    console.log(variant.get('sellingPrice')?.value);
-
     let result: Partial<ProductSaveRequestVariant> = {
       condition_desc: '',
       biz_status: variant.get('status')?.value,
@@ -1494,6 +1504,9 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
       track_qty: variant.get('trackQuantity')?.value,
       qty: this.util.safeNum(variant.controls['quantity'].value),
       buy_price: this.util.safeNum(variant.controls['price'].value),
+      purchased_price: this.util.safeNum(
+        variant.controls['purchasedPrice'].value
+      ),
       compared_price: this.util.safeNum(
         variant.controls['comparedPrice'].value
       ),
@@ -1616,6 +1629,9 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
 
       selling_price: this.util.safeNum(variant.get('sellingPrice')?.value),
       buy_price: this.util.safeNum(variant.controls['price'].value),
+      purchased_price: this.util.safeNum(
+        variant.controls['purchasedPrice'].value
+      ),
       compared_price: this.util.safeNum(
         variant.controls['comparedPrice'].value
       ),
@@ -1683,10 +1699,10 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // << Utility >>
 
-  compare(a: any, b: any) {
-    if (a && b) return a.id.toString() === b.id.toString();
-    else return false;
-  }
+  // compare(a: any, b: any) {
+  //   if (a && b) return a.id.toString() === b.id.toString();
+  //   else return false;
+  // }
 
   compareRandomSelect(a: number, b: number) {
     return a == b;
@@ -1723,9 +1739,6 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   submitProduct = async () => {
-    // << First validation >>
-
-    // << Prepare product >>
     let param: ProductSaveRequest = {
       id: this.productForm.value.id,
       biz_status: this.productForm.value.status,
@@ -1745,6 +1758,7 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
       hasVariant: this.productForm.value.hasVariant,
       variants: [],
       fk_group_id: '',
+      fk_purchased_currency_id: this.productForm.value.purchasedCurrency?.id,
     };
 
     for (let v of this.getVariants.controls) {
@@ -1781,7 +1795,6 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     console.log('save ', param);
-
     const loadingRef = await this.popup.showLoading('Please wait');
     loadingRef.present();
 
@@ -1830,8 +1843,8 @@ export class ProductSetupComponent implements OnInit, AfterViewInit, OnDestroy {
     modalRef.componentInstance.modalRef = modalRef;
     modalRef.result.then((value: ProfitMarginResp | undefined) => {
       if (value) {
-        variant.get('sellingPrice')?.setValue(value.salePrice)
-        variant.get('price')?.setValue(value.costOfItem)
+        variant.get('sellingPrice')?.setValue(value.salePrice);
+        variant.get('price')?.setValue(value.costOfItem);
       }
     });
   }

@@ -1,6 +1,5 @@
 import { DatePipe } from '@angular/common';
 import { ElementRef, Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   easepick,
   LockPlugin,
@@ -8,7 +7,7 @@ import {
   RangePlugin,
 } from '@easepick/bundle';
 import * as moment from 'moment';
-import { ServerService } from './server.service';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -16,12 +15,7 @@ export class Utility {
   readonly DATEPIPE_FORMAT = 'dd-MM-YYYY h:mm:ss a'; //h:mm:ss a
   readonly MOMENT_FORMAT = 'DD-MM-YYYY h:mm:ss a';
 
-
-  constructor(
-    private datepie: DatePipe,
-    private router: Router,
-    private http: ServerService
-  ) {}
+  constructor(private datepie: DatePipe) {}
 
   /** Date Utility */
   dateTransform(date: Date) {
@@ -147,6 +141,18 @@ export class Utility {
         delimiter: ' -> ',
       },
     });
+  }
+  getGreeting():string {
+    var today = new Date();
+    var curHr = today.getHours();
+
+    if (curHr < 12) {
+      return 'good morning';
+    } else if (curHr < 18) {
+      return 'good afternoon';
+    } else {
+      return 'good evening';
+    }
   }
   /** IO */
   readImage(src: any): Promise<any> {

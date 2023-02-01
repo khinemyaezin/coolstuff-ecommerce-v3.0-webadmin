@@ -17,7 +17,6 @@ import { NavBarAdminComponent } from './core-components/nav-bar-admin/nav-bar-ad
 import { MenusPannelComponent } from './core-components/menus-pannel/menus-pannel.component';
 import { TextEditorComponent } from './core-components/text-editor/text-editor.component';
 import { ProductSetupComponent } from './seller/product-setup/product-setup.component';
-import { BootstrapModelComponent } from './core-components/bootstrap-model/bootstrap-model.component';
 import { ImageCropperModelComponent } from './core-components/image-cropper-model/image-cropper-model.component';
 import { InventoryComponent } from './seller/inventory/inventory.component';
 import { LoadingComponent } from './core-components/loading/loading.component';
@@ -43,7 +42,6 @@ import { DepartmentsComponent } from './admin/departments/departments.component'
 import { PagenotfoundComponent } from './core-components/pagenotfound/pagenotfound.component';
 import { Router } from '@angular/router';
 import { HttpErrorHandlerService } from './services/http-error-handler.service';
-import { StoreComponent } from './seller/store/store.component';
 import { PopupService } from './services/popup.service';
 import { ProductPropertiesComponent } from './admin/product-properties/product-properties.component';
 import { ProductPropertiesDetailComponent } from './admin/product-properties-detail/product-properties-detail.component';
@@ -77,6 +75,7 @@ import { ProfitMarginCalculatorComponent } from './core-components/profit-margin
 import { ProfitMarginCalculatorBtnDirective } from './directive/profit-margin-calculator-btn.directive';
 import { IMaskModule } from 'angular-imask';
 import { NgxCurrencyModule } from 'ngx-currency';
+import { StoreDashboardComponent } from './seller/store-dashboard/store-dashboard.component';
 
 
 // const config: SocketIoConfig = {
@@ -94,7 +93,6 @@ import { NgxCurrencyModule } from 'ngx-currency';
     TextEditorComponent,
     ProductSetupComponent,
     InventoryComponent,
-    BootstrapModelComponent,
     ImageCropperModelComponent,
     LoadingComponent,
     PaginationComponent,
@@ -119,7 +117,6 @@ import { NgxCurrencyModule } from 'ngx-currency';
     UserControlsMenuComponent,
     DepartmentsComponent,
     PagenotfoundComponent,
-    StoreComponent,
     ProductPropertiesComponent,
     ProductPropertiesDetailComponent,
     ConfirmationBoxComponent,
@@ -142,8 +139,10 @@ import { NgxCurrencyModule } from 'ngx-currency';
     VariantOptionVisibilityPipe,
     ProfitMarginCalculatorComponent,
     ProfitMarginCalculatorBtnDirective,
+    StoreDashboardComponent,
   ],
   imports: [
+    //NgChartsModule
     BrowserModule,
     AppRoutingModule,
     ServiceWorkerModule.register('ngsw-worker.js', {

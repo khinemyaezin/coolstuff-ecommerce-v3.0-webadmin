@@ -11,15 +11,15 @@ import { AuthService } from 'src/app/auth/auth.service';
 export class AdminHomeComponent implements OnInit {
   menus: Menus[] = [
     {
-      id: 'departments',
-      title: 'Departments',
-      icon: 'bi bi-diagram-3-fill',
+      id: 'settings',
+      title: 'Setup',
+      icon: 'bi bi-gear-wide-connected',
       routerLink: '',
       collapse: false,
       children: [
         {
           id: 'dep-manager',
-          title: 'Manager',
+          title: 'Departments Manager',
           icon: '',
           routerLink: 'departments',
           collapse: false,
@@ -27,32 +27,22 @@ export class AdminHomeComponent implements OnInit {
         },
         {
           id: 'product-attributes',
-          title: 'Attributes',
+          title: 'Product Properties Of A Department',
           icon: '',
           routerLink: 'product-attributes',
           collapse: false,
           children: []
         },
-        
-      ],
-      
-    },
-    {
-      id: 'products',
-      title: 'Products',
-      icon: 'bi bi-box2-fill',
-      routerLink: '',
-      collapse: false,
-      children: [
         {
           id: 'product-properties',
-          title: 'Properties',
+          title: 'Product Properties',
           icon: '',
           routerLink: 'product-properties',
           collapse: false,
           children: []
         }
-      ]
+      ],
+      
     }
   ];
   constructor(

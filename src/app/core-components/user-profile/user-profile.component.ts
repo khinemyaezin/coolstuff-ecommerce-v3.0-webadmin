@@ -13,6 +13,7 @@ import { PopupService } from 'src/app/services/popup.service';
 import { UserSaveRequest } from 'src/app/services/requests';
 import { ServerService } from 'src/app/services/server.service';
 import { MediaChooserConfig } from '../media-chooser/media-chooser.component';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'user-profile-component',
@@ -42,12 +43,20 @@ export class UserProfileComponent implements OnInit {
     pagination: 12,
     ratio: '1/1',
   };
+  phoneMaskConfig = {
+    mask: '+{95} N',
+    blocks: {
+      N: {
+        mask: /^[0-9]+$/,
+      },
+    },
+  };
 
   constructor(
     public popup: PopupService,
     private http: ServerService,
     private util: Utility,
-    private formBuilder: FormBuilder
+    private auth:AuthService
   ) {}
 
   ngOnInit(): void {
@@ -58,6 +67,8 @@ export class UserProfileComponent implements OnInit {
         if (resp.success) this.mapAccount(resp.details);
       });
     }
+
+    this.phoneMaskConfig.mask = `{${this.auth.user.brand.region.dial_code}} N`;
   }
 
   mapAccount(acc: User) {
@@ -93,7 +104,7 @@ export class UserProfileComponent implements OnInit {
       profile_image:
         this.accountForm.controls['profileImage'].value?.id ?? null,
       email: this.accountForm.controls['email'].value,
-      phone: this.accountForm.controls['phoneNo'].value,
+      phone: this.accountForm.controls['phoneNo'].value.replace(/\s/g, ''),
       address: this.accountForm.controls['address'].value,
       password: this.accountForm.controls['password'].value,
     };
@@ -108,7 +119,7 @@ export class UserProfileComponent implements OnInit {
       last_name: this.accountForm.controls['lastName']?.value,
       profile_image:
         this.accountForm.controls['profileImage'].value?.id ?? null,
-      email: this.accountForm.controls['email'].value,
+      email: this.accountForm.controls['email'].value.replace(/\s/g, ''),
       phone: this.accountForm.controls['phoneNo'].value,
       address: this.accountForm.controls['address'].value,
     };

@@ -251,12 +251,17 @@
                 </div>
                 <div class="mb-2">
                     <label for="purchasedCurrency" class="form-label ">Purchased with</label>
-                    <select class="form-select" id="purchasedCurrency" formControlName="purchasedCurrency">
+                    <select class="form-select" id="purchasedCurrency" formControlName="purchasedCurrency" [compareWith]="compare">
                         <option [value]="null" disabled selected>Select</option>
                         <option [ngValue]="currency" *ngFor="let currency of currencyByRegions;">
-                            {{ currency.currency_code }}<br>
+                            {{ currency.currency_code }} 
+                            ({{currency.country_name}})
                         </option>
                     </select>
+                </div>
+                <div class="mb-2" *ngIf="storeCurrency?.id !== buyCurrency?.id">
+                    <label for="currencyRate" class="form-label ">Currency rate</label>
+                    <input type="text" class="form-control" id="currencyRate" placeholder="shirt, red" formControlName="currencyRate">
                 </div>
             </div>
         </div>
@@ -287,7 +292,7 @@
 
                     <input type="text" class="form-control text-end" id="offerSellingPrice"
                         formControlName="sellingPrice" currencyMask
-                        [options]="{ prefix:'', suffix: ' '+sellCurrency?.currency_code, thousands: ',', decimal: '.' }">
+                        [options]="{ prefix:'', suffix: ' '+storeCurrency?.currency_code, thousands: ',', decimal: '.' }">
                 </div>
             </div>
             <div class="row mb-2">
@@ -299,7 +304,7 @@
 
                     <input type="text" class="form-control text-end" id="offerCompareAtPrice"
                         formControlName="comparedPrice" currencyMask
-                        [options]="{ prefix:'', suffix: ' '+sellCurrency?.currency_code, thousands: ',', decimal: '.' }">
+                        [options]="{ prefix:'', suffix: ' '+storeCurrency?.currency_code, thousands: ',', decimal: '.' }">
 
                 </div>
             </div>
@@ -326,8 +331,18 @@
 
                     <input type="text" class="form-control text-end" id="offerCostPerItem" formControlName="price"
                         currencyMask
+                        [options]="{ prefix:'', suffix: ' '+storeCurrency?.currency_code, thousands: ',', decimal: '.' }">
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-4">
+                    <label for="offerPurchasedPrice" class="w-100 col-form-label  text-lg-end text-sm-start">
+                        Purchased price</label>
+                </div>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control text-end" id="offerPurchasedPrice"  formControlName="purchasedPrice"
+                        currencyMask
                         [options]="{ prefix:'', suffix: ' '+buyCurrency?.currency_code, thousands: ',', decimal: '.' }">
-                    <small class="text-muted">Customer won't see it.</small>
                 </div>
             </div>
             <div class="d-flex justify-content-end">
@@ -732,6 +747,9 @@
                                     Cost of item
                                 </th>
                                 <th class="table-cell column-heading">
+                                    Purchased price
+                                </th>
+                                <th class="table-cell column-heading">
                                     Qty
                                 </th>
                                 <th class="table-cell column-heading">
@@ -943,7 +961,7 @@
 
                                                 <input type="text" class="form-control text-end input-number"
                                                     formControlName="sellingPrice" currencyMask
-                                                    [options]="{ prefix:'', suffix: ' '+sellCurrency?.currency_code, thousands: ',', decimal: '.' }">
+                                                    [options]="{ prefix:'', suffix: ' '+storeCurrency?.currency_code, thousands: ',', decimal: '.' }">
                                             </div>
                                         </td>
                                         <td class="table-cell">
@@ -954,7 +972,7 @@
 
                                                 <input type="text" class="form-control  text-end  input-number"
                                                     formControlName="comparedPrice" currencyMask
-                                                    [options]="{ prefix:'', suffix: ' '+sellCurrency?.currency_code, thousands: ',', decimal: '.' }">
+                                                    [options]="{ prefix:'', suffix: ' '+storeCurrency?.currency_code, thousands: ',', decimal: '.' }">
                                             </div>
                                         </td>
                                         <td class="table-cell">
@@ -964,6 +982,15 @@
                                             <div class="table-cell-content">
                                                 <input type="text" class="form-control text-end input-number"
                                                     formControlName="price" currencyMask
+                                                    [options]="{ prefix:'', suffix: ' '+storeCurrency?.currency_code, thousands: ',', decimal: '.' }">
+                                            </div>
+                                        </td>
+                                        <td class="table-cell">
+                                            <div class="table-cell-heading">
+                                            </div>
+                                            <div class="table-cell-content">
+                                                <input type="text" class="form-control text-end input-number"
+                                                    formControlName="purchasedPrice" currencyMask
                                                     [options]="{ prefix:'', suffix: ' '+buyCurrency?.currency_code, thousands: ',', decimal: '.' }">
                                             </div>
                                         </td>

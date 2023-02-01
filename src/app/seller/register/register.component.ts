@@ -16,6 +16,14 @@ export class RegisterComponent extends ComponentFather implements OnInit {
 
   /** UI controls */
   activeTabId = 1;
+  phoneMaskConfig = {
+    mask: '+{95} N',
+    blocks: {
+      N: {
+        mask: /^[0-9]+$/,
+      },
+    },
+  };
 
   /** FormGroups */
   brandFormGroup: FormGroup = new FormGroup({
@@ -29,7 +37,7 @@ export class RegisterComponent extends ComponentFather implements OnInit {
     userLastName: new FormControl('', Validators.required),
     userEmail: new FormControl('', Validators.required),
     userPhNo: new FormControl('', Validators.required),
-    userAddress: new FormControl('', Validators.required),
+    userAddress: new FormControl(''),
     password: new FormControl('', Validators.required),
   });
 
@@ -54,6 +62,9 @@ export class RegisterComponent extends ComponentFather implements OnInit {
 
   ngOnInit(): void {
     this.getRegions();
+  }
+  onChangeRegion(){   
+    this.phoneMaskConfig.mask = `{${this.brandFormGroup.get('region')?.value?.dial_code}} N`
   }
 
   submit() {

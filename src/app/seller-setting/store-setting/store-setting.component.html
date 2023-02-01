@@ -120,7 +120,7 @@
                                 </div>
                                 <div class="w-100 align-self-center">
                                     <div>
-                                        <a class="mb-0 h6">{{contactInfo.get('phone')?.value}}</a>
+                                        <a class="mb-0 h6 text-decoration-none">{{contactInfo.get('phone')?.value | defaultEmptyString:'Provide phone number'}}</a>
                                     </div>
                                 </div>
                             </div>
@@ -128,7 +128,8 @@
                         <ng-template #contactPhoneEdit>
                             <div class="">
                                 <label for="contactPhone" class="form-label">Phone number</label>
-                                <input type="tel" class="form-control" id="contactPhone" formControlName="phone">
+                                <input type="tel" class="form-control" id="contactPhone" formControlName="phone" [imask]="phoneMaskConfig"
+                                placeholder="Enter phone number">
                             </div>
                         </ng-template>
                     </div>
@@ -143,7 +144,7 @@
                                 </div>
                                 <div class="w-100">
                                     <div>
-                                        <a class="mb-0 h6">{{contactInfo.get('sysEmail')?.value}}</a>
+                                        <a class="mb-0 h6 text-decoration-none">{{contactInfo.get('sysEmail')?.value | defaultEmptyString:'Provide email'}}</a>
                                         <p class="mb-0 opacity-75 small">{{appName}} uses this to contact you.</p>
                                     </div>
                                 </div>
@@ -171,7 +172,7 @@
                                 </div>
                                 <div class="w-100">
                                     <div>
-                                        <a class="mb-0 h6">{{contactInfo.get('cusEmail')?.value}}</a>
+                                        <a class="mb-0 h6 text-decoration-none">{{contactInfo.get('cusEmail')?.value | defaultEmptyString:'Provide email'}}</a>
                                         <p class="mb-0 opacity-75 small">Customer see if you email them.</p>
                                     </div>
                                 </div>
@@ -190,7 +191,7 @@
                 </div>
             </div>
             <div class="card-footer d-flex justify-content-end" *ngIf="contactInfo.get('isEdit')?.value">
-                <button class="btn btn-primary" type="submit">Submit</button>
+                <button class="btn btn-primary" type="submit" [disabled]="!contactInfo.valid">Submit</button>
             </div>
         </div>
     </form>

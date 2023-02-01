@@ -38,7 +38,7 @@ export class InventoryComponent implements OnInit {
   /**
    * Data variables
    */
-  private variantsChanges = new Map();
+  variantsChanges = new Map();
   productFormGroup: FormGroup = new FormGroup({
     products: new FormArray([]),
   });
@@ -68,14 +68,14 @@ export class InventoryComponent implements OnInit {
     private changeDetector: ChangeDetectorRef
   ) {}
 
-  get productVariationControls(): AbstractControl[] {
-    return (<FormArray>this.productFormGroup.get('products')).controls;
-  }
   get saveBtnOn() {
     return this.variantsChanges.size > 0;
   }
   get chnagedVariNumber() {
     return this.variantsChanges.size;
+  }
+  get productVariationControls(): AbstractControl[] {
+    return (<FormArray>this.productFormGroup.get('products')).controls;
   }
 
   ngOnDestroy(): void {
@@ -282,7 +282,7 @@ export class InventoryComponent implements OnInit {
       variants: Array.from(this.variantsChanges.values()).map(
         (variant: AbstractControl) => {
           console.log(variant.get('buy_price')?.value);
-          
+
           return {
             id: variant.get('id')?.value,
             buy_price: this.pgService.safeNum(variant.get('buy_price')?.value),
@@ -322,18 +322,25 @@ export class InventoryComponent implements OnInit {
     console.log(values);
   }
 
-  async removeProduct(id: string) {
+  async removeProduct(deletedProduct: AbstractControl) {
     const result: ConfirmBoxResult = await this.popup.confirmBox(
       'Do you want to delete?'
     );
     if (result == ConfirmBoxResult.CONFIRM) {
-      lastValueFrom(this.deleteProduct(id)).then((response: any) => {
-        if (response.success) {
-          this.popup.showSuccessToast('Success');
-        } else {
-          this.popup.showTost(response.message);
-        }
+      const prodIndex = this.productVariationControls.findIndex((prod) => {
+        return prod.get('product') === deletedProduct;
       });
+
+      lastValueFrom(this.deleteProduct(deletedProduct.value.id)).then(
+        (response: any) => {
+          if (response.success) {
+            this.popup.showSuccessToast('Success');
+            this.productVariationControls.splice(prodIndex, 1);
+          } else {
+            this.popup.showTost(response.message);
+          }
+        }
+      );
     }
   }
 }

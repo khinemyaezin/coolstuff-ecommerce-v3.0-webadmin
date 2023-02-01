@@ -17,9 +17,9 @@ import { RegisterComponent } from './seller/register/register.component';
 import { SellerHomeComponent } from './seller/seller-home/seller-home.component';
 import { SellerGuard } from './seller/seller.guard';
 import { StoreSettingComponent } from './seller-setting/store-setting/store-setting.component';
-import { StoreComponent } from './seller/store/store.component';
 import { BrandSettingComponent } from './seller-setting/brand-setting/brand-setting.component';
 import { UsersAndPermissionComponent } from './seller-setting/users-and-permission/users-and-permission.component';
+import { StoreDashboardComponent } from './seller/store-dashboard/store-dashboard.component';
 
 const routes: Routes = [
   {
@@ -65,8 +65,8 @@ const routes: Routes = [
     children: [
      
       {
-        path: 'store',
-        component: StoreComponent,
+        path: 'dashboard',
+        component: StoreDashboardComponent,
       },
       {
         path: 'inventory',

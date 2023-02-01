@@ -1,6 +1,6 @@
 import { HttpParams } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { lastValueFrom, Subject, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { PopupService } from 'src/app/services/popup.service';
@@ -38,10 +38,19 @@ export class StoreSettingComponent implements OnInit, OnDestroy {
 
   contactInfo = new FormGroup({
     isEdit: new FormControl<boolean>(false),
-    phone: new FormControl(''),
-    sysEmail: new FormControl(''),
-    cusEmail: new FormControl(''),
+    phone: new FormControl('',Validators.required),
+    sysEmail: new FormControl('',Validators.required),
+    cusEmail: new FormControl('',Validators.required),
   });
+
+  phoneMaskConfig = {
+    mask: '+{95} N',
+    blocks: {
+      N: {
+        mask: /^[0-9]+$/,
+      },
+    },
+  };
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
@@ -63,6 +72,9 @@ export class StoreSettingComponent implements OnInit, OnDestroy {
       this.initStoreBasic(resp.details);
       this.initStoreContact(resp.details);
     });
+
+    this.phoneMaskConfig.mask = `{${this.auth.user.brand.region.dial_code}} N`;
+
   }
 
   initStoreCurrency(setting: any) {

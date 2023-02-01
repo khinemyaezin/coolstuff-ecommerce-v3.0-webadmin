@@ -13,11 +13,11 @@
   
       </div>
     </nav>
-    <div class="d-flex">
-      <div class="offcanvas-expand " style="min-width: 21.875rem;">
+    <div class="app-wrapper flex-column flex-row-fluid">
+      <div class="offcanvas-expand side-bar" style="min-width: 21.875rem;">
         <ng-template *ngTemplateOutlet="menuTemplate ; context:{ offcanvas: null }"></ng-template>
       </div>
-      <main class="offcanvas-enabled">
+      <main class="offcanvas-enabled flex-column flex-row-fluid">
         <router-outlet></router-outlet>
       </main>
     </div>
@@ -28,10 +28,7 @@
   </ng-template>
   
   <ng-template #menuTemplate let-offcanvas="offcanvas">
-    <div class="offcanvas-body px-0">
-      <div class="py-5">
+    <div class="offcanvas-body">
         <menus [menus]="menus" [offcanvas]="offcanvas"></menus>
-        <!-- <a (click)="">Logout</a> -->
-      </div>
     </div>
   </ng-template>

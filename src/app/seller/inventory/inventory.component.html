@@ -1,4 +1,4 @@
-<main class="container pb-2">
+<main class="container-fluid pb-2">
 
     <ng-container *ngTemplateOutlet="heading; context:{ submitBtn: true }">
     </ng-container>
@@ -26,7 +26,7 @@
                         </label>
                     </div>
                     <div class="px-2">
-                        <button [routerLink]="'/seller-central/add-a-product'" class="btn btn-light" type="button"
+                        <button [routerLink]="'/seller-central/add-a-product'" class="btn btn-primary" type="button"
                             id="btn-add-product">Add a product</button>
                     </div>
                 </div>
@@ -371,7 +371,7 @@
             <i class="bi bi-three-dots-vertical"></i>
         </button>
         <div ngbDropdownMenu aria-labelledby="menu">
-            <button ngbDropdownItem *ngIf="isParent" (click)="removeProduct(variant.get('product')?.value.id)">
+            <button ngbDropdownItem *ngIf="isParent" (click)="removeProduct(variant.get('product'))">
                 Remove
             </button>
             <!-- <button ngbDropdownItem *ngIf="!isStandAlone" (click)="removeVariant(variant.get('id')?.value)">

@@ -46,7 +46,7 @@
                                         </div>
                                         <div class="mb-4">
                                             <label for="region" class="form-label">Region</label>
-                                            <select id="region" class="form-select" formControlName="region"
+                                            <select id="region" class="form-select" formControlName="region" (change)="onChangeRegion()"
                                                 [compareWith]="compare">
                                                 <option [value]="null" disabled selected>Select</option>
                                                 <option [ngValue]="region" *ngFor="let region of regions">
@@ -97,9 +97,8 @@
                                         <div class="mb-3">
                                             <label for="user-phone" class="form-label">What is your phone
                                                 number?</label>
-                                            <input type="tel" id="user-phone" placeholder="09 xxxxxxxxx"
-                                                formControlName="userPhNo"
-                                                [ngClass]="{'form-control is-invalid': !accountFormGroup.get('userPhNo')?.valid && accountFormGroup.get('userPhNo')?.touched,'form-control':true}">
+                                            <input type="text" id="user-phone" placeholder="09 xxxxxxxxx" [imask]="phoneMaskConfig"
+                                                formControlName="userPhNo" class="form-control form-validation">
                                         </div>
                                         <div class="mb-3">
                                             <label for="user-password" class="form-label">Password</label>

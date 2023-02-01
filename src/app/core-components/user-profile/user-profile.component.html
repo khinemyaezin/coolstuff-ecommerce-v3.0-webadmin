@@ -50,8 +50,8 @@
                     your phone
                     number?</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" id="user-phone" placeholder="9** *******" prefix="+95 "
-                        mask="000 0000000" formControlName="phoneNo">
+                    <input type="text" class="form-control" id="user-phone" placeholder="9** *******" 
+                    [imask]="phoneMaskConfig" formControlName="phoneNo">
                 </div>
 
             </div>
