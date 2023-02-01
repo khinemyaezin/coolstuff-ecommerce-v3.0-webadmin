@@ -2,7 +2,12 @@
 
     <ng-container *ngTemplateOutlet="heading; context:{ submitBtn: true }">
     </ng-container>
-
+    <ngx-charts-bar-vertical-2d [view]="view" [scheme]="colorScheme" [results]="multi" [gradient]="gradient"
+        [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="showLegend" [showXAxisLabel]="showXAxisLabel"
+        [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel"
+        [legendTitle]="legendTitle" (select)="onSelect($event)" (activate)="onActivate($event)"
+        (deactivate)="onDeactivate($event)">
+    </ngx-charts-bar-vertical-2d>
 </main>
 <ng-template #heading>
 
@@ -12,6 +17,6 @@
             <p class="text-muted small pe-2 mb-0">
             </p>
         </div>
-        
+
     </head>
 </ng-template>

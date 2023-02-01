@@ -76,6 +76,7 @@ import { ProfitMarginCalculatorBtnDirective } from './directive/profit-margin-ca
 import { IMaskModule } from 'angular-imask';
 import { NgxCurrencyModule } from 'ngx-currency';
 import { StoreDashboardComponent } from './seller/store-dashboard/store-dashboard.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 
 // const config: SocketIoConfig = {
@@ -142,7 +143,7 @@ import { StoreDashboardComponent } from './seller/store-dashboard/store-dashboar
     StoreDashboardComponent,
   ],
   imports: [
-    //NgChartsModule
+    NgxChartsModule,
     BrowserModule,
     AppRoutingModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
