@@ -54,7 +54,7 @@ export interface User {
   address: string;
   brand: any;
   user_type: UserTypes;
-  user_roles: [];
+  user_roles: string[];
 }
 
 export interface Product {

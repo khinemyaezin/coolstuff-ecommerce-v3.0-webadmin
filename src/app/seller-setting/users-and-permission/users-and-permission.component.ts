@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, Subject, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { UserProfileComponent } from 'src/app/core-components/user-profile/user-profile.component';
 import { User, UserTypes } from 'src/app/services/core';
@@ -11,13 +11,45 @@ import { ServerService } from 'src/app/services/server.service';
   templateUrl: './users-and-permission.component.html',
   styleUrls: ['./users-and-permission.component.scss'],
 })
-export class UsersAndPermissionComponent implements OnInit {
+export class UsersAndPermissionComponent implements OnInit, OnDestroy {
   storeOwners: User[] = [];
   staffs: User[] = [];
-  constructor(private auth: AuthService, private http: ServerService,private modalService: NgbModal) {}
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
+  constructor(
+    private auth: AuthService,
+    private http: ServerService,
+    private modalService: NgbModal
+  ) {}
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
+  }
 
   ngOnInit(): void {
-    this.getUsersByUserType().then((result) => {
+    this.getUsersByUserType();
+  }
+
+  openNewStaffModel() {
+    const modalRef = this.modalService.open(UserProfileComponent, {
+      size: 'lg',
+      centered: true,
+      scrollable: true,
+    });
+    modalRef.componentInstance.type = 'model';
+    modalRef.componentInstance.title = 'Create a new staff';
+    modalRef.componentInstance.userType = UserTypes.STAFF;
+
+    modalRef.componentInstance.userResponse
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((resp: any) => {
+        if (resp.success) this.getUsersByUserType();
+        modalRef.close();
+      });
+  }
+  getUsersByUserType() {
+    this.requestUsersByUserType().then((result) => {
       if (result.success) {
         result.details.forEach((userType: any) => {
           if (userType.id == UserTypes.SELLER) {
@@ -30,19 +62,8 @@ export class UsersAndPermissionComponent implements OnInit {
     });
   }
 
-  openNewStaffModel() {
-    const modalRef = this.modalService.open(UserProfileComponent, {
-      size: 'lg',
-      centered: true,
-      scrollable: true,
-    });
-    modalRef.componentInstance.type = 'model';
-    modalRef.componentInstance.title = 'Create a new staff';
-    modalRef.componentInstance.userType = UserTypes.STAFF;
-  }
-
   //HTTPS
-  getUsersByUserType() {
+  requestUsersByUserType() {
     return lastValueFrom(this.http.GET('usertypes/users'));
   }
 }

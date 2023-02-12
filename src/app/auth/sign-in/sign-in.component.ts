@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { LoginData } from 'src/app/interfaces/request-data';
+import { ResponseObject } from 'src/app/interfaces/response-data';
 import { ServerService } from 'src/app/services/server.service';
 import { AuthService } from '../auth.service';
 
@@ -40,7 +42,7 @@ export class SignInComponent implements OnInit {
     }
     //<< Send request to server.>>
     this.http.POST('login', param).subscribe({
-      next: (body) => {
+      next: (body:ResponseObject<LoginData>) => {
         if (body.success) {
           this.authService.signin(body.details);          
         }

@@ -295,31 +295,34 @@ export class InventoryComponent implements OnInit {
         }
       ),
     };
-    this.http
-      .PUT(`brands/${this.auth.user.brand.id}/inventory/variants`, values)
-      .subscribe({
-        next: (result: any) => {
-          if (result.success) {
-            this.productFormGroup.markAsPristine();
-            values.variants.forEach((v) => {
-              this.defaultVariants.set(v.id, {
-                buy_price: v['buy_price'],
-                selling_price: v['selling_price'],
-                qty: v['qty'],
-                condition: v['fk_condition_id'],
-              });
+    this.updateProducts(values)
+      .then((result: any) => {
+        if (result.success) {
+          this.productFormGroup.markAsPristine();
+          values.variants.forEach((v) => {
+            this.defaultVariants.set(v.id, {
+              buy_price: v['buy_price'],
+              selling_price: v['selling_price'],
+              qty: v['qty'],
+              condition: v['fk_condition_id'],
             });
+          });
 
-            this.variantsChanges.clear();
-          } else {
-            console.log(result);
-          }
-        },
-        error: (err) => {
-          console.log(err);
-        },
-      });
+          this.variantsChanges.clear();
+        } else {
+          console.log(result);
+        }
+      })
+      .catch((e) => console.log(e));
     console.log(values);
+  }
+  updateProducts(request: any) {
+    return lastValueFrom(
+      this.http.PUT(
+        `brands/${this.auth.user.brand.id}/inventory/variants`,
+        request
+      )
+    );
   }
 
   async removeProduct(deletedProduct: AbstractControl) {

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { Menus } from 'src/app/app.component';
 import { AuthService } from 'src/app/auth/auth.service';
-import { PopupService } from 'src/app/services/popup.service';
 
 @Component({
   selector: 'app-seller-home',
@@ -98,7 +97,7 @@ export class SellerHomeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.accountName = this.auth.user?.first_name;
+    this.accountName = this.auth.user?.first_name ?? '';
     this.accountImagePath = this.auth.user?.profile_image;
     this.navBrand = this.auth.user?.brand.profile_image;
   }

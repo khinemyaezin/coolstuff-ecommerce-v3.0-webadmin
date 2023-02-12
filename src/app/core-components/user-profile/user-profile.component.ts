@@ -6,7 +6,7 @@ import {
   Validators,
   FormBuilder,
 } from '@angular/forms';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, Subject } from 'rxjs';
 import { Utility } from 'src/app/services/utility.service';
 import { User, UserTypes } from 'src/app/services/core';
 import { PopupService } from 'src/app/services/popup.service';
@@ -52,6 +52,8 @@ export class UserProfileComponent implements OnInit {
     },
   };
 
+  public userResponse:Subject<any> = new Subject<any>();
+
   constructor(
     public popup: PopupService,
     private http: ServerService,
@@ -91,13 +93,19 @@ export class UserProfileComponent implements OnInit {
 
   submit() {
     if (this.util.isEmptyID(this.id)) {
-      this.saveUser();
+      this.saveUser().then(resp=>{
+        this.popup.showTost(resp.message);
+        this.userResponse.next(resp);
+      })
     } else {
-      this.updateUser();
+      this.updateUser().then((resp) => {
+        this.popup.showTost(resp.message);
+        this.userResponse.next(resp);
+      });
     }
   }
   saveUser() {
-    let request: UserSaveRequest = {
+    const request: UserSaveRequest = {
       user_type_id: this.userType,
       first_name: this.accountForm.controls['firstName'].value,
       last_name: this.accountForm.controls['lastName']?.value,
@@ -109,9 +117,7 @@ export class UserProfileComponent implements OnInit {
       password: this.accountForm.controls['password'].value,
     };
 
-    lastValueFrom(this.http.POST(`users`, request)).then((resp) => {
-      this.popup.showTost(resp.message);
-    });
+    return lastValueFrom(this.http.POST(`users`, request));
   }
   updateUser() {
     let param: Partial<User> = {
@@ -124,11 +130,9 @@ export class UserProfileComponent implements OnInit {
       address: this.accountForm.controls['address'].value,
     };
 
-    lastValueFrom(
+    return lastValueFrom(
       this.http.PUT(`users/${this.accountForm.controls['id'].value}`, param)
-    ).then((resp) => {
-      this.popup.showTost(resp.message);
-    });
+    )
   }
   getUserByID(id: string) {
     let httpParams = new HttpParams();

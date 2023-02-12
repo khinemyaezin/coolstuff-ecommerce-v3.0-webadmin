@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { LoginData } from '../interfaces/request-data';
 import { User, UserTypes } from '../services/core';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private curUser!: User;
+  private curUser!: Partial<User>;
   constructor(private router: Router) {}
 
   get user() {
@@ -13,7 +14,7 @@ export class AuthService {
   }
 
   get userType(): UserTypes {
-    return this.curUser.user_type;
+    return this.curUser.user_type ?? UserTypes.USER;
   }
 
   get isSeller(): boolean {
@@ -28,25 +29,19 @@ export class AuthService {
     return this.isLogin() && this.userType == UserTypes.USER;
   }
 
-  public signin(request: any, fromLogin: boolean = true): boolean {
+  public signin(request: LoginData, fromLogin: boolean = true): boolean {
     const userType: UserTypes | null = this.identifyUser(
-      request.user.user_type.id
+      request.user_type
     );
     if (!userType) {
       throw new Error('Invalid User');
     }
 
     this.curUser = {
-      id: request.user.id,
-      status: request.user.status,
-      first_name: request.user.first_name,
-      last_name: request.user.last_name,
-      nrc_value: request.user.nrc_value,
-      profile_image: request.user.profile_image,
-      email: request.user.email,
-      phone: request.user.phone,
-      address: request.user.address,
-      brand: request.user.brand,
+      id: request.id,
+      first_name: request.first_name,
+      last_name: request.last_name,
+      profile_image: request.profile_image,
       user_type: userType,
       user_roles: request.roles,
     };
